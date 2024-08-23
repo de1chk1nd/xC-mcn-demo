@@ -1,0 +1,18 @@
+####### Private files
+docs-priv/
+
+setup-init/.nginx/license/*.crt
+setup-init/.nginx/license/*.key
+setup-init/.nginx/license/*.jwt
+setup-init/.xC/*.p12
+setup-init/.xC/*.txt
+setup-init/.ssh/*.crt
+setup-init/.ssh/*.pem
+setup-init/.ssh/*.ppk
+
+
+####### Terraform files
+**/.terraform/*
+.terraform.lock*
+*.tfstate*
+**/crash.log
