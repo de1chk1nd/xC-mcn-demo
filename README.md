@@ -27,7 +27,6 @@ EU-CENTRAL-1
 export EC2_xc_IID_EU_CENTRAL_1=$(aws ec2 describe-instances --region eu-central-1 --filters Name=tag:ves-io-site-name,Values=de1chk1nd-aws-* Name=instance-state-name,Values=running --query "Reservations[*].Instances[*].InstanceId" --output text)
 aws ec2 modify-instance-attribute --region eu-central-1 --instance-id $EC2_xc_IID_EU_CENTRAL_1 --source-dest-check "{\"Value\": false}"
 
-
 ### login to Ubuntu Server
 - minikube start --vm-driver=none
 - kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml
