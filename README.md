@@ -10,7 +10,7 @@ del $Env:userprofile\.ssh\known_hosts
 powershell.exe -File "$Env:userprofile\Documents\git-repositories\xC-mcn-demo\setup-init\.ssh\ssh-key-permission_win.ps1"
 
 ### Linux
-gnome-terminal -e 'sudo vim /etc/hosts'
+x-terminal-emulator -e 'sudo vim /etc/hosts'
 terraform -chdir="./infrastructure" output -raw etc-hosts | Set-Clipboard
 
 rm ~/.ssh/known_hosts
@@ -35,19 +35,16 @@ aws ec2 modify-instance-attribute --region eu-central-1 --instance-id $EC2_xc_II
 
 ## Delete
 ### Windows
-- $Env:VES_P12_PASSWORD="***REMOVED***"
-- terraform -chdir="./infrastructure" destroy -auto-approve
+ $Env:VES_P12_PASSWORD="***REMOVED***"
+ terraform -chdir="./infrastructure" destroy -auto-approve
 
 ### Linux
-export VES_P12_PASSWORD='***REMOVED***'
-terraform -chdir="./infrastructure" destroy -auto-approve
+ export VES_P12_PASSWORD='***REMOVED***'
+ terraform -chdir="./infrastructure" destroy -auto-approve
 
-sudo vim /etc/hosts
+ x-terminal-emulator -e 'sudo vim /etc/hosts' &
 
-
-
-
-- manual
+### manual (if s.th. failed)
   - xC Console
     - origin pools
     - service discovery
