@@ -185,3 +185,7 @@ sleep 10
 # sudo minikube start --vm-driver=none
 # sleep 10
 # sudo kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml
+
+# Start Echo App on http/8080 and https/8443
+docker run -d -p 8080:8080 -p 8443:8443 --rm -t mendhak/http-https-echo:31
+sleep 10
