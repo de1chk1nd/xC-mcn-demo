@@ -2,23 +2,52 @@
 py ./setup-init/initialize_infrastructure.py
 
 ## Post Install
+### Windows
 code "C:/Windows/System32/drivers/etc/hosts"
 terraform -chdir="./infrastructure" output -raw etc-hosts | Set-Clipboard
 
 del $Env:userprofile\.ssh\known_hosts
 powershell.exe -File "$Env:userprofile\Documents\git-repositories\xC-mcn-demo\setup-init\.ssh\ssh-key-permission_win.ps1"
 
-AWS Console:
-- Change source/destination check
+### Linux
+gnome-terminal -e 'sudo vim /etc/hosts'
+terraform -chdir="./infrastructure" output -raw etc-hosts | Set-Clipboard
 
-login to ubuntu:
+rm ~/.ssh/known_hosts
+sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
+
+### AWS Console / CLI (Change Soure-/Destination Check)
+EU-WEST-1
+---------
+export EC2_xc_IID_EU_WEST_1=$(aws ec2 describe-instances --region eu-west-1 --filters Name=tag:ves-io-site-name,Values=de1chk1nd-aws-* --query "Reservations[*].Instances[*].InstanceId" --output text)
+aws ec2 modify-instance-attribute --region eu-west-1 --instance-id $EC2_xc_IID_EU_WEST_1 --source-dest-check "{\"Value\": false}"
+
+
+EU-CENTRAL-1
+------------
+export EC2_xc_IID_EU_CENTRAL_1=$(aws ec2 describe-instances --region eu-central-1 --filters Name=tag:ves-io-site-name,Values=de1chk1nd-aws-* --query "Reservations[*].Instances[*].InstanceId" --output text)
+aws ec2 modify-instance-attribute --region eu-central-1 --instance-id $EC2_xc_IID_EU_CENTRAL_1 --source-dest-check "{\"Value\": false}"
+
+
+### login to Ubuntu Server
 - minikube start --vm-driver=none
 - kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml
 - create kubeconfig file >> cat "certificate file" | base64
 
+
 ## Delete
-$Env:VES_P12_PASSWORD="***REMOVED***"
+### Windows
+- $Env:VES_P12_PASSWORD="***REMOVED***"
+- terraform -chdir="./infrastructure" destroy -auto-approve
+
+### Linux
+export VES_P12_PASSWORD='***REMOVED***'
 terraform -chdir="./infrastructure" destroy -auto-approve
+
+sudo vim /etc/hosts
+
+
+
 
 - manual
   - xC Console
@@ -31,113 +60,3 @@ terraform -chdir="./infrastructure" destroy -auto-approve
     - EIP
     - VPC
     - keyring
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CERTS:
-
------BEGIN RSA PRIVATE KEY-----
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
-REDACTED_RSA_KEY_LINE
------END RSA PRIVATE KEY-----
-
------BEGIN CERTIFICATE-----
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
-REDACTED_CERT_LINE
------END CERTIFICATE-----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### OLD
-
-terraform -chdir="./infrastructure" apply -replace="module.eu-central-1.aws_instance.xC-mcn-site-ubuntu"
-
-
-Change config-yaml
-
-  ip-address: t.b.d.
-  aws_access_key_id: t.b.d.
-  aws_secret_access_key: t.b.d.
-  aws_session_token: t.b.d.
-
-
-```code
-$Env:VES_P12_PASSWORD="***REMOVED***"
-
-terraform -chdir="./infrastructure" fmt
-terraform -chdir="./infrastructure" init
-terraform -chdir="./infrastructure" plan
-terraform -chdir="./infrastructure" apply -auto-approve
-```
-
-aws ec2 describe-instances --region eu-central-1 --filters "Name=tag:Name,Values=master-0" --query 'Reservations[].Instances[].PrivateIpAddress' --output text --profile terraform
-aws ec2 describe-instances --region eu-west-1 --filters "Name=tag:Name,Values=master-0" --query 'Reservations[].Instances[].PrivateIpAddress' --output text --profile terraform
-
-
-eu-central-1    : sudo ip route add 10.10.0.0/16 via 10.1.0.145
-eu-west-1       : sudo ip route add 10.1.0.0/16 via 10.10.0.92
