@@ -39,6 +39,8 @@ aws ec2 modify-instance-attribute --region eu-central-1 --instance-id $EC2_xc_II
  terraform -chdir="./infrastructure" destroy -auto-approve
 
 ### Linux
+ py ./setup-init/cred-aws.py
+
  export VES_P12_PASSWORD='***REMOVED***'
  terraform -chdir="./infrastructure" destroy -auto-approve
 
