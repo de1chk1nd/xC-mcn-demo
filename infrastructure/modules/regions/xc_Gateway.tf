@@ -2,7 +2,7 @@ resource "random_id" "xC-mcn-eu-central-1-id" {
   byte_length = 2
 }
 resource "volterra_aws_vpc_site" "xC-mcn-appstack" {
-  name       = "${var.student}-aws-${var.region}-${random_id.xC-mcn-eu-central-1-id.hex}"
+  name       = "${var.student}-${random_id.xC-mcn-eu-central-1-id.hex}-aws-${var.region}"
   namespace  = "system"
   aws_region = "${var.region}"
   ssh_key = aws_key_pair.generated_key.public_key
