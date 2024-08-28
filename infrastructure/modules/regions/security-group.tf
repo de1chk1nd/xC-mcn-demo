@@ -30,6 +30,20 @@ resource "aws_security_group" "xC-mcn-site-allow-ubuntu" {
     protocol    = "-1"
     cidr_blocks = ["10.0.0.0/8"]
   }
+  ingress {
+    description = "Allow local access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["172.16.0.0/12"]
+  }
+  ingress {
+    description = "Allow local access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["192.168.0.0/16"]
+  }
   egress {
     from_port   = 0
     to_port     = 0
