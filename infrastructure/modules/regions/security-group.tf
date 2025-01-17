@@ -24,6 +24,20 @@ resource "aws_security_group" "xC-mcn-site-allow-ubuntu" {
     cidr_blocks = [var.student_ip]
   }
   ingress {
+    description = "BigIP Web MGMT"
+    from_port   = 8443
+    to_port     = 8443
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
+    description = "xC CE Web MGMT"
+    from_port   = 65500
+    to_port     = 65500
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
     description = "Allow local access"
     from_port   = 0
     to_port     = 0

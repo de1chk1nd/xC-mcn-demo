@@ -11,7 +11,7 @@ resource "volterra_origin_pool" "local-webserver" {
         site {
           tenant = "f5-emea-ent-bceuutam"
           namespace = "system"
-          name = volterra_aws_vpc_site.xC-mcn-appstack.name
+          name = local.smsv2-site-name
           }
         }
       outside_network = true
@@ -28,6 +28,6 @@ resource "volterra_origin_pool" "local-webserver" {
   no_tls = true
 
   depends_on = [
-    volterra_tf_params_action.action_apply
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack
   ]
 }

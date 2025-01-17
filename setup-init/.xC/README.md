@@ -1,0 +1,1 @@
+openssl pkcs12 -in f5-emea-ent.console.ves.volterra.io.api-creds.p12 -out xc-curl.crt.pem -passin 'pass:***REMOVED***' -passout 'pass:***REMOVED***' -legacy

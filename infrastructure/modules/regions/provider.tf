@@ -14,11 +14,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~>4.0"
+      # version = "~>4.0"
     }
     volterra = {
       source  = "volterraedge/volterra"
-      version = "~>0.11"
+      # version = "~>0.11"
     }
   }
 }

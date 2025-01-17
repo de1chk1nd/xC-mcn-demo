@@ -1,10 +1,12 @@
 ####### Private files
 docs-priv/
 
+notes.txt
 setup-init/.nginx/license/*.crt
 setup-init/.nginx/license/*.key
 setup-init/.nginx/license/*.jwt
 setup-init/.xC/*.p12
+setup-init/.xC/*.pem
 setup-init/.xC/*.txt
 setup-init/.ssh/*.crt
 setup-init/.ssh/*.pem
