@@ -6,28 +6,28 @@ provider "volterra" {
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~>4.0"
+      source = "hashicorp/aws"
+      # version = "~>5.0"
     }
     random = {
-      source  = "hashicorp/random"
-      version = "~>3.0"
+      source = "hashicorp/random"
+      #version = "~>3.0"
     }
     template = {
-      source  = "hashicorp/template"
-      version = "~>2.0"
+      source = "hashicorp/template"
+      #version = "~>2.0"
     }
     null = {
-      source  = "hashicorp/null"
-      version = "~>3.0"
+      source = "hashicorp/null"
+      #version = "~>3.0"
     }
     local = {
-      source  = "hashicorp/local"
-      version = "~>2.0"
+      source = "hashicorp/local"
+      #version = "~>2.0"
     }
     volterra = {
-      source  = "volterraedge/volterra"
-      version = "~>0.11"
+      source = "volterraedge/volterra"
+      #version = "~>0.11"
     }
   }
 }

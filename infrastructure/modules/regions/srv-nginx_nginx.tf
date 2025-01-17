@@ -8,7 +8,6 @@ resource "aws_network_interface" "xC-mcn-site-ubuntu-public" {
 
 resource "aws_eip" "xC-mcn-site-ubuntu-eip" {
   network_interface = aws_network_interface.xC-mcn-site-ubuntu-public.id
-  vpc               = true
 
   depends_on = [
     aws_network_interface.xC-mcn-site-ubuntu-public,

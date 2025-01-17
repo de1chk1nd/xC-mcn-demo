@@ -6,7 +6,7 @@ locals {
 
 }
 
-# AMI Slection
+# AMI Slection - Ubuntu
 variable "ubuntu_ami" {
   type = map(any)
   default = {
@@ -14,4 +14,25 @@ variable "ubuntu_ami" {
     eu-west-1    = "ami-029cfca952b331b52" # r.20221212
   }
 }
+
 # https://cloud-images.ubuntu.com/locator/ec2/
+
+# AMI Selection - smsv2
+variable "smsv2_ami" {
+  type = map(any)
+  default = {
+    eu-central-1 = "ami-09e2a64a4def5c3f4" # f5xc-ce-9.2024.44-20250102062607
+    eu-west-1    = "ami-0b6745ec15401ac80" # f5xc-ce-9.2024.44-20250102062607
+  }
+}
+
+
+variable "f5_ami" {
+  type = map(any)
+  default = {
+    eu-central-1 = "ami-02ac4dea6999623fb" # f5xc-ce-9.2024.44-20250102062607
+    eu-west-1    = "ami-015ed0facaa85e773" # f5xc-ce-9.2024.44-20250102062607
+  }
+}
+#aws ec2 describe-images --region eu-central-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-16.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"
+#aws ec2 describe-images --region eu-west-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-16.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"
