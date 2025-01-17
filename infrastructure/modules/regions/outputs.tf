@@ -3,6 +3,11 @@ output "xC-mcn-site-ubuntu-eip" {
   value       = aws_eip.xC-mcn-site-ubuntu-eip.public_ip
 }
 
+output "xC-mcn-site-bigip-mgmt-eip" {
+  description = "List of BIG-IP management addresses"
+  value       = aws_eip.bigip-mgmt-0.public_ip
+}
+
 output "xC-mcn-site-vpc_id" {
   description = "List of BIG-IP management addresses"
   value       = aws_vpc.xC-mcn-site.id
