@@ -10,8 +10,9 @@ del $Env:userprofile\.ssh\known_hosts
 powershell.exe -File "$Env:userprofile\Documents\git-repositories\xC-mcn-demo\setup-init\.ssh\ssh-key-permission_win.ps1"
 
 ### Linux
-x-terminal-emulator -e 'sudo vim /etc/hosts'
 terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
+x-terminal-emulator -e 'sudo vim /etc/hosts'
+
 
 rm ~/.ssh/known_hosts
 sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
