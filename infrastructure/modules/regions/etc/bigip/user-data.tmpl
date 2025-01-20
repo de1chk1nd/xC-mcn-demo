@@ -176,7 +176,7 @@ extension_services:
                   - http
               members:
                   -
-                      servicePort: 5601
+                      servicePort: 80
                       shareNodes: true
                       addressDiscovery: fqdn
                       autoPopulate: true
@@ -218,15 +218,43 @@ extension_services:
                   -
                       - '{{{PROD_IP1}}}'
                       - 0.0.0.0/0
+              serverTLS:
+                  -
+                      bigip: /Common/clientssl
+              pool:
+                use: /Common/Shared/p_web_80
+              iRules:
+                  - HTTP_Response
+            vs_echo_443:
+              class: Service_HTTPS
+              virtualAddresses:
+                  -
+                      - '{{{PROD_IP2}}}'
+                      - 0.0.0.0/0
+              serverTLS:
+                  -
+                      bigip: /Common/clientssl
+              pool:
+                use: /Common/Shared/p_echo_8080_http
+              iRules:
+                  - HTTP_Response
+            vs_echo_443_TLSpass:
+              class: Service_HTTPS
+              virtualAddresses:
+                  -
+                      - '{{{PROD_IP3}}}'
+                      - 0.0.0.0/0
               clientTLS:
                   -
                       bigip: /Common/serverssl
               serverTLS:
                   -
                       bigip: /Common/clientssl
+              pool:
+                use: /Common/Shared/p_echo_8443_https
               iRules:
                   - HTTP_Response
-                  - Host_Routing_iRule
+
             vs_iRule_routung_443:
               class: Service_HTTPS
               virtualAddresses:
