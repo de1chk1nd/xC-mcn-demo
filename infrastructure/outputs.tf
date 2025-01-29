@@ -21,6 +21,11 @@ ${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.de1chk1nd
 ${module.eu-central-1.nlb_ip}     app-1.eu-central-1.de1chk1nd-lab.aws
 ${module.eu-west-1.nlb_ip}        app-1.eu-west-1.de1chk1nd-lab.aws
 
+# Uncomment (comment above) for direct EIP Access to MCN (no cLB)
+# ${module.eu-central-1.mcn_ip}     app-1.eu-central-1.de1chk1nd-lab.aws
+# ${module.eu-west-1.mcn_ip}        app-1.eu-west-1.de1chk1nd-lab.aws
+
+
 EOF
 }
 
