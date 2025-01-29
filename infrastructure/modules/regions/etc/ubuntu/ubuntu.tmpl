@@ -189,6 +189,11 @@ sleep 10
 docker run -d -p 8080:8080 -p 8443:8443 --rm -t mendhak/http-https-echo:31
 sleep 60
 
+# Install juice shop on http/3000 
+docker pull bkimminich/juice-shop
+docker run -d --rm -p 3000:3000 bkimminich/juice-shop
+sleep 60
+
 # Start Minicube
 sudo minikube start --vm-driver=none
 sleep 30

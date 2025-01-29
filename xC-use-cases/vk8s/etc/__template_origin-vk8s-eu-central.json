@@ -1,0 +1,35 @@
+{
+    "metadata": {
+      "name": "origin-vk8s-eu-central",
+      "namespace": "m-petersen",
+      "labels": {},
+      "annotations": {},
+      "disable": false
+    },
+    "spec": {
+      "origin_servers": [
+        {
+          "k8s_service": {
+            "service_name": "echo-aws.m-petersen",
+            "site_locator": {
+              "site": {
+                "tenant": "f5-emea-ent-bceuutam",
+                "namespace": "system",
+                "name": "${MCN_CE_EU_CENTRAL1}",
+                "kind": "site"
+              }
+            },
+            "vk8s_networks": {}
+          },
+          "labels": {}
+        }
+      ],
+      "no_tls": {},
+      "port": 80,
+      "same_as_endpoint_port": {},
+      "healthcheck": [],
+      "loadbalancer_algorithm": "LB_OVERRIDE",
+      "endpoint_selection": "LOCAL_PREFERRED"
+    },
+    "resource_version": "1698772507"
+  }

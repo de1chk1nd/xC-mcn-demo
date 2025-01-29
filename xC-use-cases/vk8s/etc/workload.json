@@ -1,0 +1,61 @@
+{
+    "metadata": {
+      "name": "echo-aws",
+      "namespace": "m-petersen",
+      "labels": {},
+      "annotations": {},
+      "disable": false
+    },
+    "spec": {
+      "service": {
+        "num_replicas": 1,
+        "containers": [
+          {
+            "name": "docker-aws",
+            "image": {
+              "name": "ealen/echo-server:latest",
+              "public": {},
+              "pull_policy": "IMAGE_PULL_POLICY_DEFAULT"
+            },
+            "init_container": false,
+            "flavor": "CONTAINER_FLAVOR_TYPE_TINY",
+            "command": [],
+            "args": []
+          }
+        ],
+        "volumes": [],
+        "deploy_options": {
+          "deploy_ce_sites": {
+            "site": [
+              {
+                "tenant": "f5-emea-ent-bceuutam",
+                "namespace": "system",
+                "name": "de1chk1nd-41aa-aws-eu-central-1",
+                "kind": "site"
+              },
+              {
+                "tenant": "f5-emea-ent-bceuutam",
+                "namespace": "system",
+                "name": "de1chk1nd-e797-aws-eu-west-1",
+                "kind": "site"
+              }
+            ]
+          }
+        },
+        "advertise_options": {
+          "advertise_in_cluster": {
+            "port": {
+              "info": {
+                "port": 80,
+                "protocol": "PROTOCOL_TCP",
+                "same_as_port": {}
+              }
+            }
+          }
+        },
+        "family": {
+          "v4": {}
+        }
+      }
+    }
+  }
