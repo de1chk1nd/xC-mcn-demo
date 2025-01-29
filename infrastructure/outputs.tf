@@ -17,6 +17,10 @@ ${module.eu-west-1.Service-1-via-BigIP}        service-bigip-eu-west-1.de1chk1nd
 ${module.eu-central-1.Service-2-via-BigIP}     service-bigip-eu-central-1.de1chk1nd-lab.aws
 ${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.de1chk1nd-lab.aws
 
+# AWS NLB IP / Application Names to resolve to NLB IP >> CE IP
+${module.eu-central-1.nlb_ip}     app-1.eu-central-1.de1chk1nd-lab.aws
+${module.eu-west-1.nlb_ip}        app-1.eu-west-1.de1chk1nd-lab.aws
+
 EOF
 }
 
