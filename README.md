@@ -1,6 +1,7 @@
 # xC-mcn-demo - Installation
 py ./setup-init/initialize_infrastructure.py
 
+
 ## Post Install
 ### Windows
 code "C:/Windows/System32/drivers/etc/hosts"
@@ -13,25 +14,25 @@ powershell.exe -File "$Env:userprofile\Documents\git-repositories\xC-mcn-demo\se
 terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
 x-terminal-emulator -e 'sudo vim /etc/hosts'
 
-
 rm ~/.ssh/known_hosts
 sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 
-### login to Ubuntu Server
-- create kubeconfig file: sudo kubectl config view --flatten
 
 ## Delete
 ### Windows
- $Env:VES_P12_PASSWORD="***REMOVED***"
- terraform -chdir="./infrastructure" destroy -auto-approve
+$Env:VES_P12_PASSWORD="***REMOVED***"
+terraform -chdir="./infrastructure" destroy -auto-approve
 
 ### Linux
- py ./setup-init/cred-aws.py
+py ./setup-init/cred-aws.py
 
- export VES_P12_PASSWORD='***REMOVED***'
- terraform -chdir="./infrastructure" destroy -auto-approve
+export VES_P12_PASSWORD='***REMOVED***'
+terraform -chdir="./infrastructure" destroy -auto-approve
 
- x-terminal-emulator -e 'sudo vim /etc/hosts' &
+sudo vim /etc/hosts
+
+
+
 
 ### manual (if s.th. failed)
   - xC Console
