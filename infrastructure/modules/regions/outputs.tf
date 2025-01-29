@@ -30,6 +30,12 @@ output "nlb_ip" {
   value       = aws_eip.ce_nlb_eip.public_ip
 }
 
+output "mcn_ip" {
+  description = "Allocated Elastic IP"
+  value       = aws_eip.xC-mcn-site-ubuntu-eip-v2.public_ip
+}
+
+
 # BigIP
 output "Service-1-via-BigIP" {
   description = "List of BIG-IP management addresses"
