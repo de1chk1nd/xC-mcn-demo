@@ -20,6 +20,16 @@ output "xC-mcn-site-subnet_id" {
   value       = aws_subnet.xC-mcn-site-subnet.id
 }
 
+output "nlb_dns" {
+  description = "DNS name of the NLB"
+  value       = aws_lb.ce-nlb.dns_name
+}
+
+output "nlb_ip" {
+  description = "Allocated Elastic IP"
+  value       = aws_eip.ce_nlb_eip.public_ip
+}
+
 # BigIP
 output "Service-1-via-BigIP" {
   description = "List of BIG-IP management addresses"

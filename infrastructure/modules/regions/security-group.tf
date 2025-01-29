@@ -25,6 +25,20 @@ resource "aws_security_group" "xC-mcn-site-allow-ubuntu" {
   }
   ingress {
     description = "BigIP Web MGMT"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    prefix_list_ids  = [aws_ec2_managed_prefix_list.xc-was-ips.id]
+  }
+  ingress {
+    description = "BigIP Web MGMT"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
+    description = "BigIP Web MGMT"
     from_port   = 8443
     to_port     = 8443
     protocol    = "tcp"
