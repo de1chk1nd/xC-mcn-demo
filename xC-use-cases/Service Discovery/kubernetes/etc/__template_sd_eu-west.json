@@ -14,7 +14,7 @@
               "name": "${MCN_CE_EU_WEST1}"
             }
           ],
-          "network_type": "VIRTUAL_NETWORK_SITE_LOCAL",
+          "network_type": "VIRTUAL_NETWORK_SITE_LOCAL_INSIDE",
           "disable_internet_vip": {}
         }
       },

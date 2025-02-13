@@ -16,6 +16,7 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack" {
 
   labels = {
     "ves.io/provider"                  = "ves-io-AWS"
+    # "de1chk1nd-vk8s-sites"             = "basic-demo"
   }
 
   re_select {
@@ -45,11 +46,22 @@ resource "volterra_token" "xC-mcn-sitetoken" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2" {
+  description = "SLo"
   subnet_id       = aws_subnet.xC-mcn-site-subnet.id
   source_dest_check = false
   security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
   tags = {
     Name = "f5-ce-SLo"
+  }
+}
+
+resource "aws_network_interface" "xC-mcn-slo-v2-priv" {
+  description = "SLi"
+  subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
+  source_dest_check = false
+  security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
+  tags = {
+    Name = "f5-ce-SLi"
   }
 }
 
@@ -87,6 +99,11 @@ resource "aws_instance" "xC-mcn-ce-v2" {
   network_interface {
     device_index         = 0
     network_interface_id = aws_network_interface.xC-mcn-slo-v2.id
+  }
+
+  network_interface {
+    device_index         = 1
+    network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv.id
   }
 
   timeouts {

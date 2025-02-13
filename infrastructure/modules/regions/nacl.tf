@@ -1,7 +1,7 @@
 resource "aws_network_acl" "main" {
   vpc_id = aws_vpc.xC-mcn-site.id
 
-  subnet_ids = [ aws_subnet.xC-mcn-site-subnet.id ]
+  subnet_ids = [ aws_subnet.xC-mcn-site-subnet.id, aws_subnet.xC-mcn-site-subnet-priv.id, aws_subnet.xC-mcn-site-bigip-mgmt.id ]
 
   ingress {
     protocol   = -1

@@ -1,11 +1,12 @@
 {
     "metadata": {
-      "name": "lb-api-int-west",
+      "name": "lb-ce-west",
       "disable": false
     },
     "spec": {
       "domains": [
-        "remote-web.de1chk1nd-mcn.aws"
+        "app-1.eu-west-1.de1chk1nd-lab.aws",
+        "local-web.de1chk1nd-mcn.aws"
       ],
       "http": {
         "dns_volterra_managed": false,
@@ -15,11 +16,11 @@
         "advertise_where": [
           {
             "site": {
-              "network": "SITE_NETWORK_OUTSIDE",
+              "network": "SITE_NETWORK_INSIDE_AND_OUTSIDE",
               "site": {
                 "tenant": "f5-emea-ent-bceuutam",
                 "namespace": "system",
-                "name": "de1chk1nd-a3cc-aws-eu-west-1",
+                "name": "${MCN_CE_EU_WEST1}",
                 "kind": "site"
               }
             },
@@ -32,7 +33,7 @@
           "pool": {
             "tenant": "f5-emea-ent-bceuutam",
             "namespace": "m-petersen",
-            "name": "origin-aws-web-eu-central-1",
+            "name": "origin-aws-web-eu-west-1",
             "kind": "origin_pool"
           },
           "weight": 1,

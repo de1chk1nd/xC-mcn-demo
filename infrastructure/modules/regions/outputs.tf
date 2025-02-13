@@ -1,12 +1,12 @@
 # Ubuntu
 output "xC-mcn-site-ubuntu-eip" {
   description = "List of BIG-IP management addresses"
-  value       = aws_eip.xC-mcn-site-ubuntu-eip.public_ip
+  value       = aws_eip.ubuntu_nlb_eip.public_ip
 }
 
 output "xC-mcn-site-bigip-mgmt-eip" {
   description = "List of BIG-IP management addresses"
-  value       = aws_eip.bigip-mgmt-0.public_ip
+  value       = aws_eip.bigip-mgmt.public_ip
 }
 
 # AWS
@@ -39,12 +39,12 @@ output "mcn_ip" {
 # BigIP
 output "Service-1-via-BigIP" {
   description = "List of BIG-IP management addresses"
-  value       = aws_eip.bigip-mgmt-1.public_ip
+  value       = aws_eip.bigip-ext-1.public_ip
 }
 
 output "Service-2-via-BigIP" {
   description = "List of BIG-IP management addresses"
-  value       = aws_eip.bigip-mgmt-2.public_ip
+  value       = aws_eip.bigip-ext-2.public_ip
 }
 
 output "BigIP-MGMTip-private" {
