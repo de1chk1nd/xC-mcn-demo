@@ -1,6 +1,6 @@
 {
     "metadata": {
-      "name": "lb-api-int-central",
+      "name": "lb-api-int-west",
       "disable": false
     },
     "spec": {
@@ -15,11 +15,11 @@
         "advertise_where": [
           {
             "site": {
-              "network": "SITE_NETWORK_OUTSIDE",
+              "network": "SITE_NETWORK_INSIDE",
               "site": {
                 "tenant": "f5-emea-ent-bceuutam",
                 "namespace": "system",
-                "name": "de1chk1nd-445b-aws-eu-central-1",
+                "name": "${MCN_CE_EU_WEST1}",
                 "kind": "site"
               }
             },
@@ -32,7 +32,7 @@
           "pool": {
             "tenant": "f5-emea-ent-bceuutam",
             "namespace": "m-petersen",
-            "name": "origin-aws-web-eu-west-1",
+            "name": "origin-aws-web-eu-central-1",
             "kind": "origin_pool"
           },
           "weight": 1,
