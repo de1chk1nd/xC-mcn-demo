@@ -14,7 +14,7 @@ resource "volterra_origin_pool" "local-webserver" {
           name = local.smsv2-site-name
           }
         }
-      outside_network = true
+      inside_network = true
       }
     }
 

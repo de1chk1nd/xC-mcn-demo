@@ -30,9 +30,9 @@ variable "smsv2_ami" {
 variable "f5_ami" {
   type = map(any)
   default = {
-    eu-central-1 = "ami-02ac4dea6999623fb" # f5xc-ce-9.2024.44-20250102062607
-    eu-west-1    = "ami-015ed0facaa85e773" # f5xc-ce-9.2024.44-20250102062607
+    eu-central-1 = "ami-0330d966590bfc503" # f5xc-ce-9.2024.44-20250102062607
+    eu-west-1    = "ami-09f63b948981ca9b0" # f5xc-ce-9.2024.44-20250102062607
   }
 }
-#aws ec2 describe-images --region eu-central-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-16.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"
-#aws ec2 describe-images --region eu-west-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-16.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"
+#aws ec2 describe-images --profile terraform --region eu-central-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-17.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"
+#aws ec2 describe-images --profile terraform --region eu-west-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-17.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"

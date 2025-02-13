@@ -13,7 +13,17 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "subnet_cidr" {
+variable "subnet_cidr_pub" {
+  description = "BIG-IP AMI name to search for"
+  type        = string
+}
+
+variable "subnet_cidr_priv" {
+  description = "BIG-IP AMI name to search for"
+  type        = string
+}
+
+variable "subnet_cidr_mgmt" {
   description = "BIG-IP AMI name to search for"
   type        = string
 }
@@ -67,6 +77,10 @@ variable "f5_password" {
   default     = "***REMOVED***"
 }
 
+# variable "vsite_k8s" {
+#   description = "Owner for resources created by this module"
+#   type        = string
+# }
 
 #F5 Automation Toolchain
 variable "DO_URL"            { default = "https://github.com/F5Networks/f5-declarative-onboarding/releases/download/v1.35.0/f5-declarative-onboarding-1.35.0-6.noarch.rpm" }

@@ -1,23 +1,23 @@
 resource "aws_network_interface" "xC-mcn-site-ubuntu-public" {
-  subnet_id       = aws_subnet.xC-mcn-site-subnet.id
+  subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
   security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
   tags = {
     Name  = "${var.student}-xC-mcn-ubuntu-public-nic"
   }
 }
 
-resource "aws_eip" "xC-mcn-site-ubuntu-eip" {
-  network_interface = aws_network_interface.xC-mcn-site-ubuntu-public.id
-
-  depends_on = [
-    aws_network_interface.xC-mcn-site-ubuntu-public,
-    aws_instance.xC-mcn-site-ubuntu
-  ]
-
-  tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-public-eip"
-  }
-}
+# resource "aws_eip" "xC-mcn-site-ubuntu-eip" {
+#  network_interface = aws_network_interface.xC-mcn-site-ubuntu-public.id
+# 
+#  depends_on = [
+#    aws_network_interface.xC-mcn-site-ubuntu-public,
+#    aws_instance.xC-mcn-site-ubuntu
+#  ]
+# 
+#  tags = {
+#    Name  = "${var.student}-xC-mcn-ubuntu-public-eip"
+#  }
+# 
 
 data "template_file" "user_data_nginx" {
   template = file("${path.module}/etc/ubuntu/ubuntu.tmpl")
