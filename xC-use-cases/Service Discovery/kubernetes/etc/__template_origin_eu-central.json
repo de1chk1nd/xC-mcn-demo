@@ -1,0 +1,34 @@
+{
+    "metadata": {
+      "name": "origin-k8s-central",
+      "namespace": "m-petersen",
+      "labels": {},
+      "annotations": {},
+      "disable": false
+    },
+    "spec": {
+      "origin_servers": [
+        {
+          "k8s_service": {
+            "service_name": "app-v1-nginx-svc.simple-web-nginx",
+            "site_locator": {
+              "site": {
+                "tenant": "f5-emea-ent-bceuutam",
+                "namespace": "system",
+                "name": "${MCN_CE_EU_CENTRAL1}",
+                "kind": "site"
+              }
+            },
+            "inside_network": {}
+          },
+          "labels": {}
+        }
+      ],
+      "no_tls": {},
+      "port": 8080,
+      "same_as_endpoint_port": {},
+      "healthcheck": [],
+      "loadbalancer_algorithm": "LB_OVERRIDE",
+      "endpoint_selection": "LOCAL_PREFERRED"
+    }
+  }
