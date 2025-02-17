@@ -1,5 +1,17 @@
-# Create Service Discovery
+# Create Service Discovery + Pools + Loadbalancer
 "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"
+
+
+# DELETE Service Discovery + Pools + Loadbalancer
+"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"
+
+
+# # # # # # # # # #
+#
+# O L D - D E L E T E   B E L O W
+#
+# # # # # # # # # #
+
 
 # Set Up Origin Pool & Loadbalancer
 Origin Pool
@@ -38,5 +50,3 @@ Basic Loadbalancer (https/autocert)
 				m-petersen/origin-k8s-eu-west-1
 				m-petersen/origin-k8s-eu-central-1
 
-# DELETE Service Discovery
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"
