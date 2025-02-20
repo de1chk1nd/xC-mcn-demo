@@ -123,7 +123,7 @@ resource "aws_lb" "ubuntu-nlb" {
   internal           = false
   load_balancer_type = "network"
   #subnets            = [aws_subnet.xC-mcn-site-subnet.id]
-  security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
+  security_groups = [aws_security_group.xC-mcn-site-allow-linux.id]
 
   subnet_mapping {
     subnet_id       = aws_subnet.xC-mcn-site-subnet.id
