@@ -204,39 +204,36 @@ extension_services:
           Shared:
             class: Application
             template: shared
+            fqdn_ubuntu_aws:
+              class: Address_Discovery
+              addressDiscovery: fqdn
+              shareNodes: true
+              autoPopulate: true
+              hostname: web.de1chk1nd-mcn.aws
             p_web_80:
               class: Pool
               monitors:
-                  - http
+                - http
               members:
-                  -
-                      servicePort: 80
-                      shareNodes: true
-                      addressDiscovery: fqdn
-                      autoPopulate: true
-                      hostname: web.de1chk1nd-mcn.aws
-            p_echo_8080_http:
+                - servicePort: 80
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws                    
+            p_echo_10080_http:
               class: Pool
               monitors:
-                  - http
+                - http
               members:
-                  -
-                      servicePort: 8080
-                      shareNodes: true
-                      addressDiscovery: fqdn
-                      autoPopulate: true
-                      hostname: web.de1chk1nd-mcn.aws
-            p_echo_8443_https:
+                - servicePort: 10080
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws   
+            p_echo_10443_https:
               class: Pool
               monitors:
-                  - https
+                - https
               members:
-                  -
-                      servicePort: 8443
-                      shareNodes: true
-                      addressDiscovery: fqdn
-                      autoPopulate: true
-                      hostname: web.de1chk1nd-mcn.aws
+                - servicePort: 10443
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws   
             Proxy_Protocol_iRule:
               remark: Proxy Protocoll iRule
               class: iRule
@@ -246,7 +243,7 @@ extension_services:
           class: Tenant
           A1:
             class: Application
-            vs_webserver_443:
+            vs-webserver-443:
               class: Service_HTTPS
               virtualAddresses:
                   -
@@ -259,7 +256,7 @@ extension_services:
                 use: /Common/Shared/p_web_80
               iRules:
                   - HTTP_Response
-            vs_echo_443:
+            vs-echo-443:
               class: Service_HTTPS
               virtualAddresses:
                   -
@@ -269,10 +266,10 @@ extension_services:
                   -
                       bigip: /Common/clientssl
               pool:
-                use: /Common/Shared/p_echo_8080_http
+                use: /Common/Shared/p_echo_10080_http
               iRules:
                   - HTTP_Response
-            vs_echo_443_TLSpass:
+            vs-echo-443_TLSpass:
               class: Service_HTTPS
               virtualAddresses:
                   -
@@ -285,15 +282,15 @@ extension_services:
                   -
                       bigip: /Common/clientssl
               pool:
-                use: /Common/Shared/p_echo_8443_https
+                use: /Common/Shared/p_echo_10443_https
               iRules:
                   - HTTP_Response
 
-            vs_iRule_routung_443:
+            vs-iRule-routung-443:
               class: Service_HTTPS
               virtualAddresses:
                   -
-                      - '{{{MGMT_IP}}}'
+                      - '{{{PROD_IP4}}}'
                       - 0.0.0.0/0
               clientTLS:
                   -
@@ -320,11 +317,11 @@ extension_services:
                       SSL::disable serverside
                     }
                     bigip-echo.de1chk1nd-lab.aws { 
-                      pool /Common/Shared/p_echo_8080_http
+                      pool /Common/Shared/p_echo_10080_http
                       SSL::disable serverside
                     }
                     bigip-echo-ssl.de1chk1nd-lab.aws {
-                      pool /Common/Shared/p_echo_8443_https
+                      pool /Common/Shared/p_echo_10443_https
                     }
                     default {
                       drop
