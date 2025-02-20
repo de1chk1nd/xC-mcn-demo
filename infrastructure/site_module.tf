@@ -19,7 +19,7 @@ module "eu-central-1" {
   student    = local.setup-init.student.name
   student_ip = local.setup-init.student.ip-address
 
-  # vsite_k8s = volterra_virtual_site.vk8s_sites.name
+  vsite_k8s = volterra_virtual_site.vk8s_sites.name
 
 }
 
@@ -43,6 +43,6 @@ module "eu-west-1" {
   student    = local.setup-init.student.name
   student_ip = local.setup-init.student.ip-address
 
-  # vsite_k8s = volterra_virtual_site.vk8s_sites.name
+  vsite_k8s = volterra_virtual_site.vk8s_sites.name
 
 }
