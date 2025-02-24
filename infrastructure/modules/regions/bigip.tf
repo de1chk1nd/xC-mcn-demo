@@ -17,7 +17,7 @@ resource "aws_secretsmanager_secret_version" "bigip-pwd" {
 
 resource "aws_network_interface" "mgmt" {
   subnet_id       = aws_subnet.xC-mcn-site-bigip-mgmt.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
+  security_groups = [aws_security_group.xC-mcn-site-allow-bigip-mgmt.id]
   private_ips_count = 1
   tags = {
     "Name"      = "${var.student}-nic-bigip-mgmt"
@@ -30,7 +30,7 @@ data "aws_network_interface" "bigip-mgmt" {
 
 resource "aws_network_interface" "external" {
   subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
+  security_groups = [aws_security_group.xC-mcn-site-allow-bigip.id]
   private_ips_count = 4
   tags = {
     "Name"      = "${var.student}-nic-bigip-external"
@@ -43,8 +43,8 @@ data "aws_network_interface" "bigip-external" {
 
 resource "aws_network_interface" "internal" {
   subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
-  private_ips_count = 1
+  security_groups = [aws_security_group.xC-mcn-site-allow-bigip.id]
+  private_ips_count = 4
   tags = {
     "Name"      = "${var.student}-nic-bigip-internal"
   }
@@ -115,7 +115,11 @@ data "template_file" "user_data_bigip" {
     pIP_2                  = data.aws_network_interface.bigip-external.private_ips[2]
     pIP_3                  = data.aws_network_interface.bigip-external.private_ips[3]
     pIP_4                  = data.aws_network_interface.bigip-external.private_ips[4]
-    internalip             = aws_network_interface.internal.private_ip
+    internalip             = data.aws_network_interface.bigip-internal.private_ips[0]
+    iIP_1                  = data.aws_network_interface.bigip-internal.private_ips[1]
+    iIP_2                  = data.aws_network_interface.bigip-internal.private_ips[2]
+    iIP_3                  = data.aws_network_interface.bigip-internal.private_ips[3]
+    iIP_4                  = data.aws_network_interface.bigip-internal.private_ips[4]    
     INIT_URL               = var.INIT_URL,
     DO_URL                 = var.DO_URL,
     DO_VER                 = split("/", var.DO_URL)[7]
@@ -131,7 +135,7 @@ data "template_file" "user_data_bigip" {
 }
 
 resource "aws_instance" "f5_bigip" {
-  instance_type        = "m5n.xlarge"
+  instance_type        = "m5n.2xlarge"
   ami                  = var.f5_ami
   key_name             = aws_key_pair.generated_key.key_name
   monitoring           = true
