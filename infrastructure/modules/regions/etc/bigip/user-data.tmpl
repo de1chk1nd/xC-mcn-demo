@@ -70,6 +70,19 @@ runtime_parameters:
   - name: INTERNAL_IP
     type: static
     value: ${internalip}
+  - name: I_PROD_IP1
+    type: static
+    value: ${iIP_1}
+  - name: I_PROD_IP2
+    type: static
+    value: ${iIP_2}
+  - name: I_PROD_IP3
+    type: static
+    value: ${iIP_3}
+  - name: I_PROD_IP4
+    type: static
+    value: ${iIP_4}
+
 EOF
 
 if ${aws_secretmanager_auth}
@@ -239,15 +252,15 @@ extension_services:
               class: iRule
               iRule: |-
                 when SERVER_CONNECTED { TCP::respond "PROXY TCP[IP::version] [IP::client_addr] [clientside {IP::local_addr}] [TCP::client_port] [clientside {TCP::local_port}]\r\n" }
-        aws_web_in:
+        xcmcnlab:
           class: Tenant
           A1:
             class: Application
-            vs-webserver-443:
+            webserver443:
               class: Service_HTTPS
               virtualAddresses:
                   -
-                      - '{{{PROD_IP1}}}'
+                      - '{{{I_PROD_IP1}}}'
                       - 0.0.0.0/0
               serverTLS:
                   -
@@ -256,11 +269,11 @@ extension_services:
                 use: /Common/Shared/p_web_80
               iRules:
                   - HTTP_Response
-            vs-echo-443:
+            echo443:
               class: Service_HTTPS
               virtualAddresses:
                   -
-                      - '{{{PROD_IP2}}}'
+                      - '{{{I_PROD_IP2}}}'
                       - 0.0.0.0/0
               serverTLS:
                   -
@@ -269,11 +282,11 @@ extension_services:
                 use: /Common/Shared/p_echo_10080_http
               iRules:
                   - HTTP_Response
-            vs-echo-443_TLSpass:
+            echo443tlspass:
               class: Service_HTTPS
               virtualAddresses:
                   -
-                      - '{{{PROD_IP3}}}'
+                      - '{{{I_PROD_IP3}}}'
                       - 0.0.0.0/0
               clientTLS:
                   -
@@ -286,11 +299,11 @@ extension_services:
               iRules:
                   - HTTP_Response
 
-            vs-iRule-routung-443:
+            irule443:
               class: Service_HTTPS
               virtualAddresses:
                   -
-                      - '{{{PROD_IP4}}}'
+                      - '{{{I_PROD_IP4}}}'
                       - 0.0.0.0/0
               clientTLS:
                   -
