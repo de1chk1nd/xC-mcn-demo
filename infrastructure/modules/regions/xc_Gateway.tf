@@ -72,17 +72,17 @@ resource "aws_network_interface" "xC-mcn-slo-v2-priv" {
   }
 }
 
-resource "aws_network_interface" "xC-mcn-slo-v2-priv-bigip" {
-  description = "SLi"
-  subnet_id       = aws_subnet.xC-mcn-site-bigip-mgmt.id
-  source_dest_check = false
-  security_groups = [
-    aws_security_group.xC-mcn-site-ce-access-generic.id
-  ]
-  tags = {
-    Name = "f5-ce-SLi-bigip-mgmt"
-  }
-}
+# resource "aws_network_interface" "xC-mcn-slo-v2-priv-bigip" {
+#   description = "SLi"
+#   subnet_id       = aws_subnet.xC-mcn-site-bigip-mgmt.id
+#   source_dest_check = false
+#   security_groups = [
+#     aws_security_group.xC-mcn-site-ce-access-generic.id
+#   ]
+#   tags = {
+#     Name = "f5-ce-SLi-bigip-mgmt"
+#   }
+# }
 
 resource "aws_eip" "xC-mcn-site-ubuntu-eip-v2" {
   network_interface = aws_network_interface.xC-mcn-slo-v2.id
@@ -125,10 +125,10 @@ resource "aws_instance" "xC-mcn-ce-v2" {
     network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv.id
   }
 
-  network_interface {
-    device_index         = 2
-    network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv-bigip.id
-  }
+#  network_interface {
+#    device_index         = 2
+#    network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv-bigip.id
+#  }
 
   timeouts {
     create = "60m"

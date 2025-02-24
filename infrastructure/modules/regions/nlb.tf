@@ -174,3 +174,64 @@ resource "aws_lb_listener" "listener_ssh" {
     target_group_arn = aws_lb_target_group.ubuntu-target_group_http.arn
   }
 }
+
+########################################################################
+# NLB to internal BigIP MGMT
+########################################################################
+
+# Create Network Load Balancer
+resource "aws_lb" "bigip-mgmt-nlb" {
+  name               = "f5-bigip-mgmt-nlb"
+  internal           = true
+  load_balancer_type = "network"
+  subnets = [aws_subnet.xC-mcn-site-subnet-priv.id]
+  security_groups = [aws_security_group.xC-mcn-site-allow-bigip-mgmt.id]
+
+  enable_cross_zone_load_balancing = true
+
+  enable_deletion_protection = false
+}
+
+# Create target group any port
+resource "aws_lb_target_group" "bigip-mgmt-tg" {
+  name     = "f5-bigimgmt-tg-443"
+  port     = 443  # Use port 0 to indicate any port
+  protocol = "TCP"
+  vpc_id   = aws_vpc.xC-mcn-site.id
+  
+  target_type = "ip"
+  
+  health_check {
+    protocol            = "TCP"
+    port                = "traffic-port"  # Use the same port for health check
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+    interval            = 30
+  }
+  
+  preserve_client_ip = true
+}
+
+# Data source to get ENI information
+data "aws_network_interface" "bigip-mgmt_eni" {
+  id = aws_network_interface.mgmt.id
+}
+
+# Attach the EC2 instance to HTTP target group
+resource "aws_lb_target_group_attachment" "bigip-mgmt-target_attachment_http" {
+  target_group_arn = aws_lb_target_group.bigip-mgmt-tg.arn
+  target_id        = data.aws_network_interface.bigip-mgmt_eni.private_ip
+  port             = 443
+}
+
+# TCP listener for port 443 (HTTPS)
+resource "aws_lb_listener" "bigip-mgmt-listener" {
+  load_balancer_arn = aws_lb.bigip-mgmt-nlb.arn
+  port              = 443
+  protocol          = "TCP"
+  
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.bigip-mgmt-tg.arn
+  }
+}

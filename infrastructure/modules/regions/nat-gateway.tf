@@ -1,3 +1,7 @@
+########################################################################
+# NAT Gateway Internet Access
+########################################################################
+
 resource "aws_nat_gateway" "xC-mcn-site-natgw" {
   allocation_id = aws_eip.xC-mcn-site-natgw-eip.id
   subnet_id     = aws_subnet.xC-mcn-site-subnet.id

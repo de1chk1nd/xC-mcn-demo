@@ -4,3 +4,9 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 &nbsp;
 
 ## Create Loadbalancer
+
+bigip-echo.de1chk1nd-mcn.aws
+
+bigip-echo-ssl.de1chk1nd-mcn.aws
+
+skip CA verification
