@@ -2,7 +2,7 @@
 [BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws 
 [BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws 
 
-# f5-lab-infrastructure
+# xC-mcn-demo - Lab Introduction & Set Up
 Welcome to my lab. This lab contains many f5 xC app solution & use cases. Pre-Configured and prepared to be build in AWS just within a couple of minutes.
 
 The installation is failry simple and based on a local python script to deploy the whole infrastructure.

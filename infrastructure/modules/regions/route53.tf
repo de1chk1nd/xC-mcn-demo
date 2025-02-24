@@ -52,7 +52,7 @@ resource "aws_route53_record" "bigip-web" {
   name    = "bigip-web.de1chk1nd-lab.aws"
   type    = "A"
   ttl     = "300"
-  records = [data.aws_network_interface.bigip-external.private_ips[0]]
+  records = [data.aws_network_interface.bigip-internal.private_ips[0]]
 
   depends_on = [
     aws_network_interface.mgmt
@@ -65,7 +65,7 @@ resource "aws_route53_record" "bigip-echo" {
   name    = "bigip-echo.de1chk1nd-lab.aws"
   type    = "A"
   ttl     = "300"
-  records = [data.aws_network_interface.bigip-external.private_ips[0]]
+  records = [data.aws_network_interface.bigip-internal.private_ips[2]]
 
   depends_on = [
     aws_network_interface.mgmt
@@ -78,7 +78,7 @@ resource "aws_route53_record" "bigip-echo-ssl" {
   name    = "bigip-echo-ssl.de1chk1nd-lab.aws"
   type    = "A"
   ttl     = "300"
-  records = [data.aws_network_interface.bigip-external.private_ips[0]]
+  records = [data.aws_network_interface.bigip-internal.private_ips[3]]
 
   depends_on = [
     aws_network_interface.mgmt
