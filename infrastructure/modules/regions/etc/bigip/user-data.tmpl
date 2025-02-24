@@ -282,6 +282,7 @@ extension_services:
                 use: /Common/Shared/p_echo_10080_http
               iRules:
                   - HTTP_Response
+                  - Add_HTTPheader
             echo443tlspass:
               class: Service_HTTPS
               virtualAddresses:
@@ -298,7 +299,7 @@ extension_services:
                 use: /Common/Shared/p_echo_10443_https
               iRules:
                   - HTTP_Response
-
+                  - Add_HTTPheader
             irule443:
               class: Service_HTTPS
               virtualAddresses:
@@ -319,6 +320,13 @@ extension_services:
               class: iRule
               iRule: |-
                 when HTTP_RESPONSE { if { [HTTP::header is_redirect] } { if { [string tolower [HTTP::header Location]] starts_with "http://" }{	HTTP::header replace Location [string map -nocase { "http://" "https://" } [HTTP::header Location]]	HTTP::header replace Location [string map -nocase { ":8080" ":443" } [HTTP::header Location]]	log local0. "rewrite to: [HTTP::header Location]"	}	} }
+            Add_HTTPheader:
+              remark: Add custom Header for xC Tests
+              class: iRule
+              iRule: |-
+                when HTTP_REQUEST {
+                  HTTP::header insert custom-header "Created by BigIP iRule"
+                }
             Host_Routing_iRule:
               remark: Route HTTP Requests
               class: iRule

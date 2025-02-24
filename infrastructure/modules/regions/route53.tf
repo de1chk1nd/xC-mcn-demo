@@ -49,7 +49,7 @@ resource "aws_route53_record" "local-web-lb" {
 
 resource "aws_route53_record" "bigip-web" {
   zone_id = aws_route53_zone.private.zone_id
-  name    = "bigip-web.de1chk1nd-lab.aws"
+  name    = "bigip-web.de1chk1nd-mcn.aws"
   type    = "A"
   ttl     = "300"
   records = [data.aws_network_interface.bigip-internal.private_ips[0]]
@@ -62,7 +62,7 @@ resource "aws_route53_record" "bigip-web" {
 
 resource "aws_route53_record" "bigip-echo" {
   zone_id = aws_route53_zone.private.zone_id
-  name    = "bigip-echo.de1chk1nd-lab.aws"
+  name    = "bigip-echo.de1chk1nd-mcn.aws"
   type    = "A"
   ttl     = "300"
   records = [data.aws_network_interface.bigip-internal.private_ips[2]]
@@ -75,7 +75,7 @@ resource "aws_route53_record" "bigip-echo" {
 
 resource "aws_route53_record" "bigip-echo-ssl" {
   zone_id = aws_route53_zone.private.zone_id
-  name    = "bigip-echo-ssl.de1chk1nd-lab.aws"
+  name    = "bigip-echo-ssl.de1chk1nd-mcn.aws"
   type    = "A"
   ttl     = "300"
   records = [data.aws_network_interface.bigip-internal.private_ips[3]]
@@ -92,6 +92,19 @@ resource "aws_route53_record" "bigip-mgmt" {
   type    = "A"
   ttl     = "300"
   records = [data.aws_network_interface.bigip-mgmt.private_ips[0]]
+
+  depends_on = [
+    aws_network_interface.mgmt
+  ]
+
+}
+
+resource "aws_route53_record" "bigip-mgmt-via-int" {
+  zone_id = aws_route53_zone.private.zone_id
+  name    = "bigip-mgmt-nlb.de1chk1nd-mcn.aws"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_lb.bigip-mgmt-nlb.dns_name]
 
   depends_on = [
     aws_network_interface.mgmt
