@@ -184,7 +184,9 @@ resource "aws_lb" "bigip-mgmt-nlb" {
   name               = "f5-bigip-mgmt-nlb"
   internal           = true
   load_balancer_type = "network"
+
   subnets = [aws_subnet.xC-mcn-site-subnet-priv.id]
+
   security_groups = [aws_security_group.xC-mcn-site-allow-bigip-mgmt.id]
 
   enable_cross_zone_load_balancing = true
