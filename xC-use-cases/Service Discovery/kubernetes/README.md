@@ -1,52 +1,29 @@
-# Create Service Discovery + Pools + Loadbalancer
+[Service Discovery - Architecture]: https://community.f5.com/kb/technicalarticles/kubernetes-architecture-options-with-f5-distributed-cloud-services/306550
+[Service Discovery - kubeconfig]: https://community.f5.com/kb/technicalarticles/service-discovery-and-authentication-options-for-kubernetes-providers-eks-aks-gc/297576
+[Service Discovery - k8s RBAC]: https://community.f5.com/kb/technicalarticles/using-a-kubernetes-serviceaccount-for-service-discovery-with-f5-distributed-clou/300225
+
+# Service Discovery - k8s
+In this lab we'll create a basic k8s service discovery for a minikube "cluster" and route to k8s PODs/Services.
+
+&nbsp;
+
+- ***Further Reading:***
+    | Device                    	 		    | Notes                                                     |
+    |:------------------------------------------|:----------------------------------------------------------|
+    | [Service Discovery - Architecture]        | General k8s Options - focus on ***Secure k8s Gateway***   |
+    | [Service Discovery - kubeconfig]          | HowTo create kubeconfig (Cloud Provider)                  |
+    | [Service Discovery - k8s RBAC]            | Create kubeconfig with RBAC                               |
+
+&nbsp;
+
+## Create Service Discovery + Pools + Loadbalancer
+```shell
 "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"
+```
 
+&nbsp;
 
-# DELETE Service Discovery + Pools + Loadbalancer
+## DELETE Service Discovery + Pools + Loadbalancer
+```shell
 "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"
-
-
-# # # # # # # # # #
-#
-# O L D - D E L E T E   B E L O W
-#
-# # # # # # # # # #
-
-
-# Set Up Origin Pool & Loadbalancer
-Origin Pool
-    > k8s
-        origin1:
-            name: origin-k8s-central
-            origin-server:
-                Type: K8s Service Name of Origin Server on given Sites
-                Service: app-v1-nginx-svc.simple-web-nginx
-                Site: system/de1chk1nd-ebca-aws-eu-central-1
-                Network: Inside
-            Port: 8080   
-        origin2:
-            name: origin-k8s-west
-            origin-server:
-                Type: K8s Service Name of Origin Server on given Sites
-                Service: app-v1-nginx-svc.simple-web-nginx
-                Site: system/de1chk1nd-9142-aws-eu-west-1
-                Network: Inside
-            Port: 8080
-
-Basic Loadbalancer (https/autocert)
-	> k8s
-		lb1:
-			name	: lb-k8s-central
-			domains	: k8s-central.edge.de1chk1nd.de
-			origin	: m-petersen/origin-k8s-eu-central-1
-		lb2:
-			name	: lb-k8s-west
-			domains	: k8s-west.edge.de1chk1nd.de
-			origin	: m-petersen/origin-k8s-eu-west-1
-		lb3:
-			name	: lb-k8s
-			domains	: k8s.edge.de1chk1nd.de
-			origin	: 
-				m-petersen/origin-k8s-eu-west-1
-				m-petersen/origin-k8s-eu-central-1
-
+```

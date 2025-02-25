@@ -6,6 +6,18 @@ resource "aws_ec2_managed_prefix_list" "xc-was-ips" {
   entry {
     cidr        = "34.140.183.146/32"
   }
+  entry {
+    cidr        = "35.241.176.167/32"
+  }
+  entry {
+    cidr        = "34.77.66.77/32"
+  }
+  entry {
+    cidr        = "34.140.250.140/32"
+  }
+  entry {
+    cidr        = "34.22.187.249/32"
+  }
 }
 # Americas Region Prefix List
 resource "aws_ec2_managed_prefix_list" "xC_americas" {

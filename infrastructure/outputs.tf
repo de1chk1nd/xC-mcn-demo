@@ -44,3 +44,11 @@ output "BigIP-MGMTip-private-eu-central-1" {
 output "BigIP-MGMTip-private-eu-west-1" {
   value = module.eu-west-1.BigIP-MGMTip-private
 }
+
+output "BigIP-MGMTip-nlb-private-eu-central-1" {
+  value = module.eu-central-1.nlb_bigip_dns
+}
+
+output "BigIP-MGMTip-nlb-private-eu-west-1" {
+  value = module.eu-west-1.nlb_bigip_dns
+}
