@@ -57,3 +57,10 @@ output "xC-Site-Name" {
   description = "List of BIG-IP management addresses"
   value       = volterra_securemesh_site_v2.xC-mcn-smsv2-appstack.name
 }
+
+# NLB
+
+output "nlb_bigip_dns" {
+  description = "List of BIG-IP management addresses"
+  value       = aws_lb.bigip-mgmt-nlb.dns_name
+}
