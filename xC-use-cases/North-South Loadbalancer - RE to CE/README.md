@@ -5,6 +5,12 @@ A ***Wep Application Firewall*** default policy will be attached to each HTTP  L
 
 &nbsp;
 
+***Overview:***
+
+![Use Case - RE only](../../docs/images/use-cases/RE-to-CE.png)
+
+&nbsp;
+
 ## Create Loadbalancer
 ```shell
 

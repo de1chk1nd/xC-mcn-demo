@@ -9,6 +9,12 @@ A ***Wep Application Firewall*** default policy will be attached to this HTTP  L
 
 &nbsp;
 
+***Overview:***
+
+![Use Case - RE only](../../docs/images/use-cases/RE-only.png)
+
+&nbsp;
+
 ## Create Origin & Loadbalancer
 - To create the <span style="color:blue">**Origin Pool**</span>, c&p content of **xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/etc/origin-pool.json** into the JSON tab of the origin-pool create form. 
 
