@@ -1,0 +1,64 @@
+{
+    "metadata": {
+      "name": "de1chk1nd-home",
+      "namespace": "system",
+      "labels": {},
+      "annotations": {},
+      "disable": false
+    },
+    "spec": {
+      "where": {
+        "site": {
+          "ref": [
+            {
+              "kind": "site",
+              "tenant": "f5-emea-ent-bceuutam",
+              "namespace": "system",
+              "name": "de1chk1nd-home-mesh"
+            }
+          ],
+          "network_type": "VIRTUAL_NETWORK_SITE_LOCAL",
+          "disable_internet_vip": {}
+        }
+      },
+      "bgp_parameters": {
+        "asn": 65002,
+        "local_address": {},
+        "bgp_router_id_type": "BGP_ROUTER_ID_FROM_INTERFACE",
+        "bgp_router_id": {
+          "ipv4": {
+            "addr": "192.168.178.127"
+          }
+        }
+      },
+      "peers": [
+        {
+          "metadata": {
+            "name": "ubuntu",
+            "disable": false
+          },
+          "external": {
+            "asn": 65001,
+            "address": "192.168.178.123",
+            "disable_v6": {},
+            "port": 179,
+            "family_inet": {
+              "enable": {}
+            },
+            "family_inet_v6": {
+              "disable": {}
+            },
+            "interface": {
+              "tenant": "f5-emea-ent-bceuutam",
+              "namespace": "system",
+              "name": "ves-io-securemesh-site-v2-de1chk1nd-home-mesh-network-node-0-ens192-0",
+              "kind": "network_interface"
+            },
+            "no_authentication": {}
+          },
+          "passive_mode_disabled": {},
+          "target_service": "frr"
+        }
+      ]
+    }
+  }
