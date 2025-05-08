@@ -1,5 +1,5 @@
 ########################################################################
-# Subnet 1
+# Subnet 1 - CE VPC
 ########################################################################
 
 resource "aws_subnet" "xC-mcn-site-subnet" {
@@ -13,7 +13,7 @@ resource "aws_subnet" "xC-mcn-site-subnet" {
 }
 
 ########################################################################
-# Subnet 2
+# Subnet 2 - CE VPC
 ########################################################################
 
 resource "aws_subnet" "xC-mcn-site-subnet-priv" {
@@ -27,7 +27,7 @@ resource "aws_subnet" "xC-mcn-site-subnet-priv" {
 }
 
 ########################################################################
-# Subnet 2
+# Subnet 3 - CE VPC
 ########################################################################
 
 resource "aws_subnet" "xC-mcn-site-bigip-mgmt" {
@@ -37,5 +37,33 @@ resource "aws_subnet" "xC-mcn-site-bigip-mgmt" {
   map_public_ip_on_launch = true
   tags = {
     Name  = "${var.student}-xC-mcn-subnet-bigip-mgmt"
+  }
+}
+
+########################################################################
+# Subnet 4 - CE VPC
+########################################################################
+
+resource "aws_subnet" "xC-mcn-site-transfer-tgw" {
+  vpc_id                  = aws_vpc.xC-mcn-site.id
+  cidr_block              = var.subnet_cidr_tran
+  availability_zone       = "${var.region}a"
+  map_public_ip_on_launch = true
+  tags = {
+    Name  = "${var.student}-xC-mcn-subnet-bigip-mgmt"
+  }
+}
+
+########################################################################
+# Subnet 5 - App VPC
+########################################################################
+
+resource "aws_subnet" "xC-mcn-app-subnet" {
+  vpc_id                  = aws_vpc.xC-app-site.id
+  cidr_block              = var.subnet_cidr_app
+  availability_zone       = "${var.region}a"
+  map_public_ip_on_launch = true
+  tags = {
+    Name  = "${var.student}-xC-mcn-app-subnet"
   }
 }

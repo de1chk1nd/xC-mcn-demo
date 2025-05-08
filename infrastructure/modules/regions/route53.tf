@@ -26,10 +26,14 @@ resource "aws_route53_record" "remote-web" {
   name    = "remote-web.de1chk1nd-mcn.aws"
   type    = "A"
   ttl     = "300"
-  records = [aws_network_interface.xC-mcn-slo-v2-priv.private_ip]
+  records = [
+            aws_network_interface.xC-mcn-slo-v2-priv-01.private_ip,
+            aws_network_interface.xC-mcn-slo-v2-priv-02.private_ip
+            ]
 
   depends_on = [
-    aws_network_interface.xC-mcn-slo-v2
+    aws_network_interface.xC-mcn-slo-v2-priv-01,
+    aws_network_interface.xC-mcn-slo-v2-priv-02
   ]
 
 }
@@ -39,10 +43,14 @@ resource "aws_route53_record" "local-web-lb" {
   name    = "local-web.de1chk1nd-mcn.aws"
   type    = "A"
   ttl     = "300"
-  records = [aws_network_interface.xC-mcn-slo-v2-priv.private_ip]
+  records = [
+            aws_network_interface.xC-mcn-slo-v2-priv-01.private_ip,
+            aws_network_interface.xC-mcn-slo-v2-priv-02.private_ip
+            ]
 
   depends_on = [
-    aws_network_interface.xC-mcn-slo-v2
+    aws_network_interface.xC-mcn-slo-v2-priv-01,
+    aws_network_interface.xC-mcn-slo-v2-priv-02
   ]
 
 }

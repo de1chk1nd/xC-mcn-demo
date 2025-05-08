@@ -8,15 +8,15 @@ resource "volterra_origin_pool" "local-webserver" {
     private_name {
       dns_name = "web.de1chk1nd-mcn.aws"
       site_locator {
-        site {
+        virtual_site {
           tenant = "f5-emea-ent-bceuutam"
-          namespace = "system"
-          name = local.smsv2-site-name
+          namespace = "shared"
+          name = var.vsite_conf
           }
         }
       inside_network = true
       }
-    }
+    } 
 
   healthcheck {
     tenant = "f5-emea-ent-bceuutam"
@@ -28,7 +28,8 @@ resource "volterra_origin_pool" "local-webserver" {
   no_tls = true
 
   depends_on = [
-    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01,
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02
   ]
 }
 
@@ -42,10 +43,10 @@ resource "volterra_origin_pool" "local-echoserver" {
     private_name {
       dns_name = "web.de1chk1nd-mcn.aws"
       site_locator {
-        site {
+        virtual_site {
           tenant = "f5-emea-ent-bceuutam"
-          namespace = "system"
-          name = local.smsv2-site-name
+          namespace = "shared"
+          name = var.vsite_conf
           }
         }
       inside_network = true
@@ -62,7 +63,8 @@ resource "volterra_origin_pool" "local-echoserver" {
   no_tls = true
 
   depends_on = [
-    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01,
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02
   ]
 }
 
@@ -76,10 +78,10 @@ resource "volterra_origin_pool" "local-echo-ssl-server" {
     private_name {
       dns_name = "web.de1chk1nd-mcn.aws"
       site_locator {
-        site {
+        virtual_site {
           tenant = "f5-emea-ent-bceuutam"
-          namespace = "system"
-          name = local.smsv2-site-name
+          namespace = "shared"
+          name = var.vsite_conf
           }
         }
       inside_network = true
@@ -101,7 +103,8 @@ resource "volterra_origin_pool" "local-echo-ssl-server" {
   }
 
   depends_on = [
-    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01,
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02
   ]
 }
 
@@ -117,16 +120,16 @@ resource "volterra_origin_pool" "bigip-echo-ssl-server" {
     private_name {
       dns_name = "bigip-echo-ssl.de1chk1nd-mcn.aws"
       site_locator {
-        site {
+        virtual_site {
           tenant = "f5-emea-ent-bceuutam"
-          namespace = "system"
-          name = local.smsv2-site-name
+          namespace = "shared"
+          name = var.vsite_conf
           }
         }
       inside_network = true
       }
     }
-
+  
   healthcheck {
     tenant = "f5-emea-ent-bceuutam"
     namespace = "m-petersen"
@@ -142,6 +145,7 @@ resource "volterra_origin_pool" "bigip-echo-ssl-server" {
   }
 
   depends_on = [
-    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01,
+    volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02
   ]
 }
