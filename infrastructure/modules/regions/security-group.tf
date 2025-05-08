@@ -426,3 +426,137 @@ resource "aws_security_group" "xC-mcn-site-ce-to-asia" {
     Name  = "${var.student}-xC-mcn-sg-customer-edge-egress-to-asia"
   }
 }
+
+########################################################################
+# APP VPC - Security Group
+########################################################################
+
+resource "aws_security_group" "xC-mcn-app-allow-linux" {
+  name        = "allow_traffic_to_app-ubuntu"
+  description = "Allow Web inbound traffic"
+  vpc_id      = aws_vpc.xC-app-site.id
+  ingress {
+    description = "SSH from Student PC"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
+    description = "Web Access"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
+    description = "Web SSL Access"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.student_ip]
+  }
+  ingress {
+    description = "Allow local access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
+    description = "Allow local access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["172.16.0.0/12"]
+  }
+  ingress {
+    description = "Allow local access"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["192.168.0.0/16"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name  = "${var.student}-xC-mcn-app-ubuntu-sg"
+  }
+}
+
+########################################################################
+# xC - Regional Edge incomming
+########################################################################
+
+resource "aws_security_group" "xC-mcn-site-inc-americas" {
+  name        = "${var.student}-xC-mcn-sg-inc-americas"
+  description = "Allow traffic from/to Customer Edges"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  ingress {
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description       = "Allow TCP 80 to F5 Edge networks"
+  }
+  ingress {
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description       = "Allow TCP 443 to F5 Edge networks"
+  }
+  tags = {
+    Name  = "${var.student}-xC-mcn-sg-inc-americas"
+  }
+}
+
+resource "aws_security_group" "xC-mcn-site-inc-europe" {
+  name        = "${var.student}-xC-mcn-sg-inc-europe"
+  description = "Allow traffic from/to Customer Edges"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  ingress {
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description       = "Allow TCP 80 to F5 Edge networks"
+  }
+  ingress {
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description       = "Allow TCP 443 to F5 Edge networks"
+  }
+  tags = {
+    Name  = "${var.student}-xC-mcn-sg-inc-europe"
+  }
+}
+
+resource "aws_security_group" "xC-mcn-site-inc-asia" {
+  name        = "${var.student}-xC-mcn-sg-inc-asia"
+  description = "Allow traffic from/to Customer Edges"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  egress {
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description       = "Allow TCP 80 to F5 Edge networks"
+  }
+  egress {
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
+    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description       = "Allow TCP 443 to F5 Edge networks"
+  }
+  tags = {
+    Name  = "${var.student}-xC-mcn-sg-inc-asia"
+  }
+}

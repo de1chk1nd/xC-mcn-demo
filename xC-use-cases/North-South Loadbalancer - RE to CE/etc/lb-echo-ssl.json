@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "name": "lb-echo-hybrid-west",
+    "name": "lb-echo-hybrid",
     "namespace": "m-petersen",
     "labels": {},
     "annotations": {},
@@ -8,7 +8,7 @@
   },
   "spec": {
     "domains": [
-      "echo-hybrid-west.edge.de1chk1nd.de"
+      "echo-hybrid.edge.de1chk1nd.de"
     ],
     "https_auto_cert": {
       "http_redirect": true,
@@ -45,6 +45,17 @@
             "no_port_match": {}
           },
           "origin_pools": [
+            {
+              "pool": {
+                "tenant": "f5-emea-ent-bceuutam",
+                "namespace": "m-petersen",
+                "name": "origin-aws-echo-ssl-eu-central-1",
+                "kind": "origin_pool"
+              },
+              "weight": 1,
+              "priority": 1,
+              "endpoint_subsets": {}
+            },
             {
               "pool": {
                 "tenant": "f5-emea-ent-bceuutam",
