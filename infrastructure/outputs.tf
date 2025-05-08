@@ -22,20 +22,29 @@ ${module.eu-central-1.nlb_ip}     app-1.eu-central-1.de1chk1nd-lab.aws
 ${module.eu-west-1.nlb_ip}        app-1.eu-west-1.de1chk1nd-lab.aws
 
 # Uncomment (comment above) for direct EIP Access to MCN (no cLB)
-# ${module.eu-central-1.mcn_ip}     app-1.eu-central-1.de1chk1nd-lab.aws
-# ${module.eu-west-1.mcn_ip}        app-1.eu-west-1.de1chk1nd-lab.aws
+# ${module.eu-central-1.mcn_ip_gw01}     app-1.eu-central-1.de1chk1nd-lab.aws
+# ${module.eu-west-1.mcn_ip_gw01}        app-1.eu-west-1.de1chk1nd-lab.aws
 
 
 EOF
 }
 
-output "xC-MCN-CE-EU-CENTRAL1" {
-  value = module.eu-central-1.xC-Site-Name
+output "xC-MCN-CE-EU-CENTRAL1-GW01" {
+  value = module.eu-central-1.xC-Site-Name-gw01
 }
 
-output "xC-MCN-CE-EU-WEST1" {
-  value = module.eu-west-1.xC-Site-Name
+output "xC-MCN-CE-EU-CENTRAL1-GW02" {
+  value = module.eu-central-1.xC-Site-Name-gw02
 }
+
+output "xC-MCN-CE-EU-WEST1-GW01" {
+  value = module.eu-west-1.xC-Site-Name-gw01
+}
+
+output "xC-MCN-CE-EU-WEST1-GW02" {
+  value = module.eu-west-1.xC-Site-Name-gw02
+}
+
 
 output "BigIP-MGMTip-private-eu-central-1" {
   value = module.eu-central-1.BigIP-MGMTip-private
@@ -51,4 +60,12 @@ output "BigIP-MGMTip-nlb-private-eu-central-1" {
 
 output "BigIP-MGMTip-nlb-private-eu-west-1" {
   value = module.eu-west-1.nlb_bigip_dns
+}
+
+output "ubuntu-nlb-private-eu-central-1" {
+  value = module.eu-central-1.nlb_ubuntu_dns
+}
+
+output "ubuntu-nlb-private-eu-west-1" {
+  value = module.eu-west-1.nlb_ubuntu_dns
 }

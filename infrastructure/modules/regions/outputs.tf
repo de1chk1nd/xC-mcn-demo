@@ -30,9 +30,14 @@ output "nlb_ip" {
   value       = aws_eip.ce_nlb_eip.public_ip
 }
 
-output "mcn_ip" {
+output "mcn_ip_gw01" {
   description = "Allocated Elastic IP"
-  value       = aws_eip.xC-mcn-site-ubuntu-eip-v2.public_ip
+  value       = aws_eip.xC-mcn-slo-v2-eip-01.public_ip
+}
+
+output "mcn_ip_gw02" {
+  description = "Allocated Elastic IP"
+  value       = aws_eip.xC-mcn-slo-v2-eip-02.public_ip
 }
 
 
@@ -53,9 +58,14 @@ output "BigIP-MGMTip-private" {
 }
 
 # xC
-output "xC-Site-Name" {
+output "xC-Site-Name-gw01" {
   description = "List of BIG-IP management addresses"
-  value       = volterra_securemesh_site_v2.xC-mcn-smsv2-appstack.name
+  value       = volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01.name
+}
+
+output "xC-Site-Name-gw02" {
+  description = "List of BIG-IP management addresses"
+  value       = volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02.name
 }
 
 # NLB
@@ -63,4 +73,9 @@ output "xC-Site-Name" {
 output "nlb_bigip_dns" {
   description = "List of BIG-IP management addresses"
   value       = aws_lb.bigip-mgmt-nlb.dns_name
+}
+
+output "nlb_ubuntu_dns" {
+  description = "List of BIG-IP management addresses"
+  value       = aws_lb.ubuntu-nlb.dns_name
 }

@@ -1,6 +1,7 @@
 [Use Cases]: xC-use-cases/README.md
 [BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws 
 [BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
+[GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
 
 # xC-mcn-demo - Lab Introduction & Set Up
 Welcome to my lab. This lab contains many f5 xC app solution & use cases. Pre-Configured and prepared to be build in AWS just within a couple of minutes.
@@ -9,37 +10,70 @@ The installation is failry simple and based on a local python script to deploy t
 
 &nbsp;
 
-The lab set up uses two public- and one privat subnets. By default we are going to set up a basic insfrastrucure in two different AWS regions: **eu-central-1** and **eu-west-1**.
+## Overview of AWS Demo Environment
+
+This diagram illustrates a demo setup in AWS featuring **F5 Distributed Cloud Customer Edge (CE)** nodes. The environment is divided into a **Main VPC** and an **App VPC**, interconnected via a **Transit Gateway (TGW)**.
 
 &nbsp;
 
-***Main Componentes:***
-- Dual-Homed (SLo and SLi) xc Customer Edge
-- 3-NIC (Mgmt, External, Internal) BigIP vAppliance with Best License
-- Single NIC (Internal) Ubuntu Server with Docker and minikube
+### Components
+
+- **Customer Edge (CE)**: 
+  - Deployed in both the public subnet and transfer TGW subnet.
+  - Supports routing and connectivity testing.
+  - Uses **BGP** to communicate with the App VPC.
+
+- **Ubuntu Servers**:
+  - Host application workloads.
+  - Deployed in both the Main VPC (`ubuntu main-vpc`) and the App VPC (`ubuntu app-vpc`).
+  - Accessible either locally (direct CE-to-Ubuntu communication) or remotely via BGP routing.
+
+- **BigIP Appliances**:
+  - One instance is used for **management** in a dedicated subnet.
+  - Another instance supports **local traffic routing** between CE nodes and the application server.
+
+- **Network Load Balancers (NLBs)**:
+  - Distribute incoming traffic to CE nodes and BigIP instances across different subnets.
 
 &nbsp;
 
-The server are acompanied by AWS Services like NLB, Route53 (private zone), NAT Gateway, ...
+### Key Use Cases
 
-For the sake of simplicity, all devices are spread accross ONE Availability Zone.
+- Local traffic from CE nodes to the application in the Main VPC.
+- Remote application access from CE nodes to the App VPC using BGP over the Transit Gateway.
+- Routing through the local BigIP to reach the Ubuntu application server.
+
+This architecture showcases flexible traffic routing, high availability, and hybrid connectivity use cases using F5 Distributed Cloud and AWS components.
+
+&nbsp;
+
+The servers are accompanied by AWS services such as **NLB**, **Route 53** (private hosted zone), and **NAT Gateway**.
+
+&nbsp;
+
+> **Note:** For simplicity, all components in this demo environment are deployed within a **single Availability Zone**.
 
 &nbsp;
 
 ***Overview:***
 
-![AWS Lab Overview](docs/images/overview-aws-lab.png)
+![AWS Lab Overview](docs/images/overview-aws-lab-v2.png)
 
 &nbsp;
 
 ---
 
 ## xC-mcn-demo - Installation
-Download the repository and "cd" into the root ***xC-mcn-demo*** lab.
+Download/Clone the [GitHub - MCN repository] and "cd" into the root ***xC-mcn-demo*** lab.
 
 &nbsp;
 
-1. Add/Replace AWS Auth Information into ./setup-init/config.yaml
+1. Add/Replace AWS Auth Information into ***./setup-init/config.yaml***
+    - aws.**aws_access_key_id**
+    - aws.**aws_secret_access_key**
+    - aws.**aws_session_token**
+
+    &nbsp;
     > __**ATTENTION:**__ Terraform expects (by default) that AWS Auth is done with profile "trerraform". This can be changed within the **config.yaml** file.
 
 &nbsp;
@@ -54,9 +88,9 @@ Download the repository and "cd" into the root ***xC-mcn-demo*** lab.
 - Approx. Instllation times - need to complete before starting the labs/use-cases:
     | Process / Device      | Estimated Time      | Comment                                                             |
     |:----------------------|:--------------------|:--------------------------------------------------------------------|
-    | Terraform 			| ***2-3 minutes***   | ./.                                                                 |
+    | Terraform 			      | ***2-3 minutes***   | ./.                                                                 |
     | BigIP vAppliances     | ***5-7 minutes***   | check if AS3 completes L4-L7 Services: Pools, vServer in partition  |
-    | xC Gateway       		| ***15-20 minutes*** | check in xC Console if Gateways are "online"                        |
+    | xC Gateway       		  | ***15-20 minutes*** | check within the xC Console if Gateways are "online"                |
 
 &nbsp;
 

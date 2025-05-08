@@ -10,14 +10,14 @@
     "origin_servers": [
       {
         "public_name": {
-          "dns_name": "f5-ubuntu-nlb-e55ae8d7092b6f45.elb.eu-central-1.amazonaws.com",
+          "dns_name": "${UBUNTU_NLB_EU_CENTRAL}",
           "refresh_interval": 300
         },
         "labels": {}
       },
       {
         "public_name": {
-          "dns_name": "f5-ubuntu-nlb-e75fe7f18ea0dbeb.elb.eu-west-1.amazonaws.com",
+          "dns_name": "${UBUNTU_NLB_EU_WEST}",
           "refresh_interval": 300
         }
       }

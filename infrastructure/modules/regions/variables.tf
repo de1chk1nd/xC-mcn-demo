@@ -28,6 +28,22 @@ variable "subnet_cidr_mgmt" {
   type        = string
 }
 
+variable "subnet_cidr_tran" {
+  description = "BIG-IP AMI name to search for"
+  type        = string
+}
+
+variable "vpc_cidr_app" {
+  description = "BIG-IP AMI name to search for"
+  type        = string
+}
+
+variable "subnet_cidr_app" {
+  description = "BIG-IP AMI name to search for"
+  type        = string
+}
+
+
 variable "ubuntu_ami" {
   description = "linux server ami"
   type        = string
@@ -78,6 +94,16 @@ variable "f5_password" {
 }
 
 variable "vsite_k8s" {
+  description = "Owner for resources created by this module"
+  type        = string
+}
+
+variable "vsite_conf" {
+  description = "Owner for resources created by this module"
+  type        = string
+}
+
+variable "vsite-region" {
   description = "Owner for resources created by this module"
   type        = string
 }

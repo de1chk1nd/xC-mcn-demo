@@ -99,6 +99,8 @@ print("#")
 
 os.chdir(root_dir)
 
+os.system("openssl pkcs12 -in './setup-init/.xC/f5-emea-ent.console.ves.volterra.io.api-creds.p12' -out './setup-init/.xC/xc-curl.crt.pem' -passin 'pass:***REMOVED***' -passout 'pass:***REMOVED***' -legacy")
+
 os.system('terraform -chdir="./infrastructure" fmt')
 os.system('terraform -chdir="./infrastructure" init')
 os.system('terraform -chdir="./infrastructure" plan')
