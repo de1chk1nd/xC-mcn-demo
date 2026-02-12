@@ -57,7 +57,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 
 ***Overview:***
 
-![AWS Lab Overview](docs/images/overview-aws-lab-v2.png)
+![AWS Lab Overview](docs/images/overview-aws-lab-v3.png)
 
 &nbsp;
 

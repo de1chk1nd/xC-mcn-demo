@@ -7,6 +7,12 @@ In this lab we'll create a basic k8s service discovery for a minikube "cluster" 
 
 &nbsp;
 
+***Overview:***
+
+![Use Case - Service Discovery k8s](../../../docs/images/use-cases/SD-k8s.png)
+
+&nbsp;
+
 - ***Further Reading:***
     | Device                    	 		    | Notes                                                     |
     |:------------------------------------------|:----------------------------------------------------------|

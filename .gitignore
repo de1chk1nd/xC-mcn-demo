@@ -11,7 +11,9 @@ setup-init/.xC/*.txt
 setup-init/.ssh/*.crt
 setup-init/.ssh/*.pem
 setup-init/.ssh/*.ppk
+setup-init/config.yaml
 
+opencode.json
 
 ####### Terraform files
 **/.terraform/*

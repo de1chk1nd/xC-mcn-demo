@@ -217,12 +217,18 @@ extension_services:
           Shared:
             class: Application
             template: shared
-            fqdn_ubuntu_aws:
+            fqdn_ubuntu_aws_web_01:
               class: Address_Discovery
               addressDiscovery: fqdn
               shareNodes: true
               autoPopulate: true
-              hostname: web.de1chk1nd-mcn.aws
+              hostname: web-01.de1chk1nd-mcn.aws
+            fqdn_ubuntu_aws_web_02:
+              class: Address_Discovery
+              addressDiscovery: fqdn
+              shareNodes: true
+              autoPopulate: true
+              hostname: web-02.de1chk1nd-mcn.aws
             p_web_80:
               class: Pool
               monitors:
@@ -230,7 +236,10 @@ extension_services:
               members:
                 - servicePort: 80
                   addressDiscovery:
-                    use: fqdn_ubuntu_aws                    
+                    use: fqdn_ubuntu_aws_web_01
+                - servicePort: 80
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws_web_02                 
             p_echo_10080_http:
               class: Pool
               monitors:
@@ -238,7 +247,10 @@ extension_services:
               members:
                 - servicePort: 10080
                   addressDiscovery:
-                    use: fqdn_ubuntu_aws   
+                    use: fqdn_ubuntu_aws_web_01
+                - servicePort: 10080
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws_web_02
             p_echo_10443_https:
               class: Pool
               monitors:
@@ -246,7 +258,10 @@ extension_services:
               members:
                 - servicePort: 10443
                   addressDiscovery:
-                    use: fqdn_ubuntu_aws   
+                    use: fqdn_ubuntu_aws_web_01
+                - servicePort: 10443
+                  addressDiscovery:
+                    use: fqdn_ubuntu_aws_web_02
             Proxy_Protocol_iRule:
               remark: Proxy Protocoll iRule
               class: iRule

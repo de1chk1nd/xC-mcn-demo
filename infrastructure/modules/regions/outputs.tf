@@ -1,7 +1,12 @@
 # Ubuntu
-output "xC-mcn-site-ubuntu-eip" {
+output "xC-mcn-site-ubuntu-01-eip" {
   description = "List of BIG-IP management addresses"
-  value       = aws_eip.ubuntu_nlb_eip.public_ip
+  value       = aws_eip.ubuntu-01-nlb_eip.public_ip
+}
+
+output "xC-mcn-site-ubuntu-02-eip" {
+  description = "List of BIG-IP management addresses"
+  value       = aws_eip.ubuntu-02-nlb_eip.public_ip
 }
 
 output "xC-mcn-site-bigip-mgmt-eip" {
@@ -75,7 +80,12 @@ output "nlb_bigip_dns" {
   value       = aws_lb.bigip-mgmt-nlb.dns_name
 }
 
-output "nlb_ubuntu_dns" {
+output "nlb_ubuntu-01_dns" {
   description = "List of BIG-IP management addresses"
-  value       = aws_lb.ubuntu-nlb.dns_name
+  value       = aws_lb.ubuntu-01-nlb.dns_name
+}
+
+output "nlb_ubuntu-02_dns" {
+  description = "List of BIG-IP management addresses"
+  value       = aws_lb.ubuntu-02-nlb.dns_name
 }
