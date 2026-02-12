@@ -24,6 +24,7 @@ module "eu-central-1" {
   owner      = local.setup-init.student.email
   student    = local.setup-init.student.name
   student_ip = local.setup-init.student.ip-address
+  f5_password = local.setup-init.f5.f5_password
 
   vsite_k8s    = volterra_virtual_site.vk8s_sites.name
   vsite_conf   = volterra_virtual_site.eu-central_sites.name
@@ -57,6 +58,8 @@ module "eu-west-1" {
   owner      = local.setup-init.student.email
   student    = local.setup-init.student.name
   student_ip = local.setup-init.student.ip-address
+  f5_password = local.setup-init.f5.f5_password
+
 
   vsite_k8s    = volterra_virtual_site.vk8s_sites.name
   vsite_conf   = volterra_virtual_site.eu-west_sites.name
