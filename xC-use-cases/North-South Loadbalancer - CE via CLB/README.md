@@ -14,6 +14,12 @@ Goal is to ***terminate*** client sessions in CE - either via public cloud loadb
 
 &nbsp;
 
+***Overview:***
+
+![Use Case - RE only](../../docs/images/use-cases/CE-via-clb.png)
+
+&nbsp;
+
 ## Create Loadbalancer
 ```shell
 

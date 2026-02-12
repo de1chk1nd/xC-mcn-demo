@@ -14,13 +14,13 @@
       "advertise_custom": {
         "advertise_where": [
           {
-            "site": {
+            "virtual_site": {
               "network": "SITE_NETWORK_INSIDE",
-              "site": {
+              "virtual_site": {
                 "tenant": "f5-emea-ent-bceuutam",
-                "namespace": "system",
-                "name": "${MCN_CE_EU_CENTRAL1}",
-                "kind": "site"
+                "namespace": "shared",
+                "name": "de1chk1nd-eu-central-sites",
+                "kind": "virtual_site"
               }
             },
             "use_default_port": {}

@@ -5,13 +5,13 @@
     },
     "spec": {
       "where": {
-        "site": {
+        "virtual_site": {
           "ref": [
             {
-              "kind": "site",
+              "kind": "virtual_site",
               "tenant": "f5-emea-ent-bceuutam",
-              "namespace": "system",
-              "name": "${MCN_CE_EU_WEST1}"
+              "namespace": "shared",
+              "name": "de1chk1nd-eu-west-sites"
             }
           ],
           "network_type": "VIRTUAL_NETWORK_SITE_LOCAL_INSIDE",

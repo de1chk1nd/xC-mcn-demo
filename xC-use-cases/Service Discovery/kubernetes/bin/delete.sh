@@ -21,10 +21,10 @@ curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setu
 
 curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-de1chk1nd-eu-central
+    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys/sd-k8s-de1chk1nd-eu-central
 curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-de1chk1nd-eu-west
+    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys/sd-k8s-de1chk1nd-eu-west
 
 rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-central.json"
 rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-west.json"
