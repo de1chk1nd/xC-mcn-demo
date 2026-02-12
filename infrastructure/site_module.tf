@@ -21,9 +21,9 @@ module "eu-central-1" {
 
   public_key = tls_private_key.ssh_key_access.public_key_openssh
 
-  owner      = local.setup-init.student.email
-  student    = local.setup-init.student.name
-  student_ip = local.setup-init.student.ip-address
+  owner       = local.setup-init.student.email
+  student     = local.setup-init.student.name
+  student_ip  = local.setup-init.student.ip-address
   f5_password = local.setup-init.f5.f5_password
 
   vsite_k8s    = volterra_virtual_site.vk8s_sites.name
@@ -55,9 +55,9 @@ module "eu-west-1" {
 
   public_key = tls_private_key.ssh_key_access.public_key_openssh
 
-  owner      = local.setup-init.student.email
-  student    = local.setup-init.student.name
-  student_ip = local.setup-init.student.ip-address
+  owner       = local.setup-init.student.email
+  student     = local.setup-init.student.name
+  student_ip  = local.setup-init.student.ip-address
   f5_password = local.setup-init.f5.f5_password
 
 

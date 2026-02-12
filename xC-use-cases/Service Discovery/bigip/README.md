@@ -31,8 +31,8 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
 - ***Access to Devices from external:***
     | Device                    	 		 | Username | Password (lab-default)  |
     |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]  				 | admin    | ***REMOVED***         |
-    | [BigIP - eu-west]       				 | admin    | ***REMOVED***         |
+    | [BigIP - eu-central]  				 | admin    | REDACTED_P12_PASSWORD         |
+    | [BigIP - eu-west]       				 | admin    | REDACTED_P12_PASSWORD         |
 
 - Note Down IP-Address of **echo443tlspass**
 
@@ -61,7 +61,7 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
         - Name: bigip-aws-central-1
         - MGMT IP: 10.0.20.* (IP!!!)
         - Username: admin
-        - Password: ***REMOVED*** 
+        - Password: REDACTED_P12_PASSWORD 
 
 &nbsp;
 
@@ -74,7 +74,7 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
         - Name: bigip-aws-eu-west-1
         - MGMT IP: 172.16.20.* (IP!!!)
         - Username: admin
-        - Password: ***REMOVED*** 
+        - Password: REDACTED_P12_PASSWORD 
 
 &nbsp;
 

@@ -131,8 +131,8 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 - ***Access to Devices from external:***
     | Device                    	 		 | Username | Password (lab-default)  |
     |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]  				 | admin    | ***REMOVED***         |
-    | [BigIP - eu-west]       				 | admin    | ***REMOVED***         |
+    | [BigIP - eu-central]  				 | admin    | REDACTED_P12_PASSWORD         |
+    | [BigIP - eu-west]       				 | admin    | REDACTED_P12_PASSWORD         |
 
     > __**ATTENTION:**__ Before you can access the AWS Devices, please add local /etc/hosts entries!
 
@@ -144,7 +144,7 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 [comment]: <> (#### <span style="color:blue">**Windows**</span>)
 [comment]: <> (```shell)
 
-[comment]: <> ($Env:VES_P12_PASSWORD="***REMOVED***")
+[comment]: <> ($Env:VES_P12_PASSWORD="REDACTED_P12_PASSWORD")
 [comment]: <> (terraform -chdir="./infrastructure" destroy -auto-approve)
 [comment]: <> (```)
 
