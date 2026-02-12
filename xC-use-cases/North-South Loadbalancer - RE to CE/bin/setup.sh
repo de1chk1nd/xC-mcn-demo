@@ -1,18 +1,26 @@
 #!/bin/bash
-
-# Create Loadbalancer
-
-## lb-echo-ssl.json
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
-
-## lb-echo-ssl-central.json
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
-
-## lb-echo-ssl-west.json
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+set -e  # Exit on error
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
+#######################################
+# Create Load Balancers
+#######################################
+echo "Creating load balancer: lb-echo-ssl..."
+curl --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${REPO_ROOT}/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+echo "Creating load balancer: lb-echo-ssl-central..."
+curl --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${REPO_ROOT}/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl-central.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+echo "Creating load balancer: lb-echo-ssl-west..."
+curl --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${REPO_ROOT}/xC-use-cases/North-South Loadbalancer - RE to CE/etc/lb-echo-ssl-west.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+echo "Done!"
