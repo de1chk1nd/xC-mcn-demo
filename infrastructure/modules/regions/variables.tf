@@ -90,7 +90,6 @@ variable "remote_cidr" {
 variable "f5_password" {
   description = "Owner for resources created by this module"
   type        = string
-  default     = "***REMOVED***"
 }
 
 variable "vsite_k8s" {
