@@ -2,6 +2,12 @@
 # Wait mode before doing anything
 sleep 10
 
+echo ${hostname} > /etc/hostname
+hostnamectl set-hostname ${hostname}
+sed -i "s/127.0.1.1.*/127.0.1.1 ${hostname}/" /etc/hosts
+
+sleep 10
+
 sudo apt-get update -y
 sudo apt-get install curl gnupg2 ca-certificates lsb-release ubuntu-keyring apt-transport-https software-properties-common crictl -y
 
@@ -190,7 +196,7 @@ sudo minikube start --vm-driver=none
 sleep 60
 
 # Start Echo App on http/8080 and https/8443
-docker run -d --hostname $HOSTNAME -p 10080:8080 -p 10443:8443 --rm -t mendhak/http-https-echo:36
+docker run -d --hostname ${hostname} -p 10080:8080 -p 10443:8443 --rm -t mendhak/http-https-echo:36
 sleep 60
 
 # Install juice shop on http/3000 

@@ -26,8 +26,8 @@ terraform {
       #version = "~>2.0"
     }
     volterra = {
-      source = "volterraedge/volterra"
-      #version = "~>0.11"
+      source  = "volterraedge/volterra"
+      version = "0.11.42"
     }
   }
 }

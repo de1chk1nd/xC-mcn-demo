@@ -3,7 +3,7 @@ resource "volterra_virtual_k8s" "example" {
   namespace = "m-petersen"
 
   vsite_refs {
-   name = "de1chk1nd-vk8s-sites"
-   namespace = "shared"
+    name      = "de1chk1nd-vk8s-sites"
+    namespace = "shared"
   }
 }

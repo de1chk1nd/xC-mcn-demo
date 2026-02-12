@@ -119,23 +119,30 @@ resource "aws_lb_listener" "listener_https" {
 }
 
 ########################################################################
-# NLB to Ubuntu Server
+# NLB to Ubuntu Servers
 ########################################################################
 
 # Create Elastic IP
-resource "aws_eip" "ubuntu_nlb_eip" {
+resource "aws_eip" "ubuntu-01-nlb_eip" {
   domain = "vpc"
   tags = {
-    Name = "f5-ubuntu-nlb-eip"
+    Name = "f5-ubuntu-01-nlb-eip"
+  }
+}
+
+# Create Elastic IP
+resource "aws_eip" "ubuntu-02-nlb_eip" {
+  domain = "vpc"
+  tags = {
+    Name = "f5-ubuntu-02-nlb-eip"
   }
 }
 
 # Create Network Load Balancer
-resource "aws_lb" "ubuntu-nlb" {
-  name               = "f5-ubuntu-nlb"
+resource "aws_lb" "ubuntu-01-nlb" {
+  name               = "f5-ubuntu-01-nlb"
   internal           = false
   load_balancer_type = "network"
-  #subnets            = [aws_subnet.xC-mcn-site-subnet.id]
   security_groups = [
     aws_security_group.xC-mcn-site-allow-linux.id,
     aws_security_group.xC-mcn-site-inc-americas.id,
@@ -145,15 +152,51 @@ resource "aws_lb" "ubuntu-nlb" {
 
   subnet_mapping {
     subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-    allocation_id   = aws_eip.ubuntu_nlb_eip.id
+    allocation_id   = aws_eip.ubuntu-01-nlb_eip.id
+    }
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb" "ubuntu-02-nlb" {
+  name               = "f5-ubuntu-02-nlb"
+  internal           = false
+  load_balancer_type = "network"
+  security_groups = [
+    aws_security_group.xC-mcn-site-allow-linux.id,
+    aws_security_group.xC-mcn-site-inc-americas.id,
+    aws_security_group.xC-mcn-site-inc-europe.id,
+    aws_security_group.xC-mcn-site-inc-asia.id
+    ]
+
+  subnet_mapping {
+    subnet_id       = aws_subnet.xC-mcn-site-subnet.id
+    allocation_id   = aws_eip.ubuntu-02-nlb_eip.id
     }
 
   enable_deletion_protection = false
 }
 
 # Create HTTP target group (port 22)
-resource "aws_lb_target_group" "ubuntu-target_group_ssh" {
-  name        = "f5-ubuntu-tg-ssh"
+resource "aws_lb_target_group" "ubuntu-01-target_group_ssh" {
+  name        = "f5-ubuntu-01-tg-ssh"
+  port        = 22
+  protocol    = "TCP"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  target_type = "ip"
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval           = 30
+    port               = "traffic-port"
+    protocol           = "TCP"
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group" "ubuntu-02-target_group_ssh" {
+  name        = "f5-ubuntu-02-tg-ssh"
   port        = 22
   protocol    = "TCP"
   vpc_id      = aws_vpc.xC-mcn-site.id
@@ -170,12 +213,39 @@ resource "aws_lb_target_group" "ubuntu-target_group_ssh" {
 }
 
 # Create HTTP target group (port 80)
-resource "aws_lb_target_group" "ubuntu-target_group_http" {
-  name        = "f5-ubuntu-tg-http"
+resource "aws_lb_target_group" "ubuntu-01-target_group_http" {
+  name        = "f5-ubuntu-01-tg-http"
   port        = 10080
   protocol    = "TCP"
   vpc_id      = aws_vpc.xC-mcn-site.id
   target_type = "ip"
+
+  stickiness {
+    enabled = true
+    type    = "source_ip"
+  }
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval           = 30
+    port               = "traffic-port"
+    protocol           = "TCP"
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group" "ubuntu-02-target_group_http" {
+  name        = "f5-ubuntu-02-tg-http"
+  port        = 10080
+  protocol    = "TCP"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  target_type = "ip"
+
+  stickiness {
+    enabled = true
+    type    = "source_ip"
+  }
 
   health_check {
     enabled             = true
@@ -188,12 +258,39 @@ resource "aws_lb_target_group" "ubuntu-target_group_http" {
 }
 
 # Create HTTP target group (port 443)
-resource "aws_lb_target_group" "ubuntu-target_group_https" {
-  name        = "f5-ubuntu-tg-https"
+resource "aws_lb_target_group" "ubuntu-01-target_group_https" {
+  name        = "f5-ubuntu-01-tg-https"
   port        = 10443
   protocol    = "TCP"
   vpc_id      = aws_vpc.xC-mcn-site.id
   target_type = "ip"
+
+  stickiness {
+    enabled = true
+    type    = "source_ip"
+  }
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval           = 30
+    port               = "traffic-port"
+    protocol           = "TCP"
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group" "ubuntu-02-target_group_https" {
+  name        = "f5-ubuntu-02-tg-https"
+  port        = 10443
+  protocol    = "TCP"
+  vpc_id      = aws_vpc.xC-mcn-site.id
+  target_type = "ip"
+
+  stickiness {
+    enabled = true
+    type    = "source_ip"
+  }
 
   health_check {
     enabled             = true
@@ -206,58 +303,108 @@ resource "aws_lb_target_group" "ubuntu-target_group_https" {
 }
 
 # Data source to get ENI information
-data "aws_network_interface" "ubuntu_eni" {
-  id = aws_network_interface.xC-mcn-site-ubuntu-public.id
+data "aws_network_interface" "ubuntu_eni-01" {
+  id = aws_network_interface.xC-mcn-site-ubuntu-01-public.id
+}
+data "aws_network_interface" "ubuntu_eni-02" {
+  id = aws_network_interface.xC-mcn-site-ubuntu-02-public.id
 }
 
 # Attach the EC2 instance to HTTP target group
-resource "aws_lb_target_group_attachment" "ubuntu-target_attachment_ssh" {
-  target_group_arn = aws_lb_target_group.ubuntu-target_group_ssh.arn
-  target_id        = data.aws_network_interface.ubuntu_eni.private_ip
+resource "aws_lb_target_group_attachment" "ubuntu-01-target_attachment_ssh" {
+  target_group_arn = aws_lb_target_group.ubuntu-01-target_group_ssh.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-01.private_ip
   port             = 22
 }
-resource "aws_lb_target_group_attachment" "ubuntu-target_attachment_http" {
-  target_group_arn = aws_lb_target_group.ubuntu-target_group_http.arn
-  target_id        = data.aws_network_interface.ubuntu_eni.private_ip
+resource "aws_lb_target_group_attachment" "ubuntu-02-target_attachment_ssh" {
+  target_group_arn = aws_lb_target_group.ubuntu-02-target_group_ssh.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-02.private_ip
+  port             = 22
+}
+resource "aws_lb_target_group_attachment" "ubuntu-01-target_attachment_http" {
+  target_group_arn = aws_lb_target_group.ubuntu-01-target_group_http.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-01.private_ip
   port             = 10080
 }
-resource "aws_lb_target_group_attachment" "ubuntu-target_attachment_https" {
-  target_group_arn = aws_lb_target_group.ubuntu-target_group_https.arn
-  target_id        = data.aws_network_interface.ubuntu_eni.private_ip
+resource "aws_lb_target_group_attachment" "ubuntu-02-target_attachment_http" {
+  target_group_arn = aws_lb_target_group.ubuntu-02-target_group_http.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-02.private_ip
+  port             = 10080
+}
+resource "aws_lb_target_group_attachment" "ubuntu-01-target_attachment_https" {
+  target_group_arn = aws_lb_target_group.ubuntu-01-target_group_https.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-01.private_ip
+  port             = 10443
+}
+resource "aws_lb_target_group_attachment" "ubuntu-02-target_attachment_https" {
+  target_group_arn = aws_lb_target_group.ubuntu-02-target_group_https.arn
+  target_id        = data.aws_network_interface.ubuntu_eni-02.private_ip
   port             = 10443
 }
 
 # Create HTTP listener (port 22)
-resource "aws_lb_listener" "ubuntu-listener_ssh" {
-  load_balancer_arn = aws_lb.ubuntu-nlb.arn
+resource "aws_lb_listener" "ubuntu-01-listener_ssh" {
+  load_balancer_arn = aws_lb.ubuntu-01-nlb.arn
   port              = 22
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ubuntu-target_group_ssh.arn
+    target_group_arn = aws_lb_target_group.ubuntu-01-target_group_ssh.arn
   }
 }
+resource "aws_lb_listener" "ubuntu-02-listener_ssh" {
+  load_balancer_arn = aws_lb.ubuntu-02-nlb.arn
+  port              = 22
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ubuntu-02-target_group_ssh.arn
+  }
+}
+
 # Create HTTP listener (port 80)
-resource "aws_lb_listener" "ubuntu-listener_http" {
-  load_balancer_arn = aws_lb.ubuntu-nlb.arn
+resource "aws_lb_listener" "ubuntu-01-listener_http" {
+  load_balancer_arn = aws_lb.ubuntu-01-nlb.arn
   port              = 80
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ubuntu-target_group_http.arn
+    target_group_arn = aws_lb_target_group.ubuntu-01-target_group_http.arn
   }
 }
+resource "aws_lb_listener" "ubuntu-02-listener_http" {
+  load_balancer_arn = aws_lb.ubuntu-02-nlb.arn
+  port              = 80
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ubuntu-02-target_group_http.arn
+  }
+}
+
 # Create HTTP listener (port 443)
-resource "aws_lb_listener" "ubuntu-listener_https" {
-  load_balancer_arn = aws_lb.ubuntu-nlb.arn
+resource "aws_lb_listener" "ubuntu-01-listener_https" {
+  load_balancer_arn = aws_lb.ubuntu-01-nlb.arn
   port              = 443
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ubuntu-target_group_https.arn
+    target_group_arn = aws_lb_target_group.ubuntu-01-target_group_https.arn
+  }
+}
+resource "aws_lb_listener" "ubuntu-02-listener_https" {
+  load_balancer_arn = aws_lb.ubuntu-02-nlb.arn
+  port              = 443
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ubuntu-02-target_group_https.arn
   }
 }
 
