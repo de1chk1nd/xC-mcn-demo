@@ -51,7 +51,7 @@ resource "aws_security_group" "xC-mcn-site-allow-linux" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-allow-linux"
+    Name = "${var.student}-xC-mcn-sg-allow-linux"
   }
 }
 
@@ -108,7 +108,7 @@ resource "aws_security_group" "xC-mcn-site-allow-bigip-mgmt" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-allow-bigip-mgmt"
+    Name = "${var.student}-xC-mcn-sg-allow-bigip-mgmt"
   }
 }
 
@@ -165,7 +165,7 @@ resource "aws_security_group" "xC-mcn-site-allow-bigip" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-allow-bigip"
+    Name = "${var.student}-xC-mcn-sg-allow-bigip"
   }
 }
 
@@ -195,11 +195,11 @@ resource "aws_security_group" "xC-mcn-site-allow-ubuntu" {
     cidr_blocks = [var.student_ip]
   }
   ingress {
-    description = "BigIP Web MGMT"
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    prefix_list_ids  = [aws_ec2_managed_prefix_list.xc-was-ips.id]
+    description     = "BigIP Web MGMT"
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xc-was-ips.id]
   }
   ingress {
     description = "BigIP Web MGMT"
@@ -243,7 +243,7 @@ resource "aws_security_group" "xC-mcn-site-allow-ubuntu" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-sg"
+    Name = "${var.student}-xC-mcn-ubuntu-sg"
   }
 }
 
@@ -288,14 +288,14 @@ resource "aws_security_group" "xC-mcn-site-ce-access-generic" {
       "10.0.0.0/8",
       "172.16.0.0/12",
       "192.168.0.0/16"
-      ]
+    ]
   }
   egress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    cidr_blocks       = ["159.60.141.140/32"]
-    description       = "Allow TCP 443 to specific F5 IP"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["159.60.141.140/32"]
+    description = "Allow TCP 443 to specific F5 IP"
   }
   egress {
     description = "Allow local access"
@@ -306,11 +306,11 @@ resource "aws_security_group" "xC-mcn-site-ce-access-generic" {
       "10.0.0.0/8",
       "172.16.0.0/12",
       "192.168.0.0/16"
-      ]
+    ]
   }
 
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-customer-edge-generic"
+    Name = "${var.student}-xC-mcn-sg-customer-edge-generic"
   }
 }
 
@@ -319,35 +319,35 @@ resource "aws_security_group" "xC-mcn-site-ce-to-americas" {
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
   egress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow TCP 80 to F5 Edge networks"
   }
   egress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow TCP 443 to F5 Edge networks"
   }
   egress {
-    from_port         = 4500
-    to_port           = 4500
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow UDP 4500 to F5 Edge networks (IPSec)"
+    from_port       = 4500
+    to_port         = 4500
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow UDP 4500 to F5 Edge networks (IPSec)"
   }
   egress {
-    from_port         = 123
-    to_port           = 123
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow UDP 123 to F5 Edge networks (NTP)"
+    from_port       = 123
+    to_port         = 123
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow UDP 123 to F5 Edge networks (NTP)"
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-customer-edge-egress-to-americas"
+    Name = "${var.student}-xC-mcn-sg-customer-edge-egress-to-americas"
   }
 }
 
@@ -356,36 +356,36 @@ resource "aws_security_group" "xC-mcn-site-ce-to-europe" {
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
   egress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow TCP 80 to F5 Edge networks"
   }
   egress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow TCP 443 to F5 Edge networks"
   }
   egress {
-    from_port         = 4500
-    to_port           = 4500
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow UDP 4500 to F5 Edge networks (IPSec)"
+    from_port       = 4500
+    to_port         = 4500
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow UDP 4500 to F5 Edge networks (IPSec)"
   }
   egress {
-    from_port         = 123
-    to_port           = 123
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow UDP 123 to F5 Edge networks (NTP)"
+    from_port       = 123
+    to_port         = 123
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow UDP 123 to F5 Edge networks (NTP)"
   }
 
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-customer-edge-egress-to-europe"
+    Name = "${var.student}-xC-mcn-sg-customer-edge-egress-to-europe"
   }
 }
 
@@ -394,36 +394,36 @@ resource "aws_security_group" "xC-mcn-site-ce-to-asia" {
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
   egress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow TCP 80 to F5 Edge networks"
   }
   egress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow TCP 443 to F5 Edge networks"
   }
   egress {
-    from_port         = 4500
-    to_port           = 4500
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow UDP 4500 to F5 Edge networks (IPSec)"
+    from_port       = 4500
+    to_port         = 4500
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow UDP 4500 to F5 Edge networks (IPSec)"
   }
   egress {
-    from_port         = 123
-    to_port           = 123
-    protocol          = "udp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow UDP 123 to F5 Edge networks (NTP)"
+    from_port       = 123
+    to_port         = 123
+    protocol        = "udp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow UDP 123 to F5 Edge networks (NTP)"
   }
 
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-customer-edge-egress-to-asia"
+    Name = "${var.student}-xC-mcn-sg-customer-edge-egress-to-asia"
   }
 }
 
@@ -484,7 +484,7 @@ resource "aws_security_group" "xC-mcn-app-allow-linux" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-app-ubuntu-sg"
+    Name = "${var.student}-xC-mcn-app-ubuntu-sg"
   }
 }
 
@@ -497,21 +497,21 @@ resource "aws_security_group" "xC-mcn-site-inc-americas" {
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
   ingress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow TCP 80 to F5 Edge networks"
   }
   ingress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_americas.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_americas.id]
+    description     = "Allow TCP 443 to F5 Edge networks"
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-inc-americas"
+    Name = "${var.student}-xC-mcn-sg-inc-americas"
   }
 }
 
@@ -520,21 +520,21 @@ resource "aws_security_group" "xC-mcn-site-inc-europe" {
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
   ingress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow TCP 80 to F5 Edge networks"
   }
   ingress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_europe.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_europe.id]
+    description     = "Allow TCP 443 to F5 Edge networks"
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-inc-europe"
+    Name = "${var.student}-xC-mcn-sg-inc-europe"
   }
 }
 
@@ -542,21 +542,21 @@ resource "aws_security_group" "xC-mcn-site-inc-asia" {
   name        = "${var.student}-xC-mcn-sg-inc-asia"
   description = "Allow traffic from/to Customer Edges"
   vpc_id      = aws_vpc.xC-mcn-site.id
-  egress {
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow TCP 80 to F5 Edge networks"
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow TCP 80 from F5 Edge networks"
   }
-  egress {
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    prefix_list_ids   = [aws_ec2_managed_prefix_list.xC_asia.id]
-    description       = "Allow TCP 443 to F5 Edge networks"
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.xC_asia.id]
+    description     = "Allow TCP 443 from F5 Edge networks"
   }
   tags = {
-    Name  = "${var.student}-xC-mcn-sg-inc-asia"
+    Name = "${var.student}-xC-mcn-sg-inc-asia"
   }
 }

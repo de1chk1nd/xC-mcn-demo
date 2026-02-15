@@ -19,9 +19,9 @@ resource "aws_lb" "ce-nlb" {
   security_groups = [aws_security_group.xC-mcn-site-allow-ubuntu.id]
 
   subnet_mapping {
-    subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-    allocation_id   = aws_eip.ce_nlb_eip.id
-    }
+    subnet_id     = aws_subnet.xC-mcn-site-subnet.id
+    allocation_id = aws_eip.ce_nlb_eip.id
+  }
 
   enable_deletion_protection = false
 }
@@ -37,9 +37,9 @@ resource "aws_lb_target_group" "ce-target_group_http" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -55,9 +55,9 @@ resource "aws_lb_target_group" "ce-target_group_https" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -84,12 +84,12 @@ resource "aws_lb_target_group_attachment" "target_attachment_http_02" {
 }
 
 resource "aws_lb_target_group_attachment" "target_attachment_https_01" {
-  target_group_arn = aws_lb_target_group.ce-target_group_http.arn
+  target_group_arn = aws_lb_target_group.ce-target_group_https.arn
   target_id        = data.aws_network_interface.target_eni-01.private_ip
   port             = 443
 }
 resource "aws_lb_target_group_attachment" "target_attachment_https_02" {
-  target_group_arn = aws_lb_target_group.ce-target_group_http.arn
+  target_group_arn = aws_lb_target_group.ce-target_group_https.arn
   target_id        = data.aws_network_interface.target_eni-02.private_ip
   port             = 443
 }
@@ -148,12 +148,12 @@ resource "aws_lb" "ubuntu-01-nlb" {
     aws_security_group.xC-mcn-site-inc-americas.id,
     aws_security_group.xC-mcn-site-inc-europe.id,
     aws_security_group.xC-mcn-site-inc-asia.id
-    ]
+  ]
 
   subnet_mapping {
-    subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-    allocation_id   = aws_eip.ubuntu-01-nlb_eip.id
-    }
+    subnet_id     = aws_subnet.xC-mcn-site-subnet.id
+    allocation_id = aws_eip.ubuntu-01-nlb_eip.id
+  }
 
   enable_deletion_protection = false
 }
@@ -167,12 +167,12 @@ resource "aws_lb" "ubuntu-02-nlb" {
     aws_security_group.xC-mcn-site-inc-americas.id,
     aws_security_group.xC-mcn-site-inc-europe.id,
     aws_security_group.xC-mcn-site-inc-asia.id
-    ]
+  ]
 
   subnet_mapping {
-    subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-    allocation_id   = aws_eip.ubuntu-02-nlb_eip.id
-    }
+    subnet_id     = aws_subnet.xC-mcn-site-subnet.id
+    allocation_id = aws_eip.ubuntu-02-nlb_eip.id
+  }
 
   enable_deletion_protection = false
 }
@@ -188,9 +188,9 @@ resource "aws_lb_target_group" "ubuntu-01-target_group_ssh" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -205,9 +205,9 @@ resource "aws_lb_target_group" "ubuntu-02-target_group_ssh" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -228,9 +228,9 @@ resource "aws_lb_target_group" "ubuntu-01-target_group_http" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -250,9 +250,9 @@ resource "aws_lb_target_group" "ubuntu-02-target_group_http" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -273,9 +273,9 @@ resource "aws_lb_target_group" "ubuntu-01-target_group_https" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -295,9 +295,9 @@ resource "aws_lb_target_group" "ubuntu-02-target_group_https" {
   health_check {
     enabled             = true
     healthy_threshold   = 3
-    interval           = 30
-    port               = "traffic-port"
-    protocol           = "TCP"
+    interval            = 30
+    port                = "traffic-port"
+    protocol            = "TCP"
     unhealthy_threshold = 3
   }
 }
@@ -430,20 +430,20 @@ resource "aws_lb" "bigip-mgmt-nlb" {
 # Create target group any port
 resource "aws_lb_target_group" "bigip-mgmt-tg" {
   name     = "f5-bigimgmt-tg-443"
-  port     = 443  # Use port 0 to indicate any port
+  port     = 443 # Use port 0 to indicate any port
   protocol = "TCP"
   vpc_id   = aws_vpc.xC-mcn-site.id
-  
+
   target_type = "ip"
-  
+
   health_check {
     protocol            = "TCP"
-    port                = "traffic-port"  # Use the same port for health check
+    port                = "traffic-port" # Use the same port for health check
     healthy_threshold   = 3
     unhealthy_threshold = 3
     interval            = 30
   }
-  
+
   preserve_client_ip = true
 }
 
@@ -464,7 +464,7 @@ resource "aws_lb_listener" "bigip-mgmt-listener" {
   load_balancer_arn = aws_lb.bigip-mgmt-nlb.arn
   port              = 443
   protocol          = "TCP"
-  
+
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.bigip-mgmt-tg.arn

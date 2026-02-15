@@ -1,9 +1,9 @@
-[Use Cases]: xC-use-cases/README.md
-[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws 
+# xC-mcn-demo - Lab Introduction & Set Up
+
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws
 [BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
 [GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
 
-# xC-mcn-demo - Lab Introduction & Set Up
 Welcome to my lab. This lab contains many f5 xC app solution & use cases. Pre-Configured and prepared to be build in AWS just within a couple of minutes.
 
 The installation is failry simple and based on a local python script to deploy the whole infrastructure.
@@ -18,7 +18,7 @@ This diagram illustrates a demo setup in AWS featuring **F5 Distributed Cloud Cu
 
 ### Components
 
-- **Customer Edge (CE)**: 
+- **Customer Edge (CE)**:
   - Deployed in both the public subnet and transfer TGW subnet.
   - Supports routing and connectivity testing.
   - Uses **BGP** to communicate with the App VPC.
@@ -64,6 +64,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 ---
 
 ## xC-mcn-demo - Installation
+
 Download/Clone the [GitHub - MCN repository] and "cd" into the root ***xC-mcn-demo*** lab.
 
 &nbsp;
@@ -73,12 +74,10 @@ Download/Clone the [GitHub - MCN repository] and "cd" into the root ***xC-mcn-de
     - aws.**aws_secret_access_key**
     - aws.**aws_session_token**
 
-    &nbsp;
-    > __**ATTENTION:**__ Terraform expects (by default) that AWS Auth is done with profile "trerraform". This can be changed within the **config.yaml** file.
-
-&nbsp;
+    > **ATTENTION:** Terraform expects (by default) that AWS Auth is done with profile "trerraform". This can be changed within the **config.yaml** file.
 
 2. Run setup script to deploy AWS Infrastrucure, EC2 Instances, xC Gateways and basic xC Configuration.
+
     ```shell
     py ./setup-init/initialize_infrastructure.py
     ```
@@ -86,42 +85,25 @@ Download/Clone the [GitHub - MCN repository] and "cd" into the root ***xC-mcn-de
 &nbsp;
 
 - Approx. Instllation times - need to complete before starting the labs/use-cases:
+
     | Process / Device      | Estimated Time      | Comment                                                             |
     |:----------------------|:--------------------|:--------------------------------------------------------------------|
-    | Terraform 			      | ***2-3 minutes***   | ./.                                                                 |
+    | Terraform             | ***2-3 minutes***   | ./.                                                                 |
     | BigIP vAppliances     | ***5-7 minutes***   | check if AS3 completes L4-L7 Services: Pools, vServer in partition  |
-    | xC Gateway       		  | ***15-20 minutes*** | check within the xC Console if Gateways are "online"                |
+    | xC Gateway            | ***15-20 minutes*** | check within the xC Console if Gateways are "online"                |
 
 &nbsp;
 
 ### Post Install
+
 This will add entries to local /etc/hosts file to resolve FQDNs used in this repository.
 
-[comment]: <> (#### <span style="color:blue">**Windows**</span>)
-
-[comment]: <> (```shell)
-
-[comment]: <> (code "C:/Windows/System32/drivers/etc/hosts")
-[comment]: <> (terraform -chdir="./infrastructure" output -raw etc-hosts | Set-Clipboard)
-[comment]: <> (```)
-
-[comment]: <> (```shell)
-
-[comment]: <> (del $Env:userprofile\.ssh\known_hosts)
-[comment]: <> (powershell.exe -File "$Env:userprofile\Documents\git-repositories\xC-mcn-demo\setup-init\.ssh\ssh-key-permission_win.ps1")
-[comment]: <> (```)
-
-[comment]: <> (&nbsp;)
-
-[comment]: <> (#### <span style="color:red">**Linux/Ubuntu**</span>)
 ```shell
-
 terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
 x-terminal-emulator -e 'sudo vim /etc/hosts'
 ```
 
 ```shell
-
 rm ~/.ssh/known_hosts
 sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 ```
@@ -129,12 +111,13 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 &nbsp;
 
 - ***Access to Devices from external:***
-    | Device                    	 		 | Username | Password (lab-default)  |
-    |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]  				 | admin    | REDACTED_LAB_PASSWORD      |
-    | [BigIP - eu-west]       				 | admin    | REDACTED_LAB_PASSWORD      |
 
-    > __**ATTENTION:**__ Before you can access the AWS Devices, please add local /etc/hosts entries!
+    | Device                                 | Username | Password (lab-default)  |
+    |:---------------------------------------|:---------|:------------------------|
+    | [BigIP - eu-central]                   | admin    | DefaultLabPwd!2026      |
+    | [BigIP - eu-west]                      | admin    | DefaultLabPwd!2026      |
+
+    > **ATTENTION:** Before you can access the AWS Devices, please add local /etc/hosts entries!
 
 &nbsp;
 
@@ -143,11 +126,13 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 ## xC-mcn-demo - Delete
 
 - **optional** If AWS credentials expired, update creds in ./setup-init/config.yaml and run **cred-aws.py** script
+
     ```shell
     py ./setup-init/cred-aws.py
     ```
 
 &nbsp;
+
 - Delete infrastrucure in AWS and within xC Console
 
     ```shell
@@ -156,6 +141,7 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
     ```
 
 &nbsp;
+
 - manually delete local hosts entry
 
     ```shell

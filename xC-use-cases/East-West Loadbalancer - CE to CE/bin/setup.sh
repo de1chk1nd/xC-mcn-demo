@@ -23,11 +23,11 @@ envsubst < "${REPO_ROOT}/xC-use-cases/East-West Loadbalancer - CE to CE/etc/__te
 #######################################
 echo "Creating load balancer in EU-WEST..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
-    -i -X POST -H 'Content-Type: application/json' \
+    -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
     -d @"${REPO_ROOT}/xC-use-cases/East-West Loadbalancer - CE to CE/payload_final_eu-west.json" \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
 echo "Creating load balancer in EU-CENTRAL..."
-curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" -s -D - -o /dev/null \
     -i -X POST -H 'Content-Type: application/json' \
     -d @"${REPO_ROOT}/xC-use-cases/East-West Loadbalancer - CE to CE/payload_final_eu-central.json" \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"

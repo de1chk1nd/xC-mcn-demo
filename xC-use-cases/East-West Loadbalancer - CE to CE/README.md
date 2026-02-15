@@ -18,6 +18,18 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 &nbsp;
 
 ## Test Access
+
+- SSH to web server (web-01 eu-central-1 and web-01 eu-west-01)
+
+    ```bash
+    # SSH to eu-central-1 web 01 only
+    "xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" central
+    # SSH to eu-west-1 web 01 only
+    "xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" west
+    # Open both in separate terminal tabs
+    "xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" both
+    ```
+
 - Local AWS subnet via inside interface. Login to local ubuntu jump host and issue either command:
 	```code
 
