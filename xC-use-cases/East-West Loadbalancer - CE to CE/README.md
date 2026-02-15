@@ -1,4 +1,5 @@
 # Demo for xC East-West Loadbalancer - CE to CE
+
 This Demo will create several HTTP Lodbalancer via API to build ingress RE and egress CE on AWS HTTP Loadbalancer. A WAF will be attached to ech LB.
 
 &nbsp;
@@ -10,6 +11,7 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 &nbsp;
 
 ## Create Loadbalancer
+
 ```shell
 
 "xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"
@@ -30,25 +32,24 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
     "xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" both
     ```
 
+  > Using CE01 only, as no internal Loadbalancer was created for this demo
+
+&nbsp;
+
 - Local AWS subnet via inside interface. Login to local ubuntu jump host and issue either command:
-	```code
 
-	curl --silent http://remote-web.de1chk1nd-mcn.aws | grep "Server name"
-	```
-	```code
+  ```code
+  curl --silent http://remote-web.de1chk1nd-mcn.aws | grep "Server name"
+  ```
 
-	curl --silent "http://remote-web.de1chk1nd-mcn.aws?a=<script>"
-	```
-	```code
-
-	curl -v -H "Host: remote-web.de1chk1nd-mcn.aws" http://
-	```
-
+  ```code
+  curl --silent "http://remote-web.de1chk1nd-mcn.aws?a=<script>"
+  ```
 
 &nbsp;
 
 ## Delete Loadbalancer
-```shell
 
+```shell
 "xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"
 ```
