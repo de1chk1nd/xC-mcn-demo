@@ -14,6 +14,7 @@ setup-init/.ssh/*.ppk
 setup-init/config.yaml
 
 opencode.json
+xC-use-cases/vk8s/README.md
 
 ####### Terraform files
 **/.terraform/*
