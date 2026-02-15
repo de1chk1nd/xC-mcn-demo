@@ -131,8 +131,8 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 - ***Access to Devices from external:***
     | Device                    	 		 | Username | Password (lab-default)  |
     |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]  				 | admin    | REDACTED_P12_PASSWORD         |
-    | [BigIP - eu-west]       				 | admin    | REDACTED_P12_PASSWORD         |
+    | [BigIP - eu-central]  				 | admin    | REDACTED_LAB_PASSWORD      |
+    | [BigIP - eu-west]       				 | admin    | REDACTED_LAB_PASSWORD      |
 
     > __**ATTENTION:**__ Before you can access the AWS Devices, please add local /etc/hosts entries!
 
@@ -141,16 +141,7 @@ sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
 ---
 
 ## xC-mcn-demo - Delete
-[comment]: <> (#### <span style="color:blue">**Windows**</span>)
-[comment]: <> (```shell)
 
-[comment]: <> ($Env:VES_P12_PASSWORD="REDACTED_P12_PASSWORD")
-[comment]: <> (terraform -chdir="./infrastructure" destroy -auto-approve)
-[comment]: <> (```)
-
-[comment]: <> (&nbsp;)
-
-[comment]: <> (#### <span style="color:red">**Linux/Ubuntu**</span>)
 - **optional** If AWS credentials expired, update creds in ./setup-init/config.yaml and run **cred-aws.py** script
     ```shell
     py ./setup-init/cred-aws.py

@@ -23,7 +23,7 @@ Goal is to ***terminate*** client sessions in CE - either via public cloud loadb
 ## Create Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
+"xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
 ```
 
 &nbsp;
@@ -52,5 +52,5 @@ Goal is to ***terminate*** client sessions in CE - either via public cloud loadb
 ## Delete Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
+"xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
 ```

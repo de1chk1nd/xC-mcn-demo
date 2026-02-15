@@ -1,8 +1,8 @@
 https://community.f5.com/kb/technicalarticles/securing-applications-using-mtls-supported-by-f5-distributed-cloud/319377
 
 Commands to generate CA Key and Cert: 
-    openssl genrsa -out "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/misc/mTLS/certs/root-key.pem" 4096 
-    openssl req -new -x509 -days 3650 -key "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/misc/mTLS/certs/root-key.pem" -out "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/misc/mTLS/certs/root-crt.pem"
+    openssl genrsa -out "xC-use-cases/misc/mTLS/certs/root-key.pem" 4096 
+    openssl req -new -x509 -days 3650 -key "xC-use-cases/misc/mTLS/certs/root-key.pem" -out "xC-use-cases/misc/mTLS/certs/root-crt.pem"
 Commands to generate Server Certificate:
     openssl genrsa -out cert-key2.pem 4096
     openssl req -new -sha256 -subj "/CN=mtls-echo.edge.de1chk1nd.de" -key cert-key2.pem -out cert2.csr 

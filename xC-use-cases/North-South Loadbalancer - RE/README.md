@@ -22,7 +22,7 @@ This lab is based on manually creating the ressources (here via JSON Import in U
 
 - Create <span style="color:red">**Config File**</span> to dynamically add AWS NLB DNS Recors to origin public DNS
     ```code
-    "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
+    "xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
     ```
 
 &nbsp;
@@ -31,7 +31,7 @@ This lab is based on manually creating the ressources (here via JSON Import in U
 
     If you have ***xclip*** installed, run following command (else, manually copy the content into your clipboard).
     ```code
-    xclip -selection c < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/etc/origin-pool.json"
+    xclip -selection c < "xC-use-cases/North-South Loadbalancer - RE/etc/origin-pool.json"
     ```
 
 &nbsp;
@@ -40,7 +40,7 @@ This lab is based on manually creating the ressources (here via JSON Import in U
     
     If you have ***xclip*** installed, run following command (else, manually copy the content into your clipboard).
     ```code
-    xclip -selection c < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/etc/http-loadbalancer.json"
+    xclip -selection c < "xC-use-cases/North-South Loadbalancer - RE/etc/http-loadbalancer.json"
     ```
 
 &nbsp;
@@ -56,5 +56,5 @@ To delete the current configuration, please
 
 - Execute "delete <span style="color:red">**Config File**</span>" script, to remove local *.json files.
     ```code
-    "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
+    "xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
     ```

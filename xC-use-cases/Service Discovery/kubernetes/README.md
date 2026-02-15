@@ -24,12 +24,12 @@ In this lab we'll create a basic k8s service discovery for a minikube "cluster" 
 
 ## Create Service Discovery + Pools + Loadbalancer
 ```shell
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"
+"xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"
 ```
 
 &nbsp;
 
 ## DELETE Service Discovery + Pools + Loadbalancer
 ```shell
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"
+"xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"
 ```

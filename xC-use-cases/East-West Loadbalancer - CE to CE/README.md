@@ -12,7 +12,7 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 ## Create Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"
+"xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"
 ```
 
 &nbsp;
@@ -38,5 +38,5 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 ## Delete Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"
+"xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"
 ```

@@ -14,7 +14,7 @@ A ***Wep Application Firewall*** default policy will be attached to each HTTP  L
 ## Create Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
+"xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
 ```
 
 &nbsp;
@@ -35,5 +35,5 @@ A ***Wep Application Firewall*** default policy will be attached to each HTTP  L
 ## Delete Loadbalancer
 ```shell
 
-"/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
+"xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
 ```

@@ -1,15 +1,40 @@
 #!/bin/bash
+set -e  # Exit on error
 
-export MCN_CE_EU_CENTRAL1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
-export MCN_CE_EU_WEST1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/etc/__local-lb-eu-central.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-central.json"
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/etc/__local-lb-eu-west.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-west.json"
+USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/North-South Loadbalancer - CE via CLB"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+#######################################
+# Get Terraform Outputs
+#######################################
+export MCN_CE_EU_CENTRAL1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
+export MCN_CE_EU_WEST1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+#######################################
+# Generate Payloads from Templates
+#######################################
+echo "Generating payload files from templates..."
+envsubst < "${USE_CASE_DIR}/etc/__local-lb-eu-central.json" > "${USE_CASE_DIR}/payload_final_eu-central.json"
+envsubst < "${USE_CASE_DIR}/etc/__local-lb-eu-west.json" > "${USE_CASE_DIR}/payload_final_eu-west.json"
+
+#######################################
+# Create Load Balancers
+#######################################
+echo "Creating load balancer: eu-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_eu-west.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+
+echo "Creating load balancer: eu-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_eu-central.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+
+echo "Done!"

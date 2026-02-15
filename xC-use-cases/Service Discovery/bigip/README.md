@@ -12,13 +12,13 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
 - EU-Central-1
     ```shell
 
-    "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/bigip/bin/get-nlb-eu-central.sh"
+    "xC-use-cases/Service Discovery/bigip/bin/get-nlb-eu-central.sh"
     ```
 
 - EU-West-1
     ```shell
 
-    "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/bigip/bin/get-nlb-eu-west.sh"
+    "xC-use-cases/Service Discovery/bigip/bin/get-nlb-eu-west.sh"
     ```
 
 &nbsp;
@@ -31,8 +31,8 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
 - ***Access to Devices from external:***
     | Device                    	 		 | Username | Password (lab-default)  |
     |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]  				 | admin    | REDACTED_P12_PASSWORD         |
-    | [BigIP - eu-west]       				 | admin    | REDACTED_P12_PASSWORD         |
+    | [BigIP - eu-central]  				 | admin    | REDACTED_LAB_PASSWORD      |
+    | [BigIP - eu-west]       				 | admin    | REDACTED_LAB_PASSWORD      |
 
 - Note Down IP-Address of **echo443tlspass**
 
@@ -61,7 +61,7 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
         - Name: bigip-aws-central-1
         - MGMT IP: 10.0.20.* (IP!!!)
         - Username: admin
-        - Password: REDACTED_P12_PASSWORD 
+        - Password: REDACTED_LAB_PASSWORD 
 
 &nbsp;
 
@@ -74,7 +74,7 @@ This Lab will create a BigIP Service Discovery Object to get local BigIP Service
         - Name: bigip-aws-eu-west-1
         - MGMT IP: 172.16.20.* (IP!!!)
         - Username: admin
-        - Password: REDACTED_P12_PASSWORD 
+        - Password: REDACTED_LAB_PASSWORD 
 
 &nbsp;
 

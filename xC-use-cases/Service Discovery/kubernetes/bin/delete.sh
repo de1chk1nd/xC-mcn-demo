@@ -1,35 +1,66 @@
 #!/bin/bash
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-k8s-central
+set -e  # Exit on error
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-k8s-west
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-k8s
+USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/Service Discovery/kubernetes"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
+#######################################
+# Delete Load Balancers
+#######################################
+echo "Deleting load balancer: lb-k8s-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools/origin-k8s-central
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-k8s-central"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
+echo "Deleting load balancer: lb-k8s-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools/origin-k8s-west
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-k8s-west"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
+echo "Deleting load balancer: lb-k8s..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys/sd-k8s-de1chk1nd-eu-central
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-k8s"
+
+#######################################
+# Delete Origin Pools
+#######################################
+echo "Deleting origin pool: origin-k8s-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys/sd-k8s-de1chk1nd-eu-west
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/origin_pools/origin-k8s-central"
 
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-central.json"
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-west.json"
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-central.json"
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-west.json"
+echo "Deleting origin pool: origin-k8s-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -I -X DELETE \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/origin_pools/origin-k8s-west"
 
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-central"
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-west"
+#######################################
+# Delete Service Discovery
+#######################################
+echo "Deleting service discovery: sd-k8s-de1chk1nd-eu-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -I -X DELETE \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/discoverys/sd-k8s-de1chk1nd-eu-central"
+
+echo "Deleting service discovery: sd-k8s-de1chk1nd-eu-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -I -X DELETE \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/discoverys/sd-k8s-de1chk1nd-eu-west"
+
+#######################################
+# Cleanup generated files
+#######################################
+rm -f "${USE_CASE_DIR}/payload_final_eu-central.json"
+rm -f "${USE_CASE_DIR}/payload_final_eu-west.json"
+rm -f "${USE_CASE_DIR}/payload_final_origin_eu-central.json"
+rm -f "${USE_CASE_DIR}/payload_final_origin_eu-west.json"
+rm -f "${USE_CASE_DIR}/etc/kubeconfig-eu-central"
+rm -f "${USE_CASE_DIR}/etc/kubeconfig-eu-west"
+
+echo "Done!"

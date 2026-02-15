@@ -1,54 +1,99 @@
 #!/bin/bash
+set -e  # Exit on error
 
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
+
+# Load student name and SSH key path from config
+STUDENT=$(yq '.student.name' "${REPO_ROOT}/setup-init/config.yaml")
+SSH_KEY="${REPO_ROOT}/setup-init/.ssh/${STUDENT}-ssh.pem"
+
+USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/Service Discovery/kubernetes"
+
+#######################################
 # Get Remote Kubeconfig Files
-/usr/bin/ssh -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-01-eu-central-1.de1chk1nd-lab.aws 'sudo kubectl config view --flatten' > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-central"
-/usr/bin/ssh -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-01-eu-west-1.de1chk1nd-lab.aws 'sudo kubectl config view --flatten' > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-west"
+#######################################
+echo "Fetching kubeconfig from eu-central-1..."
+/usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
+    ubuntu@ubuntu-01-eu-central-1.${STUDENT}-lab.aws \
+    'sudo kubectl config view --flatten' > "${USE_CASE_DIR}/etc/kubeconfig-eu-central"
 
-# Create Environment Variables (kubeconfig and xC Sites)
-export KUBECONFIG_EU_CENTRAL1=$(base64 "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-central" | tr -d '\n')
-export KUBECONFIG_EU_WEST1=$(base64 "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-eu-west" | tr -d '\n')
+echo "Fetching kubeconfig from eu-west-1..."
+/usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
+    ubuntu@ubuntu-01-eu-west-1.${STUDENT}-lab.aws \
+    'sudo kubectl config view --flatten' > "${USE_CASE_DIR}/etc/kubeconfig-eu-west"
 
-# export MCN_CE_EU_CENTRAL1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
-# export MCN_CE_EU_WEST1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
+#######################################
+# Create Environment Variables
+#######################################
+export KUBECONFIG_EU_CENTRAL1=$(base64 "${USE_CASE_DIR}/etc/kubeconfig-eu-central" | tr -d '\n')
+export KUBECONFIG_EU_WEST1=$(base64 "${USE_CASE_DIR}/etc/kubeconfig-eu-west" | tr -d '\n')
 
-# Substitute JSON File
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/__template_sd_eu-central.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-central.json"
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/__template_sd_eu-west.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-west.json"
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/__template_origin_eu-central.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-central.json"
-envsubst < "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/__template_origin_eu-west.json" > "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-west.json"
+#######################################
+# Generate Payloads from Templates
+#######################################
+echo "Generating payload files from templates..."
+envsubst < "${USE_CASE_DIR}/etc/__template_sd_eu-central.json" > "${USE_CASE_DIR}/payload_final_eu-central.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_sd_eu-west.json" > "${USE_CASE_DIR}/payload_final_eu-west.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_origin_eu-central.json" > "${USE_CASE_DIR}/payload_final_origin_eu-central.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_origin_eu-west.json" > "${USE_CASE_DIR}/payload_final_origin_eu-west.json"
 
-
+#######################################
 # Create Service Discovery
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys
+#######################################
+echo "Creating service discovery: eu-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_eu-central.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/discoverys"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_eu-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/discoverys
-
-sleep 5
-
-# Create Pool
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools
-
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/payload_final_origin_eu-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools
+echo "Creating service discovery: eu-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_eu-west.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/discoverys"
 
 sleep 5
 
-# Create Loadbalancer
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/lb-k8s-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+#######################################
+# Create Origin Pools
+#######################################
+echo "Creating origin pool: eu-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_origin_eu-central.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/origin_pools"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/lb-k8s-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+echo "Creating origin pool: eu-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/payload_final_origin_eu-west.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/origin_pools"
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/Service Discovery/kubernetes/etc/lb-k8s.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+sleep 5
+
+#######################################
+# Create Load Balancers
+#######################################
+echo "Creating load balancer: lb-k8s-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/etc/lb-k8s-central.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+
+echo "Creating load balancer: lb-k8s-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/etc/lb-k8s-west.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+
+echo "Creating load balancer: lb-k8s..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -i -X POST -H 'Content-Type: application/json' \
+    -d @"${USE_CASE_DIR}/etc/lb-k8s.json" \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
+
+echo "Done!"

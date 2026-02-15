@@ -75,7 +75,7 @@ Please read through this parameter guide - those are important, as they configur
 <td><code>f5.password</code></td>
 <td>BigIP Password</td>
 <td>mandatory</td>
-<td>REDACTED_P12_PASSWORD</td>
+<td>REDACTED_LAB_PASSWORD</td>
 </tr>
 <tr>
 <td class="tsection"><code>f5.username</code></td>

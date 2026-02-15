@@ -1,11 +1,31 @@
 #!/bin/bash
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-ce-central
+set -e  # Exit on error
 
-curl --silent --cert /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -I -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-ce-west
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-central.json"
-rm "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/xC-use-cases/North-South Loadbalancer - CE via CLB/payload_final_eu-west.json"
+USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/North-South Loadbalancer - CE via CLB"
+
+#######################################
+# Delete Load Balancers
+#######################################
+echo "Deleting load balancer: lb-ce-central..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -I -X DELETE \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-ce-central"
+
+echo "Deleting load balancer: lb-ce-west..."
+curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
+    -I -X DELETE \
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-ce-west"
+
+#######################################
+# Cleanup generated files
+#######################################
+rm -f "${USE_CASE_DIR}/payload_final_eu-central.json"
+rm -f "${USE_CASE_DIR}/payload_final_eu-west.json"
+
+echo "Done!"
