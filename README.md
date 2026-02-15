@@ -42,10 +42,11 @@ This diagram illustrates a demo setup in AWS featuring **F5 Distributed Cloud Cu
 - Local traffic from CE nodes to the application in the Main VPC.
 - Remote application access from CE nodes to the App VPC using BGP over the Transit Gateway.
 - Routing through the local BigIP to reach the Ubuntu application server.
-
-This architecture showcases flexible traffic routing, high availability, and hybrid connectivity use cases using F5 Distributed Cloud and AWS components.
+- ***For a complete list of use cases please check:*** [link here](xC-use-cases/README.md)
 
 &nbsp;
+
+This architecture showcases flexible traffic routing, high availability, and hybrid connectivity use cases using F5 Distributed Cloud and AWS components.
 
 The servers are accompanied by AWS services such as **NLB**, **Route 53** (private hosted zone), and **NAT Gateway**.
 
