@@ -1,6 +1,6 @@
 #cloud-config
 # Cloud-init configuration for Ubuntu web servers (ubuntu-01/02)
-# Runs on Ubuntu 22.04 LTS (Jammy)
+# Runs on Ubuntu 24.04 LTS (Noble)
 
 hostname: ${hostname}
 fqdn: ${hostname}.de1chk1nd-mcn.aws
@@ -9,26 +9,9 @@ manage_etc_hosts: true
 apt:
   sources:
     nginx.list:
-      source: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu jammy nginx"
-      key: |
-        -----BEGIN PGP PUBLIC KEY BLOCK-----
-
-        mQENBE5OMmIBCAD+FPYKGriGGf7NqwKfWC83cBV01gabgVWQmhY8ixDKRr4PFjDG
-        ESIG1JEpG/UmxiSJLMBIhUWBlVdPGMCOV/tApQMBAqhoUhl1fBQXlGl7gg0Cih0B
-        PiBlBCigm6dKz4OQgT0BSLNYq/i0FMM4WDPBTSRYj34ouQ9RB5BHBEo2v9tRfEqD
-        VlOPOzICMMWIjR/j4E1XiEQR2MxDBQREd3bREPVz5N1qlWzHe2FPcg4oFNaJI8RL
-        NVnfJZRjrFb6RE3DPRW4JJxJC2TDq4mlpHsFkYwmuVDSNM4LQ6zvuFOdMjQq7wHs
-        S9qFSBVJCljj9DVELj5Fx7/sHLmn3bJ9dJNDABEBAAG0J25naW54IHNpZ25pbmcg
-        a2V5IDxzaWduaW5nLWtleUBuZ2lueC5jb20+iQE+BBMBAgAoBQJOTjJiAhsDBQkJ
-        ZgGABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCr0AYyowMgx6XyCADFUPHZ
-        bgIAg/WllG0JrXBYfUbM7I+H3pSGxFLWxjMFJJaw4lK+RByYRxMawUijzhcSPTP2
-        5MbE7D1V1JCvOIfNMDwgpsMWob3TFbvkDZ1kIbEGKKpf/V3GOnb2LBPIiV66ECR+
-        z0NKgyLcOG1k9sOEKjfTpPcG1vIwNFBRWj66dL5HMsap06U5reQmEsF32DuXBKDE
-        O7AQPx4D5jFLBmVNHI+PD7E0buiL/mY6MJ28HQFBG1u6fC9l0+zFAtKKkzxZ8mvD
-        qGvNfJGSDVPRbq5czmJ0YdkBjBZBiMK0RfaqNmQisMREvFvFaxGFQk1PzJdhP07d
-        W04mxcuht7RMPJfN
-        =CfEl
-        -----END PGP PUBLIC KEY BLOCK-----
+      source: "deb http://nginx.org/packages/ubuntu noble nginx"
+      keyid: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+      keyserver: keyserver.ubuntu.com
 
 write_files:
   - path: /etc/apt/preferences.d/99nginx
@@ -240,10 +223,10 @@ runcmd:
   - install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
   - rm -f kubectl
 
-  # cri-dockerd installation (jammy package for Ubuntu 22.04)
-  - curl -LO "https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.9/cri-dockerd_0.3.9.3-0.ubuntu-jammy_amd64.deb"
-  - dpkg -i cri-dockerd_0.3.9.3-0.ubuntu-jammy_amd64.deb
-  - rm -f cri-dockerd_0.3.9.3-0.ubuntu-jammy_amd64.deb
+  # cri-dockerd installation (v0.3.24 jammy package - no noble package available, jammy is compatible)
+  - curl -LO "https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.24/cri-dockerd_0.3.24.3-0.ubuntu-jammy_amd64.deb"
+  - dpkg -i cri-dockerd_0.3.24.3-0.ubuntu-jammy_amd64.deb
+  - rm -f cri-dockerd_0.3.24.3-0.ubuntu-jammy_amd64.deb
 
   # CNI plugins
   - curl -LO "https://github.com/containernetworking/plugins/releases/download/v1.4.1/cni-plugins-linux-amd64-v1.4.1.tgz"

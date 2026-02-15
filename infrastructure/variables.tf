@@ -6,12 +6,14 @@ locals {
 
 }
 
-# AMI Slection - Ubuntu
+# AMI Selection - Ubuntu 24.04 LTS (Noble)
+# Lookup: aws ec2 describe-images --profile terraform --region eu-central-1 --owners 099720109477 --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*" --query "sort_by(Images, &CreationDate)[-1].[ImageId,Name,CreationDate]" --output text
+# Lookup: aws ec2 describe-images --profile terraform --region eu-west-1 --owners 099720109477 --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*" --query "sort_by(Images, &CreationDate)[-1].[ImageId,Name,CreationDate]" --output text
 variable "ubuntu_ami" {
   type = map(any)
   default = {
-    eu-central-1 = "ami-0b81e95bb0a06ea8c" # r.20221212
-    eu-west-1    = "ami-029cfca952b331b52" # r.20221212
+    eu-central-1 = "ami-0aad10862ade98f27" # Ubuntu 24.04 Noble - run lookup command above
+    eu-west-1    = "ami-092b91d47c6c8baa5" # Ubuntu 24.04 Noble - run lookup command above
   }
 }
 

@@ -37,6 +37,11 @@ resource "aws_instance" "xC-mcn-site-ubuntu-01" {
   tags = {
     Name = "${var.student}-xC-mcn-ubuntu-01"
   }
+
+  depends_on = [
+    aws_route_table_association.xC-mcn-site-private,
+    aws_nat_gateway.xC-mcn-site-natgw
+  ]
 }
 
 resource "aws_instance" "xC-mcn-site-ubuntu-02" {
@@ -62,4 +67,9 @@ resource "aws_instance" "xC-mcn-site-ubuntu-02" {
   tags = {
     Name = "${var.student}-xC-mcn-ubuntu-02"
   }
+
+  depends_on = [
+    aws_route_table_association.xC-mcn-site-private,
+    aws_nat_gateway.xC-mcn-site-natgw
+  ]
 }
