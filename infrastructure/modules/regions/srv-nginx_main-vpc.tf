@@ -2,7 +2,7 @@ resource "aws_network_interface" "xC-mcn-site-ubuntu-01-public" {
   subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
   security_groups = [aws_security_group.xC-mcn-site-allow-linux.id]
   tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-01-public-nic"
+    Name = "${var.student}-xC-mcn-ubuntu-01-public-nic"
   }
 }
 
@@ -10,23 +10,7 @@ resource "aws_network_interface" "xC-mcn-site-ubuntu-02-public" {
   subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
   security_groups = [aws_security_group.xC-mcn-site-allow-linux.id]
   tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-02-public-nic"
-  }
-}
-
-data "template_file" "user_data_nginx-01" {
-  template = file("${path.module}/etc/ubuntu/ubuntu-01.tmpl")
-  vars = {
-    region                = var.region
-    hostname              = "${var.region}-webserver-01"
-  }
-}
-
-data "template_file" "user_data_nginx-02" {
-  template = file("${path.module}/etc/ubuntu/ubuntu-02.tmpl")
-  vars = {
-    region                = var.region
-    hostname              = "${var.region}-webserver-02"
+    Name = "${var.student}-xC-mcn-ubuntu-02-public-nic"
   }
 }
 
@@ -45,11 +29,13 @@ resource "aws_instance" "xC-mcn-site-ubuntu-01" {
     volume_type = "gp3"
     encrypted   = true
   }
- 
-  user_data = data.template_file.user_data_nginx-01.rendered 
+
+  user_data = templatefile("${path.module}/etc/ubuntu/ubuntu.tmpl", {
+    hostname = "${var.region}-webserver-01"
+  })
 
   tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-01"
+    Name = "${var.student}-xC-mcn-ubuntu-01"
   }
 }
 
@@ -68,10 +54,12 @@ resource "aws_instance" "xC-mcn-site-ubuntu-02" {
     volume_type = "gp3"
     encrypted   = true
   }
- 
-  user_data = data.template_file.user_data_nginx-02.rendered 
+
+  user_data = templatefile("${path.module}/etc/ubuntu/ubuntu.tmpl", {
+    hostname = "${var.region}-webserver-02"
+  })
 
   tags = {
-    Name  = "${var.student}-xC-mcn-ubuntu-02"
+    Name = "${var.student}-xC-mcn-ubuntu-02"
   }
 }
