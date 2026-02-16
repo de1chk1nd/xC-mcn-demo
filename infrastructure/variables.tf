@@ -23,8 +23,8 @@ variable "ubuntu_ami" {
 variable "smsv2_ami" {
   type = map(any)
   default = {
-    eu-central-1 = "ami-09e2a64a4def5c3f4" # f5xc-ce-9.2024.44-20250102062607
-    eu-west-1    = "ami-0b6745ec15401ac80" # f5xc-ce-9.2024.44-20250102062607
+    eu-central-1 = "ami-0a8106f8940e2bcf8" # f5xc-ce-crt-20250701-0195-9.2025.39-20251204172625 || old.ami-09e2a64a4def5c3f4
+    eu-west-1    = "ami-0b9401a6534b40bb4" # f5xc-ce-crt-20250701-0195-9.2025.39-20251204172625 || old.ami-0b6745ec15401ac80
   }
 }
 
@@ -32,8 +32,8 @@ variable "smsv2_ami" {
 variable "f5_ami" {
   type = map(any)
   default = {
-    eu-central-1 = "ami-0330d966590bfc503" # f5xc-ce-9.2024.44-20250102062607
-    eu-west-1    = "ami-09f63b948981ca9b0" # f5xc-ce-9.2024.44-20250102062607
+    eu-central-1 = "ami-0330d966590bfc503" # f5xc-ce-9.2024.44-20250102062607 old.ami-0330d966590bfc503
+    eu-west-1    = "ami-09f63b948981ca9b0" # f5xc-ce-9.2024.44-20250102062607 old.ami-09f63b948981ca9b0
   }
 }
 #aws ec2 describe-images --profile terraform --region eu-central-1 --owners '679593333241' --filters Name=description,Values='*BIGIP-17.1*PAYG*Best*25Mbps*' --query "Images[*].[Description, CreationDate, ImageId]"

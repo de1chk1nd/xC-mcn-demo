@@ -221,7 +221,7 @@ resource "aws_instance" "xC-mcn-ce-v2-01" {
   ami                  = var.smsv2_ami
   key_name             = aws_key_pair.generated_key.key_name
   monitoring           = false
-  instance_type        = "t3.2xlarge"
+  instance_type        = "m5.2xlarge"
   user_data            = data.template_file.user_data_smsv2-01.rendered
 
   root_block_device {
@@ -261,7 +261,7 @@ resource "aws_instance" "xC-mcn-ce-v2-02" {
   ami                  = var.smsv2_ami
   key_name             = aws_key_pair.generated_key.key_name
   monitoring           = false
-  instance_type        = "t3.2xlarge"
+  instance_type        = "m5.2xlarge"
   user_data            = data.template_file.user_data_smsv2-02.rendered
 
   root_block_device {

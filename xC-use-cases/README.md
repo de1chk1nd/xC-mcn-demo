@@ -27,13 +27,19 @@ A list of XC Use Cases to use with the xc-mcn-lab
 
 &nbsp;
 
-## ***WORK IN PROGRESS BELOW***
-
 ### advanced use cases / bigip integration
 
 - [Hybrid - N-S PoP (RE) to Customer Edge (CE) - BigIP "better together"](North-South%20Loadbalancer%20-%20RE%20to%20CE%20on%20big-ip/README.md)
-  - 1 public FQDN with known DNS name
+  - 2 public FQDN with known DNS name (one for each AWS region)
   - origin pool with private DNS name of internal Web Server ***via bigip***
+  - add iRule for Header manipulation (optional: APM policy)
+
+&nbsp;
+
+## ***WORK IN PROGRESS BELOW***
+
+### advanced uc / bigip integration
+
 - [Local - Customer Edge (CE) local termination](North-South%20Loadbalancer%20-%20CE%20via%20CLB/README.md)
   - FQDN on local Customer Edge
   - Origin Server via local Customer Edge
