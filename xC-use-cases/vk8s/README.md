@@ -1,70 +1,52 @@
-# Create vk8s
-export VES_P12_PASSWORD='REDACTED_P12_PASSWORD'
-terraform -chdir="xC-use-cases/vk8s/terraform" fmt
-terraform -chdir="xC-use-cases/vk8s/terraform" init
-terraform -chdir="xC-use-cases/vk8s/terraform" plan
-terraform -chdir="xC-use-cases/vk8s/terraform" apply -auto-approve
+# vk8s Use Case
 
+Deploy a virtual Kubernetes (vk8s) workload on F5 XC with origin pools and HTTP load balancers across two AWS regions.
 
-# Create Workload
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/vk8s/etc/workload.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/workloads
+## Prerequisites
 
+- `setup-init/config.yaml` configured with valid XC credentials
+- PEM certificate generated (run `python3 setup-init/initialize_infrastructure.py`)
+- Infrastructure deployed (`terraform apply` in `infrastructure/`)
+- `yq`, `envsubst`, `terraform`, and `curl` installed
 
-# Create public Service
-## Set Environment & Substitute JSON File
-export MCN_CE_EU_CENTRAL1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
-export MCN_CE_EU_WEST1=$(terraform -chdir="./infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
+## Deploy
 
-envsubst < "xC-use-cases/vk8s/etc/__template_origin-vk8s-eu-central.json" > "xC-use-cases/vk8s/payload_final_eu-central.json"
-envsubst < "xC-use-cases/vk8s/etc/__template_origin-vk8s-eu-west.json" > "xC-use-cases/vk8s/payload_final_eu-west.json"
+```bash
+./xC-use-cases/vk8s/bin/setup.sh
+```
 
-## Create Pool
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/vk8s/payload_final_eu-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/vk8s/payload_final_eu-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools
+This script will:
+1. Create the vk8s cluster via Terraform
+2. Deploy the `echo-aws` workload to CE sites
+3. Create origin pools for eu-central and eu-west (from templates using Terraform outputs)
+4. Create HTTP load balancers for both regions
 
-## Create Loadbalancer
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/vk8s/etc/lb-vk8s-eu-central.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X POST -H 'Content-Type: application/json' -d @'xC-use-cases/vk8s/etc/lb-vk8s-eu-west.json' \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+## Delete
 
+```bash
+./xC-use-cases/vk8s/bin/delete.sh
+```
 
-# Delete public Service
-## Loadbalancer
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-vk8s-eu-central
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-vk8s-eu-west
+This script will:
+1. Delete the HTTP load balancers
+2. Delete the origin pools
+3. Delete the workload
+4. Destroy the vk8s cluster via Terraform
+5. Clean up generated payload files
 
-## Pools
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools/origin-vk8s-eu-central
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/origin_pools/origin-vk8s-eu-west
+## Configuration
 
-## local tmp files
-rm "xC-use-cases/vk8s/payload_final_eu-central.json"
-rm "xC-use-cases/vk8s/payload_final_eu-west.json"
+All credentials and tenant settings are loaded from `setup-init/config.yaml` via the shared config loader. No passwords are hardcoded in the scripts.
 
+### Files
 
-# Delete Workload
-curl --cert setup-init/.xC/xc-curl.crt.pem:'REDACTED_P12_PASSWORD' \
-    -i -X DELETE \
-    https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/workloads/echo-aws
-
-
-# Delete vk8s
-export VES_P12_PASSWORD='REDACTED_P12_PASSWORD'
-terraform -chdir="xC-use-cases/vk8s/terraform" destroy -auto-approve
+| Path | Description |
+|------|-------------|
+| `bin/setup.sh` | Automated deployment script |
+| `bin/delete.sh` | Automated teardown script |
+| `etc/workload.json` | Workload definition for echo-aws |
+| `etc/__template_origin-vk8s-eu-central.json` | Origin pool template (eu-central) |
+| `etc/__template_origin-vk8s-eu-west.json` | Origin pool template (eu-west) |
+| `etc/lb-vk8s-eu-central.json` | Load balancer config (eu-central) |
+| `etc/lb-vk8s-eu-west.json` | Load balancer config (eu-west) |
+| `terraform/` | Terraform config for vk8s cluster creation |
