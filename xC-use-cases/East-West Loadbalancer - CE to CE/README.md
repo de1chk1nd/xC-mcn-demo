@@ -43,7 +43,6 @@ The two regions have no direct VPC peering; connectivity is provided entirely by
 ```bash
 ./setup-init/.ssh/ssh-key-permission_lnx.sh central
 ./setup-init/.ssh/ssh-key-permission_lnx.sh west
-./setup-init/.ssh/ssh-key-permission_lnx.sh all
 ```
 
 2. Test east-west connectivity

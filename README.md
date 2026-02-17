@@ -1,8 +1,8 @@
 # xC-mcn-demo - Lab Introduction & Set Up
 
 [GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
-[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.<student>-lab.aws
-[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.<student>-lab.aws
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws
+[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
 
 Welcome to my lab. This lab contains many F5 Distributed Cloud (xC) application solutions and use cases. Pre-configured and prepared to be built in AWS within a couple of minutes.
 
@@ -131,6 +131,14 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 ```
 
 > If AWS credentials have expired, update `./setup-init/config.yaml` and run `python3 ./setup-init/cred-aws.py` first.
+
+&nbsp;
+
+- Manually remove local hosts entries:
+
+    ```shell
+    sudo vim /etc/hosts
+    ```
 
 &nbsp;
 

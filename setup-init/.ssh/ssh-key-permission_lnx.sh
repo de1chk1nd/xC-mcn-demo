@@ -134,9 +134,9 @@ open_sessions() {
         local title="${entry##*|}"
 
         echo "  Opening: ${title} (${host})"
-        if open_ssh_window "${title}" "${host}" "${terminal}"; then
-            ((count++))
-            sleep 1.5
+            if open_ssh_window "${title}" "${host}" "${terminal}"; then
+                count=$((count + 1))   # <-- safe, no set -e trap
+                sleep 1.5
         else
             echo "  Failed to open session for ${host}"
         fi
