@@ -33,7 +33,7 @@
           "pool": {
             "tenant": "f5-emea-ent-bceuutam",
             "namespace": "m-petersen",
-            "name": "origin-aws-web-eu-west-1",
+            "name": "origin-nginx-aws-eu-west-1",
             "kind": "origin_pool"
           },
           "weight": 1,

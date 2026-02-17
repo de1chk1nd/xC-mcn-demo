@@ -20,11 +20,17 @@ echo "Fetching kubeconfig from eu-central-1..."
 /usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
     ubuntu@ubuntu-01-eu-central-1.${STUDENT}-lab.aws \
     'sudo kubectl config view --flatten' > "${USE_CASE_DIR}/etc/kubeconfig-eu-central"
+/usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
+    ubuntu@ubuntu-01-eu-central-1.${STUDENT}-lab.aws \
+    'sudo kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml'
 
 echo "Fetching kubeconfig from eu-west-1..."
 /usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
     ubuntu@ubuntu-01-eu-west-1.${STUDENT}-lab.aws \
     'sudo kubectl config view --flatten' > "${USE_CASE_DIR}/etc/kubeconfig-eu-west"
+/usr/bin/ssh -o StrictHostKeyChecking=no -i "${SSH_KEY}" \
+    ubuntu@ubuntu-01-eu-west-1.${STUDENT}-lab.aws \
+    'sudo kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml'
 
 #######################################
 # Create Environment Variables

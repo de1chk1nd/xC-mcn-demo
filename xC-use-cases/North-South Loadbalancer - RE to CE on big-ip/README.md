@@ -38,8 +38,38 @@ A ***Wep Application Firewall*** default policy will be attached to each HTTP  L
 &nbsp;
 
 - Check for Header: ***custom-header***
-- optional: create APM policy with local auth
-  - BigIP FQDN: ***bigip-echo-ssl.de1chk1nd-mcn.aws***
+
+  ![Use Case - RE only](../../docs/images/use-cases/re-to-ce-bigip/00-header-json.png)
+
+&nbsp;
+
+- ***optional***: create APM policy with local auth
+  - FQDN: ***bigip-echo-eu-central.edge.de1chk1nd.de***
+
+  - login to **eu-central bigip** and create local user db:
+
+    ![Use Case - RE only](../../docs/images/use-cases/re-to-ce-bigip/01-bigip-local-user-db.png)
+  - Instance
+    - name: local-user-db
+    - all other settings are default
+  - Create new user
+    - User Name: alice
+    - Password: \<CHOOSE_PASSWORD\>
+    - Instance: /Common/local-user-db
+  - Create Access Profile:
+
+    ![Use Case - RE only](../../docs/images/use-cases/re-to-ce-bigip/02-access-profile.png)
+    - name: local-auth
+    - profile type: All
+    - Languages: English
+  - Edit profile:
+    - Start > Login Page > Authentication (LocalDB Auth; LocalDB Instance: /Common/local-auth) > Allow
+    - Apply Access Policy
+  - Change Partition to: xcmcnlab
+  - Assign Policy to Virtual Server "echo443tlspass"
+- After "refreshing" bwowser / accessing ***bigip-echo-eu-central.edge.de1chk1nd.de*** again, a auth pop up should appear.
+  
+  ![Use Case - RE only](../../docs/images/use-cases/re-to-ce-bigip/003-auth-screen.png)
 
 &nbsp;
 
