@@ -1,14 +1,18 @@
 # xC-mcn-demo - Lab Introduction & Set Up
 
-[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws
-[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
 [GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.<student>-lab.aws
+[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.<student>-lab.aws
 
-Welcome to my lab. This lab contains many f5 xC app solution & use cases. Pre-Configured and prepared to be build in AWS just within a couple of minutes.
+Welcome to my lab. This lab contains many F5 Distributed Cloud (xC) application solutions and use cases. Pre-configured and prepared to be built in AWS within a couple of minutes.
 
-The installation is failry simple and based on a local python script to deploy the whole infrastructure.
+The installation is fairly simple and based on a local Python script to deploy the whole infrastructure.
+
+> For detailed prerequisites, tool installation instructions, repository structure, and step-by-step setup, see the **[Installation & Setup Guide](docs/install-and-setup.md)**.
 
 &nbsp;
+
+---
 
 ## Overview of AWS Demo Environment
 
@@ -42,7 +46,7 @@ This diagram illustrates a demo setup in AWS featuring **F5 Distributed Cloud Cu
 - Local traffic from CE nodes to the application in the Main VPC.
 - Remote application access from CE nodes to the App VPC using BGP over the Transit Gateway.
 - Routing through the local BigIP to reach the Ubuntu application server.
-- ***For a complete list of use cases please check:*** [link here](xC-use-cases/README.md)
+- ***For a complete list of use cases please check:*** [xC Use Cases](xC-use-cases/README.md)
 
 &nbsp;
 
@@ -64,87 +68,80 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 
 ---
 
-## xC-mcn-demo - Installation
+## Quick Start
 
-Download/Clone the [GitHub - MCN repository] and "cd" into the root ***xC-mcn-demo*** lab.
+1. Install prerequisites (Terraform, Python 3, yq, curl, openssl) -- see the **[Installation & Setup Guide](docs/install-and-setup.md#prerequisites)** for details.
 
-&nbsp;
-
-1. Add/Replace AWS Auth Information into ***./setup-init/config.yaml***
-    - aws.**aws_access_key_id**
-    - aws.**aws_secret_access_key**
-    - aws.**aws_session_token**
-
-    > **ATTENTION:** Terraform expects (by default) that AWS Auth is done with profile "trerraform". This can be changed within the **config.yaml** file.
-
-2. Run setup script to deploy AWS Infrastrucure, EC2 Instances, xC Gateways and basic xC Configuration.
+2. Clone and configure:
 
     ```shell
-    py ./setup-init/initialize_infrastructure.py
+    git clone https://github.com/de1chk1nd/xC-mcn-demo.git
+    cd xC-mcn-demo
+    cp ./setup-init/template/config.yaml ./setup-init/config.yaml
+    ```
+
+3. Edit `./setup-init/config.yaml` with your AWS credentials, xC tenant info, and student details.
+
+4. Place your F5 xC API certificate (`.p12` file) into `./setup-init/.xC/`.
+
+5. Deploy:
+
+    ```shell
+    python3 ./setup-init/initialize_infrastructure.py
+    ```
+
+6. Wait for all components to come online:
+
+    | Process / Device      | Estimated Time      |
+    |:----------------------|:--------------------|
+    | Terraform             | ***2-3 minutes***   |
+    | BigIP vAppliances     | ***5-7 minutes***   |
+    | xC Gateway            | ***15-20 minutes*** |
+
+7. Post Install -- add local `/etc/hosts` entries and open SSH sessions:
+
+    ```shell
+    # Copy /etc/hosts entries to clipboard
+    terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
+    sudo vim /etc/hosts
+
+    # Fix SSH key permissions and open SSH to all lab servers
+    ./setup-init/.ssh/ssh-key-permission_lnx.sh all
     ```
 
 &nbsp;
 
-- Approx. Instllation times - need to complete before starting the labs/use-cases:
+### Device Access
 
-    | Process / Device      | Estimated Time      | Comment                                                             |
-    |:----------------------|:--------------------|:--------------------------------------------------------------------|
-    | Terraform             | ***2-3 minutes***   | ./.                                                                 |
-    | BigIP vAppliances     | ***5-7 minutes***   | check if AS3 completes L4-L7 Services: Pools, vServer in partition  |
-    | xC Gateway            | ***15-20 minutes*** | check within the xC Console if Gateways are "online"                |
+| Device                | Username | Password (lab-default)  |
+|:----------------------|:---------|:------------------------|
+| [BigIP - eu-central]  | admin    | DefaultLabPwd!2026      |
+| [BigIP - eu-west]     | admin    | DefaultLabPwd!2026      |
 
-&nbsp;
-
-### Post Install
-
-This will add entries to local /etc/hosts file to resolve FQDNs used in this repository.
-
-```shell
-terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
-x-terminal-emulator -e 'sudo vim /etc/hosts'
-```
-
-```shell
-rm ~/.ssh/known_hosts
-sudo ./setup-init/.ssh/ssh-key-permission_lnx.sh
-```
-
-&nbsp;
-
-- ***Access to Devices from external:***
-
-    | Device                                 | Username | Password (lab-default)  |
-    |:---------------------------------------|:---------|:------------------------|
-    | [BigIP - eu-central]                   | admin    | DefaultLabPwd!2026      |
-    | [BigIP - eu-west]                      | admin    | DefaultLabPwd!2026      |
-
-    > **ATTENTION:** Before you can access the AWS Devices, please add local /etc/hosts entries!
+> **Note:** The BigIP FQDN is based on your `student.name` from `config.yaml` (e.g., `bigip-mgmt-eu-central-1.<student>-lab.aws`). Add local `/etc/hosts` entries before accessing.
 
 &nbsp;
 
 ---
 
-## xC-mcn-demo - Delete
+## Delete / Teardown
 
-- **optional** If AWS credentials expired, update creds in ./setup-init/config.yaml and run **cred-aws.py** script
+```shell
+./setup-init/bin/delete-linux.sh
+```
 
-    ```shell
-    py ./setup-init/cred-aws.py
-    ```
-
-&nbsp;
-
-- Delete infrastrucure in AWS and within xC Console
-
-    ```shell
-
-    "/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/bin/delete-linux.sh"
-    ```
+> If AWS credentials have expired, update `./setup-init/config.yaml` and run `python3 ./setup-init/cred-aws.py` first.
 
 &nbsp;
 
-- manually delete local hosts entry
+---
 
-    ```shell
-    sudo vim /etc/hosts
-    ```
+## Documentation
+
+| Document | Description |
+|:---------|:------------|
+| **[Installation & Setup Guide](docs/install-and-setup.md)** | Prerequisites, tool installation, repository structure, detailed setup |
+| **[xC Use Cases](xC-use-cases/README.md)** | All available use cases with setup/delete scripts |
+| **[Contributing](CONTRIBUTING.md)** | How to contribute to this project |
+| **[Security Policy](SECURITY.md)** | Reporting vulnerabilities, credential handling |
+| **[License](LICENSE)** | MIT License |

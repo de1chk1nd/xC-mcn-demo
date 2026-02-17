@@ -1,4 +1,4 @@
-####### Private files
+####### Private / Secret files
 docs-priv/
 opencode.json
 
@@ -13,9 +13,47 @@ setup-init/.ssh/*.pem
 setup-init/.ssh/*.ppk
 setup-init/config.yaml
 
+xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-*
+
 ####### Terraform files
 **/.terraform/*
 .terraform.lock*
 *.tfstate*
+*.tfplan
 **/crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+####### Terraform backup / scratch
 infrastructure/modules/regions/etc/ubuntu/ubuntu.tmpl.bk
+
+####### Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+
+####### Environment files
+.env
+.env.*
+
+####### OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+####### Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+\#*\#
+.project
+.settings/

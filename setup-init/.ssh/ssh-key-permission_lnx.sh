@@ -1,37 +1,84 @@
 #!/usr/bin/env bash
-chmod 600 ./setup-init/.ssh/de1chk1nd-ssh.pem
-rm ~/.ssh/known_hosts
+set -e
 
-# Improved SSH Multi-Tab Terminal Script
-# Adapted from existing x-terminal-emulator script with better timeout handling
+#######################################
+# Load Common Configuration
+#######################################
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$REPO_ROOT" ]; then
+    echo "ERROR: Not in a git repository"
+    exit 1
+fi
 
-# Configuration
-SSH_KEY="/home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem"
+CONFIG_FILE="${REPO_ROOT}/setup-init/config.yaml"
+if ! command -v yq &> /dev/null; then
+    echo "ERROR: yq not installed"
+    exit 1
+fi
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "ERROR: Config file not found: ${CONFIG_FILE}"
+    exit 1
+fi
 
-# SSH Connection Options (improved for better reliability)
-SSH_OPTIONS="-o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o TCPKeepAlive=yes -o ExitOnForwardFailure=yes"
+STUDENT=$(yq '.student.name' "$CONFIG_FILE")
+SSH_KEY="${REPO_ROOT}/setup-init/.ssh/${STUDENT}-ssh.pem"
+SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o ConnectTimeout=10 -o TCPKeepAlive=yes"
 
-# SSH Connections Configuration
-# Format: "connection_string|tab_title"
+#######################################
+# Fix SSH key permissions & known_hosts
+#######################################
+if [ -f "$SSH_KEY" ]; then
+    chmod 600 "$SSH_KEY"
+    echo "Fixed permissions on ${SSH_KEY}"
+else
+    echo "WARNING: SSH key not found: ${SSH_KEY}"
+fi
+rm -f ~/.ssh/known_hosts 2>/dev/null
+echo "Cleared ~/.ssh/known_hosts"
+
+#######################################
+# SSH Connection Definitions
+# Format: "user@host|Tab Title"
+#######################################
 SSH_CONNECTIONS=(
-    "ubuntu@ubuntu-01-eu-central-1.de1chk1nd-lab.aws|Ubuntu EU-Central-1 01"
-    "ubuntu@ubuntu-02-eu-central-1.de1chk1nd-lab.aws|Ubuntu EU-Central-1 02"
-    "ubuntu@ubuntu-01-eu-west-1.de1chk1nd-lab.aws|Ubuntu EU-West-1 01"
-    "ubuntu@ubuntu-02-eu-west-1.de1chk1nd-lab.aws|Ubuntu EU-West-1 02"
-    "admin@bigip-mgmt-eu-central-1.de1chk1nd-lab.aws|BigIP EU-Central-1"
-    "admin@bigip-mgmt-eu-west-1.de1chk1nd-lab.aws|BigIP EU-West-1"
+    "ubuntu@ubuntu-01-eu-central-1.${STUDENT}-lab.aws|Ubuntu EU-Central-1 01"
+    "ubuntu@ubuntu-02-eu-central-1.${STUDENT}-lab.aws|Ubuntu EU-Central-1 02"
+    "ubuntu@ubuntu-01-eu-west-1.${STUDENT}-lab.aws|Ubuntu EU-West-1 01"
+    "ubuntu@ubuntu-02-eu-west-1.${STUDENT}-lab.aws|Ubuntu EU-West-1 02"
+    "admin@bigip-mgmt-eu-central-1.${STUDENT}-lab.aws|BigIP EU-Central-1"
+    "admin@bigip-mgmt-eu-west-1.${STUDENT}-lab.aws|BigIP EU-West-1"
 )
 
-# Function to detect available terminal emulator
+#######################################
+# Usage
+#######################################
+usage() {
+    echo "Usage: $0 [target]"
+    echo ""
+    echo "Targets:"
+    echo "  all          - Open SSH to all hosts (default)"
+    echo "  ubuntu       - All 4 Ubuntu servers"
+    echo "  bigip        - Both BigIP management interfaces"
+    echo "  central      - Ubuntu 01+02 and BigIP in eu-central-1"
+    echo "  west         - Ubuntu 01+02 and BigIP in eu-west-1"
+    echo "  fix-perms    - Only fix SSH key permissions (no SSH sessions)"
+    echo ""
+    echo "Each session opens in a new terminal tab/window."
+    exit 1
+}
+
+#######################################
+# Detect terminal emulator
+#######################################
 detect_terminal() {
     if command -v gnome-terminal &> /dev/null; then
         echo "gnome-terminal"
-    elif command -v x-terminal-emulator &> /dev/null; then
-        echo "x-terminal-emulator"
     elif command -v xfce4-terminal &> /dev/null; then
         echo "xfce4-terminal"
     elif command -v konsole &> /dev/null; then
         echo "konsole"
+    elif command -v x-terminal-emulator &> /dev/null; then
+        echo "x-terminal-emulator"
     elif command -v terminator &> /dev/null; then
         echo "terminator"
     else
@@ -39,28 +86,30 @@ detect_terminal() {
     fi
 }
 
-# Function to open SSH session based on terminal type
-open_ssh_session() {
-    local connection=$1
-    local title=$2
-    local terminal=$3
-    local ssh_command="/usr/bin/ssh $SSH_OPTIONS -i $SSH_KEY $connection"
-    
+#######################################
+# Open SSH in a new terminal window
+#######################################
+open_ssh_window() {
+    local title="$1"
+    local host="$2"
+    local terminal="$3"
+    local ssh_cmd="ssh ${SSH_OPTIONS} -i ${SSH_KEY} ${host}"
+
     case $terminal in
         "gnome-terminal")
-            gnome-terminal --tab --title="$title" -- bash -c "$ssh_command; echo 'Connection closed. Press Enter to exit.'; read; exit"
-            ;;
-        "x-terminal-emulator")
-            x-terminal-emulator -T "$title" -e bash -c "$ssh_command; echo 'Connection closed. Press Enter to exit.'; read; exit"
+            gnome-terminal --tab --title="${title}" -- bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read"
             ;;
         "xfce4-terminal")
-            xfce4-terminal --tab --title="$title" -e "bash -c '$ssh_command; echo \"Connection closed. Press Enter to exit.\"; read; exit'"
+            xfce4-terminal --tab --title="${title}" -e "bash -c '${ssh_cmd}; echo \"Connection closed. Press Enter to exit.\"; read'" &
             ;;
         "konsole")
-            konsole --new-tab -p tabtitle="$title" -e bash -c "$ssh_command; echo 'Connection closed. Press Enter to exit.'; read; exit"
+            konsole --new-tab -p tabtitle="${title}" -e bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read" &
+            ;;
+        "x-terminal-emulator")
+            x-terminal-emulator -T "${title}" -e bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read" &
             ;;
         "terminator")
-            terminator --new-tab --title="$title" -e "bash -c '$ssh_command; echo \"Connection closed. Press Enter to exit.\"; read; exit'"
+            terminator --new-tab --title="${title}" -e "bash -c '${ssh_cmd}; echo \"Connection closed. Press Enter to exit.\"; read'" &
             ;;
         *)
             echo "Error: No supported terminal emulator found"
@@ -69,129 +118,94 @@ open_ssh_session() {
     esac
 }
 
-# Function to validate SSH key
-validate_ssh_key() {
-    if [ ! -f "$SSH_KEY" ]; then
-        echo "Error: SSH key not found at $SSH_KEY"
-        echo "Please check the path and ensure the key file exists."
-        return 1
-    fi
-    
-    if [ ! -r "$SSH_KEY" ]; then
-        echo "Error: SSH key at $SSH_KEY is not readable"
-        echo "Please check file permissions."
-        return 1
-    fi
-    
-    # Check if key has correct permissions (should be 600 or 400)
-    local perms=$(stat -c "%a" "$SSH_KEY")
-    if [ "$perms" != "600" ] && [ "$perms" != "400" ]; then
-        echo "Warning: SSH key permissions are $perms. Recommended: 600 or 400"
-        echo "You can fix this with: chmod 600 $SSH_KEY"
-    fi
-    
-    return 0
-}
-
-# Function to test connectivity (optional)
-test_connectivity() {
-    local host=$1
-    echo "Testing connectivity to $host..."
-    
-    # Extract hostname from user@host format
-    local hostname=$(echo "$host" | sed 's/.*@//')
-    
-    # Quick connectivity test with timeout
-    if timeout 5 nc -z "$hostname" 22 2>/dev/null; then
-        echo "✓ $hostname:22 is reachable"
-        return 0
-    else
-        echo "✗ $hostname:22 is not reachable (this might be normal if using jump hosts)"
-        return 1
-    fi
-}
-
-# Main execution
-main() {
-    echo "=== SSH Multi-Tab Connection Script ==="
-    echo "Setting up connections to AWS infrastructure..."
-    echo
-    
-    # Validate SSH key
-    if ! validate_ssh_key; then
-        exit 1
-    fi
-    
-    # Detect terminal
-    TERMINAL=$(detect_terminal)
-    if [ "$TERMINAL" = "none" ]; then
-        echo "Error: No supported terminal emulator found."
-        echo "Please install one of: gnome-terminal, xfce4-terminal, konsole, terminator"
-        exit 1
-    fi
-    
-    echo "Using terminal: $TERMINAL"
-    echo "SSH Key: $SSH_KEY"
-    echo "SSH Options: $SSH_OPTIONS"
-    echo
-    
-    # Optional: Test connectivity (uncomment if needed)
-    # echo "Testing connectivity..."
-    # for connection_info in "${SSH_CONNECTIONS[@]}"; do
-    #     connection=$(echo "$connection_info" | cut -d'|' -f1)
-    #     test_connectivity "$connection"
-    # done
-    # echo
-    
-    echo "Opening SSH sessions..."
-    
-    # Process each connection
+#######################################
+# Open sessions by index filter
+#   Args: terminal, index list (space-separated)
+#######################################
+open_sessions() {
+    local terminal="$1"
+    shift
+    local indices=("$@")
     local count=0
-    for connection_info in "${SSH_CONNECTIONS[@]}"; do
-        connection=$(echo "$connection_info" | cut -d'|' -f1)
-        title=$(echo "$connection_info" | cut -d'|' -f2)
-        
-        echo "Opening: $title ($connection)"
-        
-        if open_ssh_session "$connection" "$title" "$TERMINAL"; then
+
+    for idx in "${indices[@]}"; do
+        local entry="${SSH_CONNECTIONS[$idx]}"
+        local host="${entry%%|*}"
+        local title="${entry##*|}"
+
+        echo "  Opening: ${title} (${host})"
+        if open_ssh_window "${title}" "${host}" "${terminal}"; then
             ((count++))
-            # Staggered delay to prevent overwhelming the system
             sleep 1.5
         else
-            echo "Failed to open session for $connection"
+            echo "  Failed to open session for ${host}"
         fi
     done
-    
-    echo
-    echo "Successfully opened $count SSH sessions!"
-    echo
-    echo "Tips:"
-    echo "- If a connection fails, the terminal tab will remain open with an error message"
-    echo "- Use Ctrl+Shift+T to open new tabs manually if needed"
-    echo "- SSH keepalive is set to 60 seconds with 3 retries for better stability"
+
+    echo ""
+    echo "Opened ${count} SSH session(s)."
 }
 
-# Run the script
-main "$@"
+#######################################
+# Main
+#######################################
+TARGET="${1:-all}"
 
+# fix-perms exits early -- permissions already fixed above
+if [ "$TARGET" = "fix-perms" ]; then
+    echo "Done. SSH key permissions fixed."
+    exit 0
+fi
 
+# Validate SSH key exists
+if [ ! -f "$SSH_KEY" ]; then
+    echo "ERROR: SSH key not found: ${SSH_KEY}"
+    exit 1
+fi
 
+TERMINAL=$(detect_terminal)
+if [ "$TERMINAL" = "none" ]; then
+    echo "Error: No supported terminal emulator found."
+    echo "Install one of: gnome-terminal, xfce4-terminal, konsole, x-terminal-emulator, terminator"
+    exit 1
+fi
 
+echo ""
+echo "=== SSH Multi-Tab Connection Script ==="
+echo "Student:  ${STUDENT}"
+echo "SSH Key:  ${SSH_KEY}"
+echo "Terminal: ${TERMINAL}"
+echo ""
 
+case "$TARGET" in
+    all)
+        echo "Opening all SSH sessions..."
+        open_sessions "$TERMINAL" 0 1 2 3 4 5
+        ;;
+    ubuntu)
+        echo "Opening Ubuntu SSH sessions..."
+        open_sessions "$TERMINAL" 0 1 2 3
+        ;;
+    bigip)
+        echo "Opening BigIP SSH sessions..."
+        open_sessions "$TERMINAL" 4 5
+        ;;
+    central)
+        echo "Opening eu-central-1 SSH sessions..."
+        open_sessions "$TERMINAL" 0 1 4
+        ;;
+    west)
+        echo "Opening eu-west-1 SSH sessions..."
+        open_sessions "$TERMINAL" 2 3 5
+        ;;
+    -h|--help|help)
+        usage
+        ;;
+    *)
+        echo "Unknown target: ${TARGET}"
+        echo ""
+        usage
+        ;;
+esac
 
-
-## ubuntu-eu-central-1
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-01-eu-central-1.de1chk1nd-lab.aws' &
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-02-eu-central-1.de1chk1nd-lab.aws' &
-## ubuntu-eu-west-1
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-01-eu-west-1.de1chk1nd-lab.aws' &
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem ubuntu@ubuntu-02-eu-west-1.de1chk1nd-lab.aws' &
-## bigip-mgmt all regions
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem admin@bigip-mgmt-eu-central-1.de1chk1nd-lab.aws' &
-#sleep 2
-#x-terminal-emulator -e '/usr/bin/ssh -o ServerAliveInterval=180 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -i /home/de1chk1nd/Documents/git-repositories/xC-mcn-demo/setup-init/.ssh/de1chk1nd-ssh.pem admin@bigip-mgmt-eu-west-1.de1chk1nd-lab.aws' &
+echo "Done!"

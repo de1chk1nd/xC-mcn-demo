@@ -41,9 +41,9 @@ The two regions have no direct VPC peering; connectivity is provided entirely by
 1. SSH to a web server
 
 ```bash
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" central
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" west
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" both
+./setup-init/.ssh/ssh-key-permission_lnx.sh central
+./setup-init/.ssh/ssh-key-permission_lnx.sh west
+./setup-init/.ssh/ssh-key-permission_lnx.sh all
 ```
 
 2. Test east-west connectivity
@@ -84,6 +84,6 @@ All credentials and tenant settings are loaded from `setup-init/config.yaml` via
 |------|-------------|
 | `bin/setup.sh` | Automated deployment script |
 | `bin/delete.sh` | Automated teardown script |
-| `bin/ssh-webservers.sh` | SSH helper to connect to web servers |
+| `../../setup-init/.ssh/ssh-key-permission_lnx.sh` | SSH helper to connect to all lab servers (central script) |
 | `etc/__template_ew_loadbalancing-eu-central.json` | LB template -- advertised on eu-central |
 | `etc/__template_ew_loadbalancing-eu-west.json` | LB template -- advertised on eu-west |

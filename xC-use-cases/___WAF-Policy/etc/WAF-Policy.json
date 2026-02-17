@@ -1,7 +1,7 @@
 {
     "metadata": {
-      "name": "de1chk1nd-waf",
-      "namespace": "m-petersen",
+      "name": "appfw--default-waf",
+      "namespace": "default",
       "labels": {},
       "annotations": {},
       "disable": false

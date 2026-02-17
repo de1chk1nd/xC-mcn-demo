@@ -41,9 +41,9 @@ SSH to a local Ubuntu jump host and test the internal load balancer:
 1. SSH to a web server
 
 ```bash
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" central
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" west
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" both
+./setup-init/.ssh/ssh-key-permission_lnx.sh central
+./setup-init/.ssh/ssh-key-permission_lnx.sh west
+./setup-init/.ssh/ssh-key-permission_lnx.sh all
 ```
 
 2. issue curl commands

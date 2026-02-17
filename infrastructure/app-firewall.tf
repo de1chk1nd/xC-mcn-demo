@@ -1,6 +1,6 @@
 resource "volterra_app_firewall" "mcn-default-waf" {
   name      = "${local.setup-init.student.name}-mcn-default-waf"
-  namespace = "m-petersen"
+  namespace = "${local.setup-init.xC.namespace}"
 
   blocking = true
 
