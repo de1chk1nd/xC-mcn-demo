@@ -49,7 +49,7 @@
               "pool": {
                 "tenant": "f5-emea-ent-bceuutam",
                 "namespace": "m-petersen",
-                "name": "origin-aws-echo-ssl-eu-central-1",
+                "name": "origin-docker-echossl-aws-eu-central-1",
                 "kind": "origin_pool"
               },
               "weight": 1,

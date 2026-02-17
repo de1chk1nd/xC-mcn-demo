@@ -1,6 +1,7 @@
 ####### Private files
 docs-priv/
 
+feature-list.txt
 notes.txt
 setup-init/.nginx/license/*.crt
 setup-init/.nginx/license/*.key
@@ -21,3 +22,4 @@ xC-use-cases/vk8s/README.md
 .terraform.lock*
 *.tfstate*
 **/crash.log
+infrastructure/modules/regions/etc/ubuntu/ubuntu.tmpl.bk

@@ -141,22 +141,52 @@ write_files:
           </body>
       </html>
 
-  - path: /etc/systemd/system/minikube-start.service
+  - path: /etc/crictl.yaml
     content: |
-      [Unit]
-      Description=Start Minikube cluster
-      After=docker.service cri-docker.service
-      Requires=docker.service cri-docker.service
+      runtime-endpoint: unix:///var/run/cri-dockerd.sock
+      image-endpoint: unix:///var/run/cri-dockerd.sock
+      timeout: 10
 
-      [Service]
-      Type=oneshot
-      RemainAfterExit=yes
-      ExecStart=/usr/local/bin/minikube start --driver=none
-      ExecStartPost=/bin/bash -c 'sleep 10 && cp -r /root/.minikube /home/ubuntu/.minikube && chown -R ubuntu:ubuntu /home/ubuntu/.minikube && mkdir -p /home/ubuntu/.kube && cp /root/.kube/config /home/ubuntu/.kube/config && sed -i "s|/root/.minikube|/home/ubuntu/.minikube|g" /home/ubuntu/.kube/config && chown -R ubuntu:ubuntu /home/ubuntu/.kube'
-      User=root
-
-      [Install]
-      WantedBy=multi-user.target
+  - path: /usr/local/bin/start-minikube.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Wait for cri-docker service to be active
+      echo "Waiting for cri-docker service..."
+      while ! systemctl is-active --quiet cri-docker.service; do
+        sleep 1
+      done
+      
+      # Wait for socket to exist
+      echo "Waiting for cri-docker socket..."
+      while [ ! -S /var/run/cri-dockerd.sock ]; do
+        sleep 1
+      done
+      
+      # Give it a few more seconds to be fully ready
+      echo "Socket found, waiting for service to be fully ready..."
+      sleep 5
+      
+      # Verify socket is accessible
+      if ! crictl version >/dev/null 2>&1; then
+        echo "Warning: crictl cannot access socket, waiting longer..."
+        sleep 10
+      fi
+      
+      echo "Starting minikube..."
+      # Start minikube - set HOME explicitly to ensure proper config paths
+      HOME=/root minikube start --driver=none
+      
+      # Set up kubectl for ubuntu user
+      sleep 10
+      cp -r /root/.minikube /home/ubuntu/.minikube
+      chown -R ubuntu:ubuntu /home/ubuntu/.minikube
+      mkdir -p /home/ubuntu/.kube
+      cp /root/.kube/config /home/ubuntu/.kube/config
+      sed -i "s|/root/.minikube|/home/ubuntu/.minikube|g" /home/ubuntu/.kube/config
+      chown -R ubuntu:ubuntu /home/ubuntu/.kube
+      
+      echo "Minikube startup complete"
 
   - path: /etc/systemd/system/echo-app.service
     content: |
@@ -252,10 +282,8 @@ runcmd:
   - install minikube-linux-amd64 /usr/local/bin/minikube
   - rm -f minikube-linux-amd64
 
-  # Start minikube via systemd service (more reliable than inline)
-  - systemctl daemon-reload
-  - systemctl enable minikube-start.service
-  - systemctl start minikube-start.service
+  # Start minikube via startup script in background
+  - nohup /usr/local/bin/start-minikube.sh > /var/log/minikube-start.log 2>&1 &
 
   # Start Docker containers via systemd (survives reboots)
   - systemctl daemon-reload
@@ -263,7 +291,3 @@ runcmd:
   - systemctl start echo-app.service
   - systemctl enable juice-shop.service
   - systemctl start juice-shop.service
-
-  # Wait for minikube to be ready, then apply k8s manifest
-  - [ sh, -c, 'for i in {1..30}; do kubectl cluster-info && break || sleep 10; done' ]
-  - kubectl apply -f https://raw.githubusercontent.com/de1chk1nd/lab-devops/main/xC/mcn-minikube/echo-app.yaml

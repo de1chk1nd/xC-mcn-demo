@@ -35,7 +35,7 @@
         "pool": {
           "tenant": "f5-emea-ent-bceuutam",
           "namespace": "m-petersen",
-          "name": "origin-public-echo",
+          "name": "origin-public-echo-aws",
           "kind": "origin_pool"
         },
         "weight": 1,

@@ -8,6 +8,10 @@ This Demo will create several HTTP Lodbalancer via API to build ingress RE and e
 
 ![Use Case - RE only](../../docs/images/use-cases/CE-to-CE.png)
 
+> Remember:
+> - <span style="color: green">**EU Central-1**</span> HTTP Loadbalancer **>>>** <span style="color: red">**EU West-1**</span> Origin Pool
+> - <span style="color: red">**EU West-1**</span> HTTP Loadbalancer **>>>** <span style="color: green">**EU Central-1**</span> Origin Pool
+
 &nbsp;
 
 ## Create Loadbalancer

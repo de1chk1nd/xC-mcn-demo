@@ -92,6 +92,11 @@ variable "f5_password" {
   type        = string
 }
 
+variable "namespace" {
+  description = "Owner for resources created by this module"
+  type        = string
+}
+
 variable "vsite_k8s" {
   description = "Owner for resources created by this module"
   type        = string

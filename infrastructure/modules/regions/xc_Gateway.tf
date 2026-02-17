@@ -238,10 +238,10 @@ resource "aws_instance" "xC-mcn-ce-v2-01" {
     network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv-01.id
   }
 
-  network_interface {
-    device_index         = 2
-    network_interface_id = aws_network_interface.xC-mcn-slo-v2-tran-01.id
-  }
+  # network_interface {
+  #   device_index         = 2
+  #   network_interface_id = aws_network_interface.xC-mcn-slo-v2-tran-01.id
+  # }
 
   timeouts {
     create = "60m"
@@ -278,10 +278,10 @@ resource "aws_instance" "xC-mcn-ce-v2-02" {
     network_interface_id = aws_network_interface.xC-mcn-slo-v2-priv-02.id
   }
 
-  network_interface {
-    device_index         = 2
-    network_interface_id = aws_network_interface.xC-mcn-slo-v2-tran-02.id
-  }
+  # network_interface {
+  #   device_index         = 2
+  #   network_interface_id = aws_network_interface.xC-mcn-slo-v2-tran-02.id
+  # }
 
   timeouts {
     create = "60m"

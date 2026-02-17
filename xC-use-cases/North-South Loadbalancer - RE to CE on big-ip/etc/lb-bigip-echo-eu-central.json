@@ -39,7 +39,7 @@
           "pool": {
             "tenant": "f5-emea-ent-bceuutam",
             "namespace": "m-petersen",
-            "name": "origin-aws-bigip-echo-ssl-eu-central-1",
+            "name": "origin-bigip-echossl-aws-eu-central-1",
             "kind": "origin_pool"
           },
           "weight": 1,

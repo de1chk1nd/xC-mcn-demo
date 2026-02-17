@@ -1,37 +1,39 @@
-resource "volterra_http_loadbalancer" "host-rewrite" {
-  name      = "http-lb-host-rewrite"
-  namespace = "m-petersen"
+### m-petersen - removed config - 20260216
 
-  domains = ["*.de1chk1nd.eu"]
+# resource "volterra_http_loadbalancer" "host-rewrite" {
+#   name      = "http-lb-host-rewrite"
+#   namespace = "m-petersen"
 
-  http {
-    dns_volterra_managed = false
-    port                 = "80"
-  }
+#   domains = ["*.de1chk1nd.eu"]
 
-  routes {
-    simple_route {
-      path {
-        prefix = "/"
-      }
-      headers {
-        name  = "Host"
-        exact = "app-1.de1chk1nd.eu"
-      }
+#   http {
+#     dns_volterra_managed = false
+#     port                 = "80"
+#   }
 
-      origin_pools {
-        pool {
-          name      = "origin-aws-web-eu-central-1"
-          namespace = "m-petersen"
-        }
-      }
-      host_rewrite = "app-1.m-petersen.eu"
-    }
-  }
+#   routes {
+#     simple_route {
+#       path {
+#         prefix = "/"
+#       }
+#       headers {
+#         name  = "Host"
+#         exact = "app-1.de1chk1nd.eu"
+#       }
 
-  depends_on = [
-    module.eu-central-1,
-    module.eu-west-1
-  ]
+#       origin_pools {
+#         pool {
+#           name      = "origin-aws-web-eu-central-1"
+#           namespace = "m-petersen"
+#         }
+#       }
+#       host_rewrite = "app-1.m-petersen.eu"
+#     }
+#   }
 
-}
+#   depends_on = [
+#     module.eu-central-1,
+#     module.eu-west-1
+#   ]
+
+# }

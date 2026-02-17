@@ -1,5 +1,8 @@
 # Demo for xC North-South Loadbalancer - RE to CE via local BigIP
 
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws
+[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
+
 This Demo will create three HTTP Lodbalancer via API to build ingress RE and egress CE on AWS HTTP Loadbalancer - forwarding traffic to local BigIP w/o Service Discovery.
 
 A ***Wep Application Firewall*** default policy will be attached to each HTTP  Loadbalancer.
@@ -22,6 +25,17 @@ A ***Wep Application Firewall*** default policy will be attached to each HTTP  L
 &nbsp;
 
 ## Test / Verify
+
+- ***Access to BigIP from external (check/add config manually):***
+
+    | Device                                 | Username | Password (lab-default)  |
+    |:---------------------------------------|:---------|:------------------------|
+    | [BigIP - eu-central]                   | admin    | DefaultLabPwd!2026      |
+    | [BigIP - eu-west]                      | admin    | DefaultLabPwd!2026      |
+
+    > **ATTENTION:** Before you can access the AWS Devices, please add local /etc/hosts entries!
+
+&nbsp;
 
 - Check for Header: ***custom-header***
 - optional: create APM policy with local auth

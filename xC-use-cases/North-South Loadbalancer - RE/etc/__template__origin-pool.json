@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "name": "origin-public-echo",
+    "name": "origin-public-echo-aws",
     "namespace": "m-petersen",
     "labels": {},
     "annotations": {},
