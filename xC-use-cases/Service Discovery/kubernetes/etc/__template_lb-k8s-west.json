@@ -1,14 +1,11 @@
 {
     "metadata": {
-      "name": "lb-k8s",
-      "namespace": "m-petersen",
-      "labels": {},
-      "annotations": {},
+      "name": "lb-k8s-west",
       "disable": false
     },
     "spec": {
       "domains": [
-        "k8s.edge.de1chk1nd.de"
+        "k8s-west.edge.de1chk1nd.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,
@@ -32,24 +29,12 @@
           "default_coalescing": {}
         }
       },
-      "downstream_tls_certificate_expiration_timestamps": [],
       "advertise_on_public_default_vip": {},
       "default_route_pools": [
         {
           "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
-            "name": "origin-k8s-central",
-            "kind": "origin_pool"
-          },
-          "weight": 1,
-          "priority": 1,
-          "endpoint_subsets": {}
-        },
-        {
-          "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
+            "tenant": "${XC_TENANT}",
+            "namespace": "${NAMESPACE}",
             "name": "origin-k8s-west",
             "kind": "origin_pool"
           },
@@ -58,17 +43,11 @@
           "endpoint_subsets": {}
         }
       ],
-      "routes": [],
       "disable_waf": {},
       "add_location": true,
       "no_challenge": {},
       "user_id_client_ip": {},
       "disable_rate_limit": {},
-      "waf_exclusion_rules": [],
-      "data_guard_rules": [],
-      "blocked_clients": [],
-      "trusted_clients": [],
-      "ddos_mitigation_rules": [],
       "service_policies_from_namespace": {},
       "round_robin": {},
       "disable_trust_client_ip_headers": {},
@@ -79,19 +58,8 @@
       "disable_api_definition": {},
       "disable_ip_reputation": {},
       "disable_client_side_defense": {},
-      "graphql_rules": [],
-      "protected_cookies": [],
-      "dns_info": [],
-      "state": "VIRTUAL_HOST_DNS_A_RECORD_ADDED",
-      "auto_cert_info": {
-        "auto_cert_state": "AutoCertStarted",
-        "dns_records": []
-      },
-      "internet_vip_info": [],
       "system_default_timeouts": {},
       "disable_threat_mesh": {},
-      "l7_ddos_action_default": {},
-      "cert_state": "AutoCertStarted",
-      "disable_malware_protection": {}
+      "l7_ddos_action_default": {}
     }
   }

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e  # Exit on error
+
 #######################################
 # Load Common Configuration
 #######################################
@@ -15,10 +16,15 @@ echo "Deleting load balancer: lb-api-int-west..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-api-int-west"
+
 echo "Deleting load balancer: lb-api-int-central..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-api-int-central"
 
-rm -f "${USE_CASE_DIR}/payload_final_eu-central.json"
-rm -f "${USE_CASE_DIR}/payload_final_eu-west.json"
+#######################################
+# Cleanup generated files
+#######################################
+rm -f "${USE_CASE_DIR}"/payload_final_*.json
+
+echo "Done!"

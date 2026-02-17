@@ -24,6 +24,7 @@ fi
 # Load XC configuration
 export P12_PASSWORD=$(yq '.xC.p_12_pwd' "$CONFIG_FILE")
 export TENANT=$(yq '.xC.tenant_shrt' "$CONFIG_FILE")
+export XC_TENANT=$(yq '.xC.tenant' "$CONFIG_FILE")
 export NAMESPACE=$(yq '.xC.namespace' "$CONFIG_FILE")
 export CERT_FILE="${REPO_ROOT}/setup-init/.xC/xc-curl.crt.pem"
 # Validate PEM certificate exists

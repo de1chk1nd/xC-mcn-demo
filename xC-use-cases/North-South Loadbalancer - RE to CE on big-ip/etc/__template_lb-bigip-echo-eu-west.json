@@ -1,14 +1,14 @@
 {
     "metadata": {
-      "name": "lb-bigip-echo-eu-central",
-      "namespace": "m-petersen",
+      "name": "lb-bigip-echo-eu-west",
+      "namespace": "${NAMESPACE}",
       "labels": {},
       "annotations": {},
       "disable": false
     },
     "spec": {
       "domains": [
-        "bigip-echo-eu-central.edge.de1chk1nd.de"
+        "bigip-echo-eu-west.edge.de1chk1nd.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,
@@ -37,9 +37,9 @@
       "default_route_pools": [
         {
           "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
-            "name": "origin-bigip-echossl-aws-eu-central-1",
+            "tenant": "${XC_TENANT}",
+            "namespace": "${NAMESPACE}",
+            "name": "origin-bigip-echossl-aws-eu-west-1",
             "kind": "origin_pool"
           },
           "weight": 1,
@@ -49,9 +49,9 @@
       ],
       "routes": [],
       "app_firewall": {
-        "tenant": "f5-emea-ent-bceuutam",
-        "namespace": "m-petersen",
-        "name": "de1chk1nd-mcn-default-waf",
+        "tenant": "${XC_TENANT}",
+        "namespace": "${NAMESPACE}",
+        "name": "${STUDENT}-mcn-default-waf",
         "kind": "app_firewall"
       },
       "add_location": true,

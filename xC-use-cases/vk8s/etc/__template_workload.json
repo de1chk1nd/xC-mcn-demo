@@ -1,7 +1,7 @@
 {
     "metadata": {
       "name": "echo-aws",
-      "namespace": "m-petersen",
+      "namespace": "${NAMESPACE}",
       "labels": {},
       "annotations": {},
       "disable": false
@@ -28,15 +28,15 @@
           "deploy_ce_sites": {
             "site": [
               {
-                "tenant": "f5-emea-ent-bceuutam",
+                "tenant": "${XC_TENANT}",
                 "namespace": "system",
-                "name": "de1chk1nd-41aa-aws-eu-central-1",
+                "name": "${MCN_CE_EU_CENTRAL1_GW01}",
                 "kind": "site"
               },
               {
-                "tenant": "f5-emea-ent-bceuutam",
+                "tenant": "${XC_TENANT}",
                 "namespace": "system",
-                "name": "de1chk1nd-e797-aws-eu-west-1",
+                "name": "${MCN_CE_EU_WEST1_GW01}",
                 "kind": "site"
               }
             ]

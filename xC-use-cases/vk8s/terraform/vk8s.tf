@@ -1,9 +1,9 @@
 resource "volterra_virtual_k8s" "example" {
-  name      = "de1chk1nd-vk8s"
-  namespace = "m-petersen"
+  name      = "${local.setup-init.student.name}-vk8s"
+  namespace = local.setup-init.xC.namespace
 
   vsite_refs {
-    name      = "de1chk1nd-vk8s-sites"
+    name      = "${local.setup-init.student.name}-vk8s-sites"
     namespace = "shared"
   }
 }

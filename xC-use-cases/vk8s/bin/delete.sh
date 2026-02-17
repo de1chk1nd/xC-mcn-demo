@@ -53,7 +53,6 @@ terraform -chdir="${USE_CASE_DIR}/terraform" destroy -auto-approve
 #######################################
 # Cleanup generated files
 #######################################
-rm -f "${USE_CASE_DIR}/payload_final_eu-central.json"
-rm -f "${USE_CASE_DIR}/payload_final_eu-west.json"
+rm -f "${USE_CASE_DIR}"/payload_final_*.json
 
 echo "Done!"

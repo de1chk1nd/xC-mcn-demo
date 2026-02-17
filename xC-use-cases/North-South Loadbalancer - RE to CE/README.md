@@ -1,39 +1,60 @@
-# Demo for xC North-South Loadbalancer - RE to CE
-This Demo will create several HTTP Lodbalancer via API to build ingress RE and egress CE on AWS HTTP Loadbalancer. 
+# North-South Loadbalancer - RE to CE
 
-A ***Wep Application Firewall*** default policy will be attached to each HTTP  Loadbalancer.
+Create HTTP load balancers with ingress via **Regional Edge (RE)** and egress via **Customer Edge (CE)** on AWS. Three load balancers are deployed: 
+- a combined LB routing to both regions,
+- and one dedicated LB per region (eu-central, eu-west).
 
-&nbsp;
+A default **Web Application Firewall** policy is attached to each load balancer.
 
-***Overview:***
+![Use Case - RE to CE](../../docs/images/use-cases/RE-to-CE.png)
 
-![Use Case - RE only](../../docs/images/use-cases/RE-to-CE.png)
+## Prerequisites
 
-&nbsp;
+- `setup-init/config.yaml` configured with valid XC credentials
+- PEM certificate generated (run `python3 setup-init/initialize_infrastructure.py`)
+- Infrastructure deployed (`terraform apply` in `infrastructure/`)
+- Origin pools `origin-docker-echossl-aws-eu-central-1` and `origin-docker-echossl-aws-eu-west-1` must exist (created by infrastructure Terraform)
+- `yq`, `envsubst`, and `curl` installed
 
-## Create Loadbalancer
-```shell
+## Deploy
 
-"xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
+```bash
+"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
 ```
 
-&nbsp;
+This script will:
+1. Generate load balancer payloads from templates
+2. Create HTTP load balancer `lb-echo-hybrid` (both regions)
+3. Create HTTP load balancer `lb-echo-hybrid-central` (eu-central only)
+4. Create HTTP load balancer `lb-echo-hybrid-west` (eu-west only)
 
-## GET Loadbalancer
-### List all Loadbalancer
-- Issue a GET Request with your favorite API Client (need to fetch API Token, or re-use *.p12 cert from terraform)
-    - GET https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers
+## Test
 
-&nbsp;
+Test appliaction access and verify "hostname" in json response:
+- Loadbalancing between web-01 and web-02 via local / regional FQDNs.
+- Loadbalancing between web-01 and web-02 accross **both** regions.
 
-### Get Config of Loadbalancer (example lb-nginx-west) 
-- Issue a GET Request with your favorite API Client (need to fetch API Token, or re-use *.p12 cert from terraform)
-    - GET https://f5-emea-ent.console.ves.volterra.io/api/config/namespaces/m-petersen/http_loadbalancers/lb-nginx-west
 
-&nbsp;
+## Delete
 
-## Delete Loadbalancer
-```shell
-
-"xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
+```bash
+"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
 ```
+
+This script will:
+1. Delete all three HTTP load balancers
+2. Clean up generated payload files
+
+## Configuration
+
+All credentials and tenant settings are loaded from `setup-init/config.yaml` via the shared config loader. No passwords are hardcoded in the scripts.
+
+### Files
+
+| Path | Description |
+|------|-------------|
+| `bin/setup.sh` | Automated deployment script |
+| `bin/delete.sh` | Automated teardown script |
+| `etc/__template_lb-echo-ssl.json` | LB template -- both regions |
+| `etc/__template_lb-echo-ssl-central.json` | LB template -- eu-central only |
+| `etc/__template_lb-echo-ssl-west.json` | LB template -- eu-west only |

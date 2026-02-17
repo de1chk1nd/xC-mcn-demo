@@ -1,6 +1,6 @@
 {
     "metadata": {
-      "name": "sd-k8s-de1chk1nd-eu-central",
+      "name": "sd-k8s-${STUDENT}-eu-central",
       "disable": false
     },
     "spec": {
@@ -9,9 +9,9 @@
           "ref": [
             {
               "kind": "virtual_site",
-              "tenant": "f5-emea-ent-bceuutam",
+              "tenant": "${XC_TENANT}",
               "namespace": "shared",
-              "name": "de1chk1nd-eu-central-sites"
+              "name": "${STUDENT}-eu-central-sites"
             }
           ],
           "network_type": "VIRTUAL_NETWORK_SITE_LOCAL_INSIDE",

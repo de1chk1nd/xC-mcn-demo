@@ -100,7 +100,8 @@ print("#")
 os.chdir(root_dir)
 
 p12_password = data['xC']['p_12_pwd']
-os.system(f"openssl pkcs12 -in './setup-init/.xC/f5-emea-ent.console.ves.volterra.io.api-creds.p12' -out './setup-init/.xC/xc-curl.crt.pem' -passin 'pass:{p12_password}' -passout 'pass:{p12_password}' -legacy")
+p12_file = os.path.normpath(os.path.join(base_dir, data['xC']['p12_auth']))
+os.system(f"openssl pkcs12 -in '{p12_file}' -out './setup-init/.xC/xc-curl.crt.pem' -passin 'pass:{p12_password}' -passout 'pass:{p12_password}' -legacy")
 
 os.system('terraform -chdir="./infrastructure" fmt')
 os.system('terraform -chdir="./infrastructure" init')

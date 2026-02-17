@@ -1,7 +1,7 @@
 {
     "metadata": {
       "name": "origin-k8s-west",
-      "namespace": "m-petersen",
+      "namespace": "${NAMESPACE}",
       "labels": {},
       "annotations": {},
       "disable": false
@@ -13,9 +13,9 @@
             "service_name": "app-v1-nginx-svc.simple-web-nginx",
             "site_locator": {
               "virtual_site": {
-                "tenant": "f5-emea-ent-bceuutam",
+                "tenant": "${XC_TENANT}",
                 "namespace": "shared",
-                "name": "de1chk1nd-eu-west-sites",
+                "name": "${STUDENT}-eu-west-sites",
                 "kind": "virtual_site"
               }
             },

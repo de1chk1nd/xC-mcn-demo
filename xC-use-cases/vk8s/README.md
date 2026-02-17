@@ -44,9 +44,9 @@ All credentials and tenant settings are loaded from `setup-init/config.yaml` via
 |------|-------------|
 | `bin/setup.sh` | Automated deployment script |
 | `bin/delete.sh` | Automated teardown script |
-| `etc/workload.json` | Workload definition for echo-aws |
+| `etc/__template_workload.json` | Workload template for echo-aws |
 | `etc/__template_origin-vk8s-eu-central.json` | Origin pool template (eu-central) |
 | `etc/__template_origin-vk8s-eu-west.json` | Origin pool template (eu-west) |
-| `etc/lb-vk8s-eu-central.json` | Load balancer config (eu-central) |
-| `etc/lb-vk8s-eu-west.json` | Load balancer config (eu-west) |
+| `etc/__template_lb-vk8s-eu-central.json` | Load balancer template (eu-central) |
+| `etc/__template_lb-vk8s-eu-west.json` | Load balancer template (eu-west) |
 | `terraform/` | Terraform config for vk8s cluster creation |

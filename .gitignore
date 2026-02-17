@@ -1,8 +1,7 @@
 ####### Private files
 docs-priv/
+opencode.json
 
-feature-list.txt
-notes.txt
 setup-init/.nginx/license/*.crt
 setup-init/.nginx/license/*.key
 setup-init/.nginx/license/*.jwt
@@ -13,9 +12,6 @@ setup-init/.ssh/*.crt
 setup-init/.ssh/*.pem
 setup-init/.ssh/*.ppk
 setup-init/config.yaml
-
-opencode.json
-xC-use-cases/vk8s/README.md
 
 ####### Terraform files
 **/.terraform/*

@@ -15,7 +15,7 @@ student:
 f5:
   f5_password: DefaultLabPwd!2026
 xC:
-  p12_auth: ../setup-init/.xC/f5-emea-ent.console.ves.volterra.io.api-creds.p12
+  p12_auth: ../setup-init/.xC/<P12_CERT_FILE_NAME>.p12
   p_12_pwd: <P12 PASSWORD STRING>
   tenant: <XC TENANT NAME>
   tenant_shrt: <XC TENANT SHORT NAME>

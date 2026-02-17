@@ -9,6 +9,9 @@ source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 
 USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/vk8s"
 
+# Load additional config values for envsubst
+export STUDENT=$(yq '.student.name' "${REPO_ROOT}/setup-init/config.yaml")
+
 #######################################
 # Step 1: Create vk8s via Terraform
 #######################################
@@ -23,29 +26,38 @@ terraform -chdir="${USE_CASE_DIR}/terraform" apply -auto-approve
 echo "vk8s created."
 
 #######################################
-# Step 2: Create Workload
+# Step 2: Get Terraform Outputs
+#######################################
+export MCN_CE_EU_CENTRAL1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
+export MCN_CE_EU_WEST1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
+export MCN_CE_EU_CENTRAL1_GW01=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-CENTRAL1-GW01 | tr -d '\"')
+export MCN_CE_EU_WEST1_GW01=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-WEST1-GW01 | tr -d '\"')
+
+#######################################
+# Step 3: Generate All Payloads
+#######################################
+echo "Generating payload files from templates..."
+envsubst < "${USE_CASE_DIR}/etc/__template_workload.json" > "${USE_CASE_DIR}/payload_final_workload.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_origin-vk8s-eu-central.json" > "${USE_CASE_DIR}/payload_final_eu-central.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_origin-vk8s-eu-west.json" > "${USE_CASE_DIR}/payload_final_eu-west.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_lb-vk8s-eu-central.json" > "${USE_CASE_DIR}/payload_final_lb-eu-central.json"
+envsubst < "${USE_CASE_DIR}/etc/__template_lb-vk8s-eu-west.json" > "${USE_CASE_DIR}/payload_final_lb-eu-west.json"
+
+#######################################
+# Step 4: Create Workload
 #######################################
 echo "Creating workload: echo-aws..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
-    -d @"${USE_CASE_DIR}/etc/workload.json" \
+    -d @"${USE_CASE_DIR}/payload_final_workload.json" \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/workloads"
 
 echo "Waiting for workload to initialize..."
 sleep 10
 
 #######################################
-# Step 3: Create Origin Pools
+# Step 5: Create Origin Pools
 #######################################
-# Get Terraform Outputs for CE site names
-export MCN_CE_EU_CENTRAL1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-CENTRAL1 | tr -d '\"')
-export MCN_CE_EU_WEST1=$(terraform -chdir="${REPO_ROOT}/infrastructure" output xC-MCN-CE-EU-WEST1 | tr -d '\"')
-
-# Generate Payloads from Templates
-echo "Generating origin pool payloads from templates..."
-envsubst < "${USE_CASE_DIR}/etc/__template_origin-vk8s-eu-central.json" > "${USE_CASE_DIR}/payload_final_eu-central.json"
-envsubst < "${USE_CASE_DIR}/etc/__template_origin-vk8s-eu-west.json" > "${USE_CASE_DIR}/payload_final_eu-west.json"
-
 echo "Creating origin pool: origin-vk8s-eu-central..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
@@ -61,18 +73,18 @@ curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
 sleep 5
 
 #######################################
-# Step 4: Create Load Balancers
+# Step 6: Create Load Balancers
 #######################################
 echo "Creating load balancer: lb-vk8s-eu-central..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
-    -d @"${USE_CASE_DIR}/etc/lb-vk8s-eu-central.json" \
+    -d @"${USE_CASE_DIR}/payload_final_lb-eu-central.json" \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
 
 echo "Creating load balancer: lb-vk8s-eu-west..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
-    -d @"${USE_CASE_DIR}/etc/lb-vk8s-eu-west.json" \
+    -d @"${USE_CASE_DIR}/payload_final_lb-eu-west.json" \
     "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers"
 
 echo "Done!"

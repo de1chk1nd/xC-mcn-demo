@@ -1,11 +1,11 @@
 {
     "metadata": {
-      "name": "lb-k8s-west",
+      "name": "lb-k8s-central",
       "disable": false
     },
     "spec": {
       "domains": [
-        "k8s-west.edge.de1chk1nd.de"
+        "k8s-central.edge.de1chk1nd.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,
@@ -33,9 +33,9 @@
       "default_route_pools": [
         {
           "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
-            "name": "origin-k8s-west",
+            "tenant": "${XC_TENANT}",
+            "namespace": "${NAMESPACE}",
+            "name": "origin-k8s-central",
             "kind": "origin_pool"
           },
           "weight": 1,

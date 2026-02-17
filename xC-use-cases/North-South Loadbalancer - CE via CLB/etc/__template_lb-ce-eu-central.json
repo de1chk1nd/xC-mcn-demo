@@ -18,9 +18,9 @@
             "virtual_site": {
               "network": "SITE_NETWORK_INSIDE_AND_OUTSIDE",
               "virtual_site": {
-                "tenant": "f5-emea-ent-bceuutam",
+                "tenant": "${XC_TENANT}",
                 "namespace": "shared",
-                "name": "de1chk1nd-eu-central-sites",
+                "name": "${STUDENT}-eu-central-sites",
                 "kind": "virtual_site"
               }
             },
@@ -31,8 +31,8 @@
       "default_route_pools": [
         {
           "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
+            "tenant": "${XC_TENANT}",
+            "namespace": "${NAMESPACE}",
             "name": "origin-nginx-aws-eu-central-1",
             "kind": "origin_pool"
           },
@@ -42,9 +42,9 @@
         }
       ],
       "app_firewall": {
-        "tenant": "f5-emea-ent-bceuutam",
-        "namespace": "m-petersen",
-        "name": "de1chk1nd-mcn-default-waf",
+        "tenant": "${XC_TENANT}",
+        "namespace": "${NAMESPACE}",
+        "name": "${STUDENT}-mcn-default-waf",
         "kind": "app_firewall"
       },
       "add_location": true,

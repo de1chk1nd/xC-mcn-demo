@@ -1,60 +1,57 @@
-# Demo for xC North-South Loadbalancer - RE only
-This Demo will create one  HTTP Lodbalancer manually to build *ingress & egress via* **Regional Edge** HTTP Loadbalancer.
+# North-South Loadbalancer - RE Only
 
-Egress will be directly via "Internet" and DNS Service Discovery (FQDN) of AWS ELB Names (EU-Central-1 and EU-West-1).
+Create an HTTP load balancer with ingress and egress via **Regional Edge (RE)**.
 
-&nbsp;
+Egress goes directly via the Internet using DNS service discovery (FQDN) of AWS NLB names across EU-Central-1 and EU-West-1.
 
-A ***Wep Application Firewall*** default policy will be attached to this HTTP  Loadbalancer.
-
-&nbsp;
-
-***Overview:***
+A default **Web Application Firewall** policy is attached to the load balancer, guaranteeing common security policies and metrics accross different envionments.
 
 ![Use Case - RE only](../../docs/images/use-cases/RE-only.png)
 
-&nbsp;
+## Prerequisites
 
-## Create Origin & Loadbalancer
-This lab is based on manually creating the ressources (here via JSON Import in UI).
+- `setup-init/config.yaml` configured with valid XC credentials
+- PEM certificate generated (run `python3 setup-init/initialize_infrastructure.py`)
+- Infrastructure deployed (`terraform apply` in `infrastructure/`)
+- `yq`, `envsubst`, and `curl` installed
 
-&nbsp;
+## Deploy
 
-- Create <span style="color:red">**Config File**</span> to dynamically add AWS NLB DNS Recors to origin public DNS
-    ```code
-    "xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
-    ```
+```bash
+"./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
+```
 
-&nbsp;
+This script will:
+1. Fetch NLB DNS names from Terraform outputs
+2. Generate origin pool and load balancer payloads from templates
+3. Create the origin pool `origin-public-echo-aws` via XC API
+4. Create the HTTP load balancer `lb-echo-public` via XC API
 
-- To create the <span style="color:blue">**Origin Pool**</span>, c&p content of **xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/etc/origin-pool.json** into the JSON tab of the origin-pool create form. 
+## Test
 
-    If you have ***xclip*** installed, run following command (else, manually copy the content into your clipboard).
-    ```code
-    xclip -selection c < "xC-use-cases/North-South Loadbalancer - RE/etc/origin-pool.json"
-    ```
+Test appliaction access and verify "hostname" in json response.
+Loadbalancing between eu-central-1 and eu-west-1.
 
-&nbsp;
+## Delete
 
-- To create the <span style="color:blue">**HTTP Loadbalancer**</span>, c&p content of **xC-mcn-demo/xC-use-cases/North-South Loadbalancer - RE/etc/http-loadbalancer.json** into the JSON tab of the HTTP-Loadbalancer create form. 
-    
-    If you have ***xclip*** installed, run following command (else, manually copy the content into your clipboard).
-    ```code
-    xclip -selection c < "xC-use-cases/North-South Loadbalancer - RE/etc/http-loadbalancer.json"
-    ```
+```bash
+"./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
+```
 
-&nbsp;
+This script will:
+1. Delete the HTTP load balancer
+2. Delete the origin pool
+3. Clean up generated payload files
 
-## Delete Origin & Loadbalancer
-To delete the current configuration, please
+## Configuration
 
-- Via xC UI, **manually** delete (in listet order):
-    - HTTP-Loadbalancer 
-    - Origin-Pool
+All credentials and tenant settings are loaded from `setup-init/config.yaml` via the shared config loader. No passwords are hardcoded in the scripts.
 
-&nbsp;
+### Files
 
-- Execute "delete <span style="color:red">**Config File**</span>" script, to remove local *.json files.
-    ```code
-    "xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
-    ```
+| Path | Description |
+|------|-------------|
+| `bin/setup.sh` | Automated deployment script |
+| `bin/delete.sh` | Automated teardown script |
+| `etc/__template__origin-pool.json` | Origin pool template (uses NLB DNS from Terraform) |
+| `etc/__template_http-loadbalancer.json` | HTTP load balancer template |

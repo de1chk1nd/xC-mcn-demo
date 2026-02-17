@@ -1,56 +1,80 @@
-[NGINX - eu-central]: http://app-1.eu-central-1.de1chk1nd-lab.aws
-[NGINX - eu-west]: http://app-1.eu-west-1.de1chk1nd-lab.aws
+# North-South Loadbalancer - CE via CLB
 
-[NGINX XSS - eu-central]: http://app-1.eu-central-1.de1chk1nd-lab.aws?a=<script>
-[NGINX XSS - eu-west]: http://app-1.eu-west-1.de1chk1nd-lab.aws?a=<script>
+Create HTTP load balancers with ingress and egress via **Customer Edge (CE)** on AWS. Client sessions are terminated directly at the CE -- either via a public cloud load balancer (CLB) or via internal request on the inside interface. This provides **SaaS-managed local WAAP** without routing through the Regional Edge. A default **Web Application Firewall** policy is attached to each load balancer.
 
+![Use Case - CE via CLB](../../docs/images/use-cases/CE-via-clb.png)
 
-# Demo for xC North-South Loadbalancer - CE only
-This Demo will create a HTTP Lodbalancer via API to build ingress CE and egress CE on AWS HTTP Loadbalancer. 
+## Prerequisites
 
-A WAF will be attached to ech LB.
+- `setup-init/config.yaml` configured with valid XC credentials
+- PEM certificate generated (run `python3 setup-init/initialize_infrastructure.py`)
+- Infrastructure deployed (`terraform apply` in `infrastructure/`)
+- Origin pools `origin-nginx-aws-eu-central-1` and `origin-nginx-aws-eu-west-1` must exist (created by infrastructure Terraform)
+- `yq`, `envsubst`, and `curl` installed
 
-Goal is to ***terminate*** client sessions in CE - either via public cloud loadbalancer or directly via internal request (SaaS managed local WAAP)
+## Deploy
 
-&nbsp;
-
-***Overview:***
-
-![Use Case - RE only](../../docs/images/use-cases/CE-via-clb.png)
-
-&nbsp;
-
-## Create Loadbalancer
-```shell
-
-"xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
+```bash
+"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
 ```
 
-&nbsp;
+This script will:
+1. Generate load balancer payloads from templates
+2. Create HTTP load balancer `lb-ce-central` (advertised on eu-central CE sites)
+3. Create HTTP load balancer `lb-ce-west` (advertised on eu-west CE sites)
 
 ## Test Access
-- public Internet (via local CE)
-| App						| Link App				| Link App XSS  			|
-|:--------------------------|:----------------------|:--------------------------|
-| NGINX in AWS eu-central	| [NGINX - eu-central]  | [NGINX XSS - eu-central]	|
-| NGINX in AWS  eu-west     | [NGINX - eu-west]		| [NGINX XSS - eu-west]		|
 
-&nbsp;
+### Via public Cloud Load Balancer (external)
 
-- Local AWS subnet via inside interface. Login to local ubuntu jump host and issue either command:
-	```code
+Access the NLB FQDN from your browser or curl. Requires local `/etc/hosts` entries (see Post Install in main README).
 
-	curl --silent http://local-web.de1chk1nd-mcn.aws | grep "Server address"
-	```
-	```code
+| Region | App | App + XSS test |
+|:---|:---|:---|
+| EU-Central-1 | `http://app-1.eu-central-1.de1chk1nd-lab.aws` | `http://app-1.eu-central-1.de1chk1nd-lab.aws?a=<script>` |
+| EU-West-1 | `http://app-1.eu-west-1.de1chk1nd-lab.aws` | `http://app-1.eu-west-1.de1chk1nd-lab.aws?a=<script>` |
 
-	curl --silent "http://local-web.de1chk1nd-mcn.aws?a=<script>"
-	```
+### Via inside interface (internal)
 
-&nbsp;
+SSH to a local Ubuntu jump host and test the internal load balancer:
 
-## Delete Loadbalancer
-```shell
+1. SSH to a web server
 
-"xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
+```bash
+"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" central
+"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" west
+"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/ssh-webservers.sh" both
 ```
+
+2. issue curl commands
+
+```bash
+# Normal request -- should return the NGINX server address
+curl --silent http://local-web.de1chk1nd-mcn.aws | grep "Server address"
+
+# XSS test -- WAF should block this request
+curl --silent "http://local-web.de1chk1nd-mcn.aws?a=<script>"
+```
+
+## Delete
+
+```bash
+"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
+```
+
+This script will:
+1. Delete both HTTP load balancers
+2. Clean up generated payload files
+
+## Configuration
+
+All credentials and tenant settings are loaded from `setup-init/config.yaml` via the shared config loader. No passwords are hardcoded in the scripts.
+
+### Files
+
+| Path | Description |
+|------|-------------|
+| `bin/setup.sh` | Automated deployment script |
+| `bin/delete.sh` | Automated teardown script |
+| `etc/__template_lb-ce-eu-central.json` | LB template -- eu-central |
+| `etc/__template_lb-ce-eu-west.json` | LB template -- eu-west |

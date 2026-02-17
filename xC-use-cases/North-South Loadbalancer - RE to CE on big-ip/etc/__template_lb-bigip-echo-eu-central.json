@@ -1,11 +1,14 @@
 {
     "metadata": {
-      "name": "lb-vk8s-eu-central",
+      "name": "lb-bigip-echo-eu-central",
+      "namespace": "${NAMESPACE}",
+      "labels": {},
+      "annotations": {},
       "disable": false
     },
     "spec": {
       "domains": [
-        "vk8s-eu-central.edge.de1chk1nd.de"
+        "bigip-echo-eu-central.edge.de1chk1nd.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,
@@ -29,13 +32,14 @@
           "default_coalescing": {}
         }
       },
+      "downstream_tls_certificate_expiration_timestamps": [],
       "advertise_on_public_default_vip": {},
       "default_route_pools": [
         {
           "pool": {
-            "tenant": "f5-emea-ent-bceuutam",
-            "namespace": "m-petersen",
-            "name": "origin-vk8s-eu-central",
+            "tenant": "${XC_TENANT}",
+            "namespace": "${NAMESPACE}",
+            "name": "origin-bigip-echossl-aws-eu-central-1",
             "kind": "origin_pool"
           },
           "weight": 1,
@@ -43,11 +47,22 @@
           "endpoint_subsets": {}
         }
       ],
-      "disable_waf": {},
+      "routes": [],
+      "app_firewall": {
+        "tenant": "${XC_TENANT}",
+        "namespace": "${NAMESPACE}",
+        "name": "${STUDENT}-mcn-default-waf",
+        "kind": "app_firewall"
+      },
       "add_location": true,
       "no_challenge": {},
       "user_id_client_ip": {},
       "disable_rate_limit": {},
+      "waf_exclusion_rules": [],
+      "data_guard_rules": [],
+      "blocked_clients": [],
+      "trusted_clients": [],
+      "ddos_mitigation_rules": [],
       "service_policies_from_namespace": {},
       "round_robin": {},
       "disable_trust_client_ip_headers": {},
@@ -58,8 +73,19 @@
       "disable_api_definition": {},
       "disable_ip_reputation": {},
       "disable_client_side_defense": {},
+      "graphql_rules": [],
+      "protected_cookies": [],
+      "dns_info": [],
+      "state": "VIRTUAL_HOST_DNS_A_RECORD_ADDED",
+      "auto_cert_info": {
+        "auto_cert_state": "PreDomainChallengePending",
+        "dns_records": []
+      },
+      "internet_vip_info": [],
       "system_default_timeouts": {},
       "disable_threat_mesh": {},
-      "l7_ddos_action_default": {}
+      "l7_ddos_action_default": {},
+      "cert_state": "PreDomainChallengePending",
+      "disable_malware_protection": {}
     }
   }
