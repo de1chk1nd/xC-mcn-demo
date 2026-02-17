@@ -22,9 +22,9 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack-01" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"                  = "ves-io-AWS"
-    "de1chk1nd-mcn-sites"              = "vk8s"
-    "de1chk1nd-mcn-sites"              = "${var.vsite-region}"
+    "ves.io/provider"                       = "ves-io-AWS"
+    "${var.student}-mcn-sites"              = "vk8s"
+    "${var.student}-mcn-sites"              = "${var.vsite-region}"
   }
 
   re_select {
@@ -52,9 +52,9 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack-02" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"                  = "ves-io-AWS"
-    "de1chk1nd-mcn-sites"              = "vk8s"
-    "de1chk1nd-mcn-sites"              = "${var.vsite-region}"
+    "ves.io/provider"                       = "ves-io-AWS"
+    "${var.student}-mcn-sites"              = "vk8s"
+    "${var.student}-mcn-sites"              = "${var.vsite-region}"
   }
 
   re_select {
