@@ -1,0 +1,12 @@
+/* Highlight replaced placeholders so the user sees what was dynamized */
+code:has(> .replaced),
+.md-typeset code {
+  /* Default styling is fine — no overrides needed currently */
+}
+
+/* Student config widget responsive tweaks */
+@media (max-width: 600px) {
+  #student-config input {
+    width: 140px !important;
+  }
+}

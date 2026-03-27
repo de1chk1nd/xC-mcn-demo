@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>xC MCN Demo Lab Guide</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="brand">xC MCN Lab Guide</div>
+  <h2>Setup &amp; Delete</h2>
+  <a href="#" data-target="home" onclick="show('home', event)">Home</a>
+  <a href="#" data-target="before-start" onclick="show('before-start', event)">Before You Start</a>
+  <a href="#" data-target="os-setup" onclick="show('os-setup', event)">Basic Setup</a>
+  <a href="#" data-target="setup-quick" onclick="show('setup-quick', event)">Lab Setup</a>
+  <a href="#" data-target="lab-delete" onclick="show('lab-delete', event)">Lab Deletion</a>
+  <h2>Use Cases</h2>
+  <a href="#" data-target="use-cases" onclick="show('use-cases', event)">Overview</a>
+  <a href="#" class="sub" data-target="ns-re" onclick="show('ns-re', event)">RE Only</a>
+  <a href="#" class="sub" data-target="ns-re-ce" onclick="show('ns-re-ce', event)">RE to CE</a>
+  <a href="#" class="sub" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">RE to CE via BIG-IP</a>
+  <a href="#" class="sub" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">CE via CLB</a>
+  <h2>East-West</h2>
+  <a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>
+  <a href="#" data-target="ew-nwc" onclick="show('ew-nwc', event)">Network Connect</a>
+  <h2>Service Discovery</h2>
+  <a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">Kubernetes</a>
+  <a href="#" data-target="sd-bigip" onclick="show('sd-bigip', event)">BIG-IP</a>
+  <h2>Edge Computing</h2>
+  <a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a>
+</nav>
+
+<div class="main">
+
+  <div class="student-bar">
+    <label for="student-input">Student Name</label>
+    <input id="student-input" type="text" placeholder="e.g. jdoe">
+    <button onclick="saveStudent()">Save</button>
+    <button class="ghost" onclick="clearStudent()">Clear</button>
+    <span class="current">Current: <b id="student-display">&lt;not set&gt;</b></span>
+  </div>
+
+  <div class="progress">
+    <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-label" id="progress-label">Step 1 of 12</div>
+  </div>
+
+  <!-- ===== HOME ===== -->
+  <section id="home" class="active">
+    <h1>xC MCN Demo Lab Guide</h1>
+    <p>Welcome to the F5 Distributed Cloud Multi-Cloud Networking lab. This guide provides step-by-step instructions for setting up the lab environment and running each use case.</p>
+
+    <div class="admonition info">
+      <strong>Dynamic content</strong>
+      Enter your <b>student name</b> above. All CLI commands, FQDNs, and URLs in this guide will be updated automatically.
+      <ul>
+        <li><b>Current domain suffix:</b> <span id="domain-status" class="domain-badge pending">__DOMAIN__</span></li>
+      </ul>
+    </div>
+
+    <h2>Lab Architecture</h2>
+    <p>Two AWS regions (eu-central-1, eu-west-1) with CE nodes, BIG-IP appliances, and Ubuntu web servers connected via Transit Gateway.</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/overview-aws-lab-v3.png')">
+      <img src="../images/overview-aws-lab-v3.png" alt="AWS Lab Overview">
+    </a>
+
+    <p>Use the sidebar to navigate through setup and each use case. A full overview is available under <b>Use Cases</b>.</p>
+  </section>
+  <div class="section-nav" data-for="home" data-prev="vk8s" data-next="before-start"></div>
+
+  <!-- ===== BEFORE YOU START ===== -->
+  <section id="before-start">
+    <h1>Before You Start</h1>
+    <p>This lab expects a local workstation with tools installed and a few credentials on hand.</p>
+
+    <h2>Prerequisites</h2>
+    <table>
+      <tr><th>Tool</th><th>Min Version</th><th>Purpose</th></tr>
+      <tr><td>Terraform</td><td>&gt;= 1.0</td><td>Infrastructure provisioning</td></tr>
+      <tr><td>Python 3</td><td>&gt;= 3.9</td><td>Setup scripts, CA generation</td></tr>
+      <tr><td>yq</td><td>&gt;= 4.x</td><td>YAML parsing in shell</td></tr>
+      <tr><td>envsubst</td><td>any</td><td>Template rendering in use cases</td></tr>
+      <tr><td>ssh</td><td>any</td><td>Remote access for service discovery</td></tr>
+      <tr><td>base64</td><td>any</td><td>Kubeconfig encoding</td></tr>
+      <tr><td>curl</td><td>any</td><td>xC API calls</td></tr>
+      <tr><td>openssl</td><td>any</td><td>Certificate generation</td></tr>
+      <tr><td>git</td><td>any</td><td>Repository root detection</td></tr>
+    </table>
+
+    <h2>Required Credentials</h2>
+    <ul>
+      <li>AWS Access Key + Secret (and STS Token if temporary)</li>
+      <li>xC Tenant name and Namespace</li>
+      <li>xC API certificate (.p12) and password</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>Tip</strong>
+      Your student name will be used in domain names and resource naming. Set it once at the top of the page.
+      <div class="note">Student name must be DNS-safe: lowercase <code>[a-z0-9-]</code>, 1-16 chars, start/end alphanumeric.</div>
+    </div>
+  </section>
+  <div class="section-nav" data-for="before-start" data-prev="home" data-next="os-setup"></div>
+
+  <!-- ===== BASIC SETUP ===== -->
+  <section id="os-setup">
+    <h1>Basic Setup</h1>
+    <p>Three steps: install OS tools, clone the repository, then set up a Python environment.</p>
+
+    <h2 class="step">1. Install Tools</h2>
+
+    <h3>Linux (Ubuntu / Debian)</h3>
+<pre><code># Terraform
+wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install -y terraform
+
+# Python 3 + pip
+sudo apt install -y python3 python3-pip
+
+# Tools
+sudo apt install -y yq curl openssl git gettext-base
+</code></pre>
+
+    <h3>macOS</h3>
+<pre><code>brew install terraform python yq curl openssl git gettext
+</code></pre>
+
+    <div class="admonition info">
+      <strong>Note</strong>
+      <code>gettext-base</code> (Linux) / <code>gettext</code> (macOS) provides <code>envsubst</code> which is required by the use-case scripts.
+    </div>
+
+    <h2 class="step">2. Python Packages</h2>
+    <p>Python dependencies are managed via <code>requirements.txt</code> in a virtual environment. This works the same on Linux and macOS.</p>
+
+    <h3>Clone the repository</h3>
+<pre><code>git clone https://github.com/de1chk1nd/xC-mcn-demo.git
+cd xC-mcn-demo
+</code></pre>
+
+    <h3>Create venv and install dependencies</h3>
+<pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+</code></pre>
+
+  </section>
+  <div class="section-nav" data-for="os-setup" data-prev="before-start" data-next="setup-quick"></div>
+
+  <!-- ===== USE CASE OVERVIEW ===== -->
+  <section id="use-cases">
+    <h1>Use Cases Overview</h1>
+    <p>All automated use cases live under <code>xC-use-cases/</code> and have <code>setup.sh</code> and <code>delete.sh</code> scripts.</p>
+    <table>
+      <tr><th>Use Case</th><th>Direction</th><th>Ingress</th><th>Egress</th><th>WAF</th></tr>
+      <tr><td><a href="#" data-target="ns-re" onclick="show('ns-re', event)">N-S RE only</a></td><td>North-South</td><td>RE</td><td>Internet</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="ns-re-ce" onclick="show('ns-re-ce', event)">N-S RE to CE</a></td><td>North-South</td><td>RE</td><td>CE</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">N-S RE to CE via BigIP</a></td><td>North-South</td><td>RE</td><td>CE &rarr; BigIP</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">N-S CE via CLB</a></td><td>North-South</td><td>CE (CLB)</td><td>CE</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">E-W CE to CE</a></td><td>East-West</td><td>CE</td><td>CE (remote)</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">SD Kubernetes</a></td><td>North-South</td><td>RE</td><td>CE &rarr; k8s</td><td>No</td></tr>
+      <tr><td><a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a></td><td>North-South</td><td>RE</td><td>CE (vk8s)</td><td>No</td></tr>
+    </table>
+  </section>
+  <div class="section-nav" data-for="use-cases" data-prev="lab-delete" data-next="ns-re"></div>
+
+  <!-- ===== LAB SETUP ===== -->
+  <section id="setup-quick">
+    <h1>Lab Setup</h1>
+    <p>This assumes you completed the <b>Basic Setup</b> (tools installed, repo cloned). If you are returning on a different day, start with Step 1 to re-activate your environment.</p>
+
+    <h2 class="step">1. Activate Environment</h2>
+    <p>Navigate into the repository and activate the Python virtual environment.</p>
+<pre><code>cd xC-mcn-demo
+source .venv/bin/activate</code></pre>
+
+    <h2 class="step">2. Gather Credentials</h2>
+    <p>You need two sets of credentials before configuring the lab.</p>
+
+    <h3>F5 xC API Certificate</h3>
+    <ol>
+      <li>Log in to the <b>F5 Distributed Cloud Console</b>.</li>
+      <li>Navigate to <b>Administration &rarr; Credentials &rarr; API Credentials</b>.</li>
+      <li>Create or download an API certificate (<code>.p12</code> file).</li>
+      <li>Note the <b>password</b> you set during creation.</li>
+      <li>Copy the file into the repository:</li>
+    </ol>
+<pre><code>cp ~/Downloads/your-cert.p12 ./setup-init/.xC/</code></pre>
+
+    <h3>AWS Credentials</h3>
+    <p>Obtain temporary (STS) or static AWS credentials from your AWS account or lab portal:</p>
+    <ul>
+      <li><code>aws_access_key_id</code></li>
+      <li><code>aws_secret_access_key</code></li>
+      <li><code>aws_session_token</code> (if using STS / temporary credentials)</li>
+    </ul>
+
+    <h2 class="step">3. Configure</h2>
+    <p>Copy the template and open it in your editor:</p>
+<pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
+vim ./setup-init/config.yaml</code></pre>
+
+    <p>The configuration file has four sections:</p>
+
+    <table>
+      <tr><th>Section</th><th>Parameter</th><th>Description</th></tr>
+      <tr><td rowspan="5"><b>aws</b></td><td><code>auth_profile</code></td><td>AWS CLI profile name (default: <code>xc-mcn-lab</code>)</td></tr>
+      <tr><td><code>aws_access_key_id</code></td><td>Your AWS Access Key</td></tr>
+      <tr><td><code>aws_secret_access_key</code></td><td>Your AWS Secret Key</td></tr>
+      <tr><td><code>aws_session_token</code></td><td>STS session token (leave empty for static keys)</td></tr>
+      <tr><td><code>tmp_aws_cred</code></td><td>Set <code>true</code> for STS, <code>false</code> for static</td></tr>
+      <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td>Your unique lab ID (DNS-safe, max 16 chars). Example: <code>__STUDENT__</code></td></tr>
+      <tr><td><code>email</code></td><td>Contact email for resource tagging</td></tr>
+      <tr><td rowspan="4"><b>xC</b></td><td><code>p12_auth</code></td><td>Path to the <code>.p12</code> file, e.g. <code>.xC/your-cert.p12</code></td></tr>
+      <tr><td><code>p_12_pwd</code></td><td>Password for the P12 certificate</td></tr>
+      <tr><td><code>tenant</code></td><td>Your xC tenant name</td></tr>
+      <tr><td><code>tenant_api</code></td><td>API endpoint, e.g. <code>https://&lt;tenant&gt;.console.ves.volterra.io/api</code></td></tr>
+      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td>BIG-IP admin password (default: <code>DefaultLabPwd!2026</code>)</td></tr>
+    </table>
+
+    <div class="admonition warning">
+      <strong>Student name rules</strong>
+      Lowercase letters, digits, and hyphens only (<code>[a-z0-9-]</code>). Must start and end with a letter or digit. Maximum 16 characters. This value becomes part of your DNS domain suffix: <code>__DOMAIN__</code>.
+    </div>
+
+    <h2 class="step">4. Deploy</h2>
+<pre><code>./setup-init/bin/initialize.sh init</code></pre>
+    <p>This will automatically:</p>
+    <ul>
+      <li>Detect your public IP</li>
+      <li>Generate a Certificate Authority in <code>./setup-init/.cert/ca/</code></li>
+      <li>Update AWS credentials in <code>~/.aws/credentials</code></li>
+      <li>Convert the xC P12 certificate to PEM</li>
+      <li>Run Terraform (<code>fmt</code>, <code>init</code>, <code>plan</code>, <code>apply</code>)</li>
+    </ul>
+
+    <h2 class="step">5. Wait for Components</h2>
+    <table>
+      <tr><th>Component</th><th>Estimated Time</th><th>How to verify</th></tr>
+      <tr><td>Terraform</td><td>2-3 min</td><td>Script completes without errors</td></tr>
+      <tr><td>BIG-IP</td><td>5-7 min</td><td>AS3 deploys pools and virtual servers</td></tr>
+      <tr><td>xC Gateways</td><td>15-20 min</td><td>Check xC Console: gateways show <b>online</b></td></tr>
+    </table>
+
+    <h2 class="step">6. Post Install</h2>
+    <p>Add local <code>/etc/hosts</code> entries and open SSH sessions:</p>
+<pre><code># Copy /etc/hosts entries to clipboard
+terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
+sudo vim /etc/hosts
+
+# Fix SSH key permissions and open sessions to all lab servers
+./setup-init/.ssh/ssh-key-permission_lnx.sh all</code></pre>
+
+    <h3>Device Access</h3>
+    <table>
+      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
+      <tr><td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener">BIG-IP EU-Central (<code>bigip-mgmt-eu-central-1.__DOMAIN__</code>)</a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener">BIG-IP EU-West (<code>bigip-mgmt-eu-west-1.__DOMAIN__</code>)</a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+    </table>
+
+    <div class="admonition warning">
+      <strong>Important</strong>
+      Add local <code>/etc/hosts</code> entries before accessing any devices.
+    </div>
+  </section>
+  <div class="section-nav" data-for="setup-quick" data-prev="os-setup" data-next="lab-delete"></div>
+
+  <!-- ===== LAB DELETION ===== -->
+  <section id="lab-delete">
+    <h1>Lab Deletion</h1>
+    <p>When you are done with the lab, tear down all infrastructure and clean up local artifacts.</p>
+
+    <h2 class="step">1. Update Credentials (if expired)</h2>
+    <p>If your AWS credentials have expired since the initial setup, update <code>config.yaml</code> and run:</p>
+<pre><code>./setup-init/bin/initialize.sh update-creds</code></pre>
+
+    <h2 class="step">2. Destroy Infrastructure</h2>
+    <p>This will destroy all AWS resources, remove generated certificates, clean up the AWS profile, and reset auto-populated config values.</p>
+<pre><code>./setup-init/bin/delete.sh</code></pre>
+
+    <h2 class="step">3. Remove /etc/hosts Entries</h2>
+    <p>Manually remove the lab entries you added during post install:</p>
+<pre><code>sudo vim /etc/hosts</code></pre>
+
+    <div class="admonition warning">
+      <strong>What the delete script removes</strong>
+      <ul>
+        <li>All Terraform-managed AWS infrastructure</li>
+        <li>Generated xC PEM certificate (<code>.xC/xc-curl.crt.pem</code>)</li>
+        <li>CA and domain certificates (<code>.cert/</code>)</li>
+        <li>AWS credentials profile (<code>xc-mcn-lab</code>) from <code>~/.aws/credentials</code></li>
+        <li>Auto-populated values in <code>config.yaml</code> (IP, CA paths)</li>
+      </ul>
+    </div>
+  </section>
+  <div class="section-nav" data-for="lab-delete" data-prev="setup-quick" data-next="use-cases"></div>
+
+  <!-- ===== NS RE ONLY ===== -->
+  <section id="ns-re">
+    <h1>North-South: RE Only</h1>
+    <p>Public HTTP load balancer via Regional Edge with DNS service discovery of AWS NLB names. Traffic does not touch a Customer Edge.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"</code></pre>
+    <h2>Test</h2>
+    <p>Access the load balancer FQDN (<code>echo-public.__DOMAIN__</code>) and verify the <b>hostname</b> in the JSON response. Load balancing alternates between eu-central-1 and eu-west-1.</p>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="ns-re" data-prev="use-cases" data-next="ns-re-ce"></div>
+
+  <!-- ===== NS RE to CE ===== -->
+  <section id="ns-re-ce">
+    <h1>North-South: RE to CE</h1>
+    <p>Public HTTP load balancers via Regional Edge with egress through Customer Edge to private backend servers. Three LBs are deployed: combined, eu-central only, eu-west only.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"</code></pre>
+    <h2>Test</h2>
+    <p>Access each FQDN and verify load balancing between web-01 and web-02:</p>
+    <ul>
+      <li><code>echo-hybrid.__DOMAIN__</code> &mdash; both regions</li>
+      <li><code>echo-hybrid-central.__DOMAIN__</code> &mdash; eu-central only</li>
+      <li><code>echo-hybrid-west.__DOMAIN__</code> &mdash; eu-west only</li>
+    </ul>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="ns-re-ce" data-prev="ns-re" data-next="ns-re-ce-bigip"></div>
+
+  <!-- ===== NS RE to CE via BIG-IP ===== -->
+  <section id="ns-re-ce-bigip">
+    <h1>North-South: RE to CE via BIG-IP</h1>
+    <p>Public HTTP load balancers via RE, egress through CE to a local BIG-IP appliance. Demonstrates F5 "better together" integration with iRule header manipulation.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"</code></pre>
+    <h2>Test</h2>
+    <p>Access the FQDN and check for the <b>custom-header</b> injected by the BIG-IP iRule:</p>
+    <ul>
+      <li><code>bigip-echo-eu-central.__DOMAIN__</code></li>
+      <li><code>bigip-echo-eu-west.__DOMAIN__</code></li>
+    </ul>
+    <h3>BIG-IP Access</h3>
+    <table>
+      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
+      <tr><td><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><td><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+    </table>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="ns-re-ce-bigip" data-prev="ns-re-ce" data-next="ns-ce-clb"></div>
+
+  <!-- ===== NS CE via CLB ===== -->
+  <section id="ns-ce-clb">
+    <h1>North-South: CE via Cloud Load Balancer</h1>
+    <p>Client sessions terminated directly at the Customer Edge via a public NLB or internal request. SaaS-managed local WAAP without Regional Edge.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"</code></pre>
+    <h2>Test &mdash; External (via NLB)</h2>
+    <p>Requires local <code>/etc/hosts</code> entries.</p>
+    <table>
+      <tr><th>Region</th><th>App</th><th>XSS Test</th></tr>
+      <tr><td>EU-Central-1</td><td><code>http://app-1.eu-central-1.__DOMAIN__</code></td><td><code>http://app-1.eu-central-1.__DOMAIN__?a=&lt;script&gt;</code></td></tr>
+      <tr><td>EU-West-1</td><td><code>http://app-1.eu-west-1.__DOMAIN__</code></td><td><code>http://app-1.eu-west-1.__DOMAIN__?a=&lt;script&gt;</code></td></tr>
+    </table>
+    <h2>Test &mdash; Internal (via SSH)</h2>
+<pre><code># SSH to a web server
+./setup-init/.ssh/ssh-key-permission_lnx.sh central
+
+# Normal request
+curl --silent http://local-web.__DOMAIN__ | grep "Server address"
+
+# XSS test -- WAF should block
+curl --silent "http://local-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="ns-ce-clb" data-prev="ns-re-ce-bigip" data-next="ew-ce"></div>
+
+  <!-- ===== EW CE to CE ===== -->
+  <section id="ew-ce">
+    <h1>East-West: CE to CE</h1>
+    <p>Internal HTTP load balancers for cross-region east-west traffic between CE sites. No VPC peering &mdash; connectivity provided entirely by the xC fabric.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"</code></pre>
+    <h2>Test</h2>
+    <p>SSH to a web server and curl the internal LB. The response should come from the <b>opposite</b> region:</p>
+<pre><code># SSH to eu-central
+./setup-init/.ssh/ssh-key-permission_lnx.sh central
+
+# Test cross-region connectivity
+curl --silent http://remote-web.__DOMAIN__ | grep "Server name"
+
+# Test WAF (should be blocked)
+curl --silent "http://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+    <table>
+      <tr><th>SSH into</th><th>curl remote-web</th><th>Response from</th></tr>
+      <tr><td>EU-Central-1</td><td><code>lb-api-int-central</code></td><td>EU-West-1 NGINX</td></tr>
+      <tr><td>EU-West-1</td><td><code>lb-api-int-west</code></td><td>EU-Central-1 NGINX</td></tr>
+    </table>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="ew-ce" data-prev="ns-ce-clb" data-next="ew-nwc"></div>
+
+  <!-- ===== EW Network Connect ===== -->
+  <section id="ew-nwc">
+    <h1>East-West: Network Connect (L3 VPN)</h1>
+    <div class="admonition warning"><strong>Beta</strong> This lab section is in beta. Routing only possible via GW01-to-GW01 CE nodes.</div>
+    <p>Establishes a full L3 VPN tunnel between both AWS sites using xC segments.</p>
+    <h2>Steps</h2>
+    <ol>
+      <li>Create a Segment: <code>__STUDENT__-global-vrf</code></li>
+      <li>Go to Multi-Cloud Network Connect &rarr; Site Management &rarr; Customer Edges &rarr; your CE &rarr; Manage</li>
+      <li>On interface <code>ens6</code>, change VRF from <b>SITE LOCAL INSIDE</b> to <b>Segment (Global VRF)</b> and select the segment. Repeat for both GW01 (eu-west and eu-central).</li>
+      <li>Check CE Routes</li>
+      <li>Test access</li>
+    </ol>
+    <h2>Delete</h2>
+    <p>Change interface setting back to <b>SITE_LOCAL_INSIDE</b>.</p>
+  </section>
+  <div class="section-nav" data-for="ew-nwc" data-prev="ew-ce" data-next="sd-k8s"></div>
+
+  <!-- ===== SD K8s ===== -->
+  <section id="sd-k8s">
+    <h1>Service Discovery: Kubernetes</h1>
+    <p>Kubernetes service discovery via kubeconfig for minikube clusters on CE sites. Discovered services are exposed through HTTP load balancers.</p>
+    <h2>Deploy</h2>
+<pre><code>"./xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"</code></pre>
+    <p>The script SSHs into each Ubuntu server, fetches kubeconfig, deploys the echo app, and registers everything with the xC API.</p>
+    <h2>FQDNs</h2>
+    <ul>
+      <li><code>k8s.__DOMAIN__</code> &mdash; both regions</li>
+      <li><code>k8s-central.__DOMAIN__</code> &mdash; eu-central only</li>
+      <li><code>k8s-west.__DOMAIN__</code> &mdash; eu-west only</li>
+    </ul>
+    <h2>Delete</h2>
+<pre><code>"./xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"</code></pre>
+  </section>
+  <div class="section-nav" data-for="sd-k8s" data-prev="ew-nwc" data-next="sd-bigip"></div>
+
+  <!-- ===== SD BIG-IP ===== -->
+  <section id="sd-bigip">
+    <h1>Service Discovery: BIG-IP</h1>
+    <div class="admonition warning"><strong>Early Access</strong> This feature is still Early Access. Use with caution.</div>
+    <h2>BIG-IP Access</h2>
+    <table>
+      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
+      <tr><td><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><td><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+    </table>
+    <h2>Create Service Discovery</h2>
+    <h3>EU-Central</h3>
+    <ul>
+      <li><b>Name:</b> <code>sd-bigip-__STUDENT__-central</code></li>
+      <li><b>Site:</b> <code>system/__STUDENT__-****-aws-eu-central-1</code></li>
+      <li><b>Type:</b> Site Local Network</li>
+    </ul>
+    <h3>EU-West</h3>
+    <ul>
+      <li><b>Name:</b> <code>sd-bigip-__STUDENT__-west</code></li>
+      <li><b>Site:</b> <code>system/__STUDENT__-****-aws-eu-west-1</code></li>
+      <li><b>Type:</b> Site Local Network</li>
+    </ul>
+  </section>
+  <div class="section-nav" data-for="sd-bigip" data-prev="sd-k8s" data-next="vk8s"></div>
+
+  <!-- ===== vk8s ===== -->
+  <section id="vk8s">
+    <h1>Edge Computing: vk8s</h1>
+    <p>Deploy container workloads to CE sites using F5 xC virtual Kubernetes (vk8s). Pods run directly on Customer Edge nodes.</p>
+    <h2>Deploy</h2>
+<pre><code>./xC-use-cases/vk8s/bin/setup.sh</code></pre>
+    <h2>FQDNs</h2>
+    <ul>
+      <li><code>vk8s-eu-central.__DOMAIN__</code></li>
+      <li><code>vk8s-eu-west.__DOMAIN__</code></li>
+    </ul>
+    <h2>Delete</h2>
+<pre><code>./xC-use-cases/vk8s/bin/delete.sh</code></pre>
+  </section>
+  <div class="section-nav" data-for="vk8s" data-prev="sd-bigip" data-next="home"></div>
+
+</div>
+
+<div id="image-modal" class="image-modal" aria-hidden="true">
+  <div class="image-modal-overlay" onclick="closeImageModal()"></div>
+  <div class="image-modal-content">
+    <button class="image-modal-close" onclick="closeImageModal()">×</button>
+    <img id="image-modal-img" src="" alt="Enlarged diagram">
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

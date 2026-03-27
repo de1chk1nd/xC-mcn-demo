@@ -189,9 +189,6 @@ sudo apt update && sudo apt install -y terraform
 # Python 3 + pip
 sudo apt install -y python3 python3-pip
 
-# Python packages
-pip3 install pyyaml requests
-
 # yq (YAML processor - https://github.com/mikefarah/yq)
 sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 sudo chmod +x /usr/local/bin/yq
@@ -211,10 +208,21 @@ pre-commit install
 brew install terraform python yq curl openssl git pre-commit
 
 # Python packages
-pip3 install pyyaml requests
+# Install via venv after cloning the repo (see below)
 
 # Pre-commit hooks (optional)
 pre-commit install
+```
+
+### Python Packages (venv)
+
+Use a virtual environment and install from `requirements.txt`:
+
+```shell
+cd xC-mcn-demo
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 &nbsp;
