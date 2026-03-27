@@ -5,7 +5,7 @@ resource "random_id" "id" {
 resource "aws_secretsmanager_secret" "bigip" {
   name = format("%s-bigip-secret-%s", var.student, random_id.id.hex)
   tags = {
-    Name  = "${var.student}-bigip-secret"
+    Name = "${var.student}-bigip-secret"
 
   }
 }
@@ -16,11 +16,11 @@ resource "aws_secretsmanager_secret_version" "bigip-pwd" {
 }
 
 resource "aws_network_interface" "mgmt" {
-  subnet_id       = aws_subnet.xC-mcn-site-bigip-mgmt.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-bigip-mgmt.id]
+  subnet_id         = aws_subnet.xC-mcn-site-bigip-mgmt.id
+  security_groups   = [aws_security_group.xC-mcn-site-allow-bigip-mgmt.id]
   private_ips_count = 1
   tags = {
-    "Name"      = "${var.student}-nic-bigip-mgmt"
+    "Name" = "${var.student}-nic-bigip-mgmt"
   }
 }
 
@@ -29,11 +29,11 @@ data "aws_network_interface" "bigip-mgmt" {
 }
 
 resource "aws_network_interface" "external" {
-  subnet_id       = aws_subnet.xC-mcn-site-subnet.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-bigip.id]
+  subnet_id         = aws_subnet.xC-mcn-site-subnet.id
+  security_groups   = [aws_security_group.xC-mcn-site-allow-bigip.id]
   private_ips_count = 4
   tags = {
-    "Name"      = "${var.student}-nic-bigip-external"
+    "Name" = "${var.student}-nic-bigip-external"
   }
 }
 
@@ -42,11 +42,11 @@ data "aws_network_interface" "bigip-external" {
 }
 
 resource "aws_network_interface" "internal" {
-  subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
-  security_groups = [aws_security_group.xC-mcn-site-allow-bigip.id]
+  subnet_id         = aws_subnet.xC-mcn-site-subnet-priv.id
+  security_groups   = [aws_security_group.xC-mcn-site-allow-bigip.id]
   private_ips_count = 4
   tags = {
-    "Name"      = "${var.student}-nic-bigip-internal"
+    "Name" = "${var.student}-nic-bigip-internal"
   }
 }
 
@@ -57,46 +57,46 @@ data "aws_network_interface" "bigip-internal" {
 resource "aws_eip" "bigip-mgmt" {
   network_interface = aws_network_interface.mgmt.id
   tags = {
-    Name        = "${var.student}-bigip-mgmt"
-    Owner       = var.owner
+    Name  = "${var.student}-bigip-mgmt"
+    Owner = var.owner
   }
 }
 resource "aws_eip" "bigip-ext-0" {
-  network_interface = aws_network_interface.external.id
+  network_interface         = aws_network_interface.external.id
   associate_with_private_ip = data.aws_network_interface.bigip-external.private_ips[0]
   tags = {
-    Name        = "${var.student}-bigip-external-0"
-    Owner       = var.owner
+    Name  = "${var.student}-bigip-external-0"
+    Owner = var.owner
   }
 }
 resource "aws_eip" "bigip-ext-1" {
-  network_interface = aws_network_interface.external.id
+  network_interface         = aws_network_interface.external.id
   associate_with_private_ip = data.aws_network_interface.bigip-external.private_ips[1]
   tags = {
-    Name        = "${var.student}-bigip-external-1"
-    Owner       = var.owner
+    Name  = "${var.student}-bigip-external-1"
+    Owner = var.owner
   }
 }
 resource "aws_eip" "bigip-ext-2" {
-  network_interface = aws_network_interface.external.id
+  network_interface         = aws_network_interface.external.id
   associate_with_private_ip = data.aws_network_interface.bigip-external.private_ips[2]
   tags = {
-    Name        = "${var.student}-bigip-external-2"
-    Owner       = var.owner
+    Name  = "${var.student}-bigip-external-2"
+    Owner = var.owner
   }
 }
 resource "aws_eip" "bigip-ext-3" {
-  network_interface = aws_network_interface.external.id
+  network_interface         = aws_network_interface.external.id
   associate_with_private_ip = data.aws_network_interface.bigip-external.private_ips[3]
   tags = {
-    Name        = "${var.student}-bigip-external-3"
+    Name = "${var.student}-bigip-external-3"
   }
 }
 resource "aws_eip" "bigip-ext-4" {
-  network_interface = aws_network_interface.external.id
+  network_interface         = aws_network_interface.external.id
   associate_with_private_ip = data.aws_network_interface.bigip-external.private_ips[4]
   tags = {
-    Name        = "${var.student}-bigip-external-4"
+    Name = "${var.student}-bigip-external-4"
   }
 }
 
@@ -119,7 +119,8 @@ data "template_file" "user_data_bigip" {
     iIP_1                  = data.aws_network_interface.bigip-internal.private_ips[1]
     iIP_2                  = data.aws_network_interface.bigip-internal.private_ips[2]
     iIP_3                  = data.aws_network_interface.bigip-internal.private_ips[3]
-    iIP_4                  = data.aws_network_interface.bigip-internal.private_ips[4]    
+    iIP_4                  = data.aws_network_interface.bigip-internal.private_ips[4]
+    domain_suffix          = local.domain_suffix
     INIT_URL               = var.INIT_URL,
     DO_URL                 = var.DO_URL,
     DO_VER                 = split("/", var.DO_URL)[7]
@@ -135,11 +136,11 @@ data "template_file" "user_data_bigip" {
 }
 
 resource "aws_instance" "f5_bigip" {
-  instance_type        = "m5n.2xlarge"
-  ami                  = var.f5_ami
-  key_name             = aws_key_pair.generated_key.key_name
-  monitoring           = true
-  user_data            = data.template_file.user_data_bigip.rendered
+  instance_type = "m5n.2xlarge"
+  ami           = var.f5_ami
+  key_name      = aws_key_pair.generated_key.key_name
+  monitoring    = true
+  user_data     = data.template_file.user_data_bigip.rendered
 
   root_block_device {
     delete_on_termination = true
@@ -163,6 +164,6 @@ resource "aws_instance" "f5_bigip" {
   depends_on = [aws_eip.bigip-mgmt, aws_eip.bigip-ext-0]
 
   tags = {
-    Name        = "${var.student}-bigip" 
+    Name = "${var.student}-bigip"
   }
 }

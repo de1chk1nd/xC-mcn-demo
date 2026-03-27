@@ -31,7 +31,8 @@ resource "aws_instance" "xC-mcn-site-ubuntu-01" {
   }
 
   user_data = templatefile("${path.module}/etc/ubuntu/ubuntu.tmpl", {
-    hostname = "${var.region}-webserver-01"
+    hostname      = "${var.region}-webserver-01"
+    domain_suffix = local.domain_suffix
   })
 
   tags = {
@@ -61,7 +62,8 @@ resource "aws_instance" "xC-mcn-site-ubuntu-02" {
   }
 
   user_data = templatefile("${path.module}/etc/ubuntu/ubuntu.tmpl", {
-    hostname = "${var.region}-webserver-02"
+    hostname      = "${var.region}-webserver-02"
+    domain_suffix = local.domain_suffix
   })
 
   tags = {

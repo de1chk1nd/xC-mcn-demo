@@ -214,13 +214,13 @@ extension_services:
               addressDiscovery: fqdn
               shareNodes: true
               autoPopulate: true
-              hostname: web-01.de1chk1nd-mcn.aws
+              hostname: web-01.${domain_suffix}
             fqdn_ubuntu_aws_web_02:
               class: Address_Discovery
               addressDiscovery: fqdn
               shareNodes: true
               autoPopulate: true
-              hostname: web-02.de1chk1nd-mcn.aws
+              hostname: web-02.${domain_suffix}
             p_web_80:
               class: Pool
               monitors:
@@ -340,15 +340,15 @@ extension_services:
               iRule: |-
                 when HTTP_REQUEST {
                   switch -glob [HTTP::host] {
-                    bigip-web.de1chk1nd-lab.aws { 
+                    bigip-web.${domain_suffix} { 
                       pool /Common/Shared/p_web_80
                       SSL::disable serverside
                     }
-                    bigip-echo.de1chk1nd-lab.aws { 
+                    bigip-echo.${domain_suffix} { 
                       pool /Common/Shared/p_echo_10080_http
                       SSL::disable serverside
                     }
-                    bigip-echo-ssl.de1chk1nd-lab.aws {
+                    bigip-echo-ssl.${domain_suffix} {
                       pool /Common/Shared/p_echo_10443_https
                     }
                     default {

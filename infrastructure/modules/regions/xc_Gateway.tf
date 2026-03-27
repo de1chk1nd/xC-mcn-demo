@@ -8,6 +8,7 @@ resource "random_id" "xC-mcn-eu-central-1-id" {
 locals {
   smsv2-site-name-gw01 = "${var.student}-${random_id.xC-mcn-eu-central-1-id.hex}-aws-${var.region}-01"
   smsv2-site-name-gw02 = "${var.student}-${random_id.xC-mcn-eu-central-1-id.hex}-aws-${var.region}-02"
+  domain_suffix        = "${var.student}-xc-mcn-lab.aws"
 }
 
 ### Configure Gateways in xC Console (GW01 and GW02) and Generate Tokens
@@ -22,9 +23,9 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack-01" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"                       = "ves-io-AWS"
-    "${var.student}-mcn-sites"              = "vk8s"
-    "${var.student}-mcn-sites"              = "${var.vsite-region}"
+    "ves.io/provider"          = "ves-io-AWS"
+    "${var.student}-mcn-sites" = "vk8s"
+    "${var.student}-mcn-sites" = "${var.vsite-region}"
   }
 
   re_select {
@@ -52,9 +53,9 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack-02" {
   enable_ha               = false
 
   labels = {
-    "ves.io/provider"                       = "ves-io-AWS"
-    "${var.student}-mcn-sites"              = "vk8s"
-    "${var.student}-mcn-sites"              = "${var.vsite-region}"
+    "ves.io/provider"          = "ves-io-AWS"
+    "${var.student}-mcn-sites" = "vk8s"
+    "${var.student}-mcn-sites" = "${var.vsite-region}"
   }
 
   re_select {
@@ -76,34 +77,34 @@ resource "volterra_securemesh_site_v2" "xC-mcn-smsv2-appstack-02" {
 resource "volterra_token" "xC-mcn-sitetoken-01" {
   name      = "token-${random_id.xC-mcn-eu-central-1-id.hex}-gw01"
   namespace = "system"
-  type = "1"
+  type      = "1"
   site_name = local.smsv2-site-name-gw01
-  depends_on = [ 
+  depends_on = [
     volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-01
-    ]
+  ]
 }
 
 resource "volterra_token" "xC-mcn-sitetoken-02" {
   name      = "token-${random_id.xC-mcn-eu-central-1-id.hex}-gw02"
   namespace = "system"
-  type = "1"
+  type      = "1"
   site_name = local.smsv2-site-name-gw02
-  depends_on = [ 
+  depends_on = [
     volterra_securemesh_site_v2.xC-mcn-smsv2-appstack-02
-    ]
+  ]
 }
 
 ### Create NICs, EIPs, User-Data, ...
 ###
 
 resource "aws_network_interface" "xC-mcn-slo-v2-publ-01" {
-  description = "SLo"
-  subnet_id       = aws_subnet.xC-mcn-site-subnet.id
+  description       = "SLo"
+  subnet_id         = aws_subnet.xC-mcn-site-subnet.id
   source_dest_check = false
   security_groups = [
-    aws_security_group.xC-mcn-site-ce-access-generic.id, 
-    aws_security_group.xC-mcn-site-ce-to-americas.id, 
-    aws_security_group.xC-mcn-site-ce-to-europe.id, 
+    aws_security_group.xC-mcn-site-ce-access-generic.id,
+    aws_security_group.xC-mcn-site-ce-to-americas.id,
+    aws_security_group.xC-mcn-site-ce-to-europe.id,
     aws_security_group.xC-mcn-site-ce-to-asia.id
   ]
   tags = {
@@ -112,8 +113,8 @@ resource "aws_network_interface" "xC-mcn-slo-v2-publ-01" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2-priv-01" {
-  description = "SLi"
-  subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
+  description       = "SLi"
+  subnet_id         = aws_subnet.xC-mcn-site-subnet-priv.id
   source_dest_check = false
   security_groups = [
     aws_security_group.xC-mcn-site-ce-access-generic.id
@@ -124,8 +125,8 @@ resource "aws_network_interface" "xC-mcn-slo-v2-priv-01" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2-tran-01" {
-  description = "SLi"
-  subnet_id       = aws_subnet.xC-mcn-site-transfer-tgw.id
+  description       = "SLi"
+  subnet_id         = aws_subnet.xC-mcn-site-transfer-tgw.id
   source_dest_check = false
   security_groups = [
     aws_security_group.xC-mcn-site-ce-access-generic.id
@@ -136,13 +137,13 @@ resource "aws_network_interface" "xC-mcn-slo-v2-tran-01" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2-publ-02" {
-  description = "SLo"
-  subnet_id       = aws_subnet.xC-mcn-site-subnet.id
+  description       = "SLo"
+  subnet_id         = aws_subnet.xC-mcn-site-subnet.id
   source_dest_check = false
   security_groups = [
-    aws_security_group.xC-mcn-site-ce-access-generic.id, 
-    aws_security_group.xC-mcn-site-ce-to-americas.id, 
-    aws_security_group.xC-mcn-site-ce-to-europe.id, 
+    aws_security_group.xC-mcn-site-ce-access-generic.id,
+    aws_security_group.xC-mcn-site-ce-to-americas.id,
+    aws_security_group.xC-mcn-site-ce-to-europe.id,
     aws_security_group.xC-mcn-site-ce-to-asia.id
   ]
   tags = {
@@ -151,8 +152,8 @@ resource "aws_network_interface" "xC-mcn-slo-v2-publ-02" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2-priv-02" {
-  description = "SLi"
-  subnet_id       = aws_subnet.xC-mcn-site-subnet-priv.id
+  description       = "SLi"
+  subnet_id         = aws_subnet.xC-mcn-site-subnet-priv.id
   source_dest_check = false
   security_groups = [
     aws_security_group.xC-mcn-site-ce-access-generic.id
@@ -163,8 +164,8 @@ resource "aws_network_interface" "xC-mcn-slo-v2-priv-02" {
 }
 
 resource "aws_network_interface" "xC-mcn-slo-v2-tran-02" {
-  description = "SLi"
-  subnet_id       = aws_subnet.xC-mcn-site-transfer-tgw.id
+  description       = "SLi"
+  subnet_id         = aws_subnet.xC-mcn-site-transfer-tgw.id
   source_dest_check = false
   security_groups = [
     aws_security_group.xC-mcn-site-ce-access-generic.id
@@ -176,7 +177,7 @@ resource "aws_network_interface" "xC-mcn-slo-v2-tran-02" {
 
 resource "aws_eip" "xC-mcn-slo-v2-eip-01" {
   network_interface = aws_network_interface.xC-mcn-slo-v2-publ-01.id
-  
+
   depends_on = [
     aws_network_interface.xC-mcn-slo-v2-publ-01,
     aws_instance.xC-mcn-ce-v2-01
@@ -189,7 +190,7 @@ resource "aws_eip" "xC-mcn-slo-v2-eip-01" {
 
 resource "aws_eip" "xC-mcn-slo-v2-eip-02" {
   network_interface = aws_network_interface.xC-mcn-slo-v2-publ-02.id
-  
+
   depends_on = [
     aws_network_interface.xC-mcn-slo-v2-publ-02,
     aws_instance.xC-mcn-ce-v2-01
@@ -203,14 +204,14 @@ resource "aws_eip" "xC-mcn-slo-v2-eip-02" {
 data "template_file" "user_data_smsv2-01" {
   template = file("${path.module}/etc/smsv2/user-data.tmpl")
   vars = {
-    token                = volterra_token.xC-mcn-sitetoken-01.id
+    token = volterra_token.xC-mcn-sitetoken-01.id
   }
 }
 
 data "template_file" "user_data_smsv2-02" {
   template = file("${path.module}/etc/smsv2/user-data.tmpl")
   vars = {
-    token                = volterra_token.xC-mcn-sitetoken-02.id
+    token = volterra_token.xC-mcn-sitetoken-02.id
   }
 }
 
@@ -218,11 +219,11 @@ data "template_file" "user_data_smsv2-02" {
 ###
 
 resource "aws_instance" "xC-mcn-ce-v2-01" {
-  ami                  = var.smsv2_ami
-  key_name             = aws_key_pair.generated_key.key_name
-  monitoring           = false
-  instance_type        = "m5.2xlarge"
-  user_data            = data.template_file.user_data_smsv2-01.rendered
+  ami           = var.smsv2_ami
+  key_name      = aws_key_pair.generated_key.key_name
+  monitoring    = false
+  instance_type = "m5.2xlarge"
+  user_data     = data.template_file.user_data_smsv2-01.rendered
 
   root_block_device {
     volume_size = 120
@@ -258,11 +259,11 @@ resource "aws_instance" "xC-mcn-ce-v2-01" {
 }
 
 resource "aws_instance" "xC-mcn-ce-v2-02" {
-  ami                  = var.smsv2_ami
-  key_name             = aws_key_pair.generated_key.key_name
-  monitoring           = false
-  instance_type        = "m5.2xlarge"
-  user_data            = data.template_file.user_data_smsv2-02.rendered
+  ami           = var.smsv2_ami
+  key_name      = aws_key_pair.generated_key.key_name
+  monitoring    = false
+  instance_type = "m5.2xlarge"
+  user_data     = data.template_file.user_data_smsv2-02.rendered
 
   root_block_device {
     volume_size = 120

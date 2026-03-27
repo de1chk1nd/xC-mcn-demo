@@ -4,45 +4,45 @@
 #
 resource "volterra_origin_pool" "webserver-nginx" {
   name                   = "origin-nginx-aws-${var.region}"
-  namespace              = "${var.namespace}"
+  namespace              = var.namespace
   endpoint_selection     = "LOCAL_PREFERRED"
   loadbalancer_algorithm = "LB_OVERRIDE"
 
   origin_servers {
-     private_name {
-      dns_name = "web-01.de1chk1nd-mcn.aws"
+    private_name {
+      dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
+          tenant    = "f5-emea-ent-bceuutam"
           namespace = "shared"
-          name = var.vsite_conf
-          }
+          name      = var.vsite_conf
         }
-      inside_network = true
       }
+      inside_network = true
     }
- 
-   origin_servers {
-     private_name {
-      dns_name = "web-02.de1chk1nd-mcn.aws"
-      site_locator {
-        virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
-          namespace = "shared"
-          name = var.vsite_conf
-          }
-        }
-      inside_network = true
-      }
-    }  
-
-  healthcheck {
-    tenant = "f5-emea-ent-bceuutam"
-    namespace = "${var.namespace}"
-    name = "hello-check"
   }
 
-  port = "80"
+  origin_servers {
+    private_name {
+      dns_name = "web-02.${local.domain_suffix}"
+      site_locator {
+        virtual_site {
+          tenant    = "f5-emea-ent-bceuutam"
+          namespace = "shared"
+          name      = var.vsite_conf
+        }
+      }
+      inside_network = true
+    }
+  }
+
+  healthcheck {
+    tenant    = "f5-emea-ent-bceuutam"
+    namespace = var.namespace
+    name      = "hello-check"
+  }
+
+  port   = "80"
   no_tls = true
 
   depends_on = [
@@ -58,42 +58,42 @@ resource "volterra_origin_pool" "webserver-nginx" {
 
 resource "volterra_origin_pool" "webserver-echossl" {
   name                   = "origin-docker-echossl-aws-${var.region}"
-  namespace              = "${var.namespace}"
+  namespace              = var.namespace
   endpoint_selection     = "LOCAL_PREFERRED"
   loadbalancer_algorithm = "LB_OVERRIDE"
 
   origin_servers {
-     private_name {
-      dns_name = "web-01.de1chk1nd-mcn.aws"
+    private_name {
+      dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
+          tenant    = "f5-emea-ent-bceuutam"
           namespace = "shared"
-          name = var.vsite_conf
-          }
+          name      = var.vsite_conf
         }
-      inside_network = true
       }
+      inside_network = true
     }
- 
-   origin_servers {
-     private_name {
-      dns_name = "web-02.de1chk1nd-mcn.aws"
+  }
+
+  origin_servers {
+    private_name {
+      dns_name = "web-02.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
+          tenant    = "f5-emea-ent-bceuutam"
           namespace = "shared"
-          name = var.vsite_conf
-          }
+          name      = var.vsite_conf
         }
-      inside_network = true
       }
-    } 
+      inside_network = true
+    }
+  }
 
   healthcheck {
-    tenant = "f5-emea-ent-bceuutam"
-    namespace = "${var.namespace}"
-    name = "hello-check"
+    tenant    = "f5-emea-ent-bceuutam"
+    namespace = var.namespace
+    name      = "hello-check"
   }
 
   port = "10443"
@@ -117,45 +117,45 @@ resource "volterra_origin_pool" "webserver-echossl" {
 
 resource "volterra_origin_pool" "webserver-juiceshop" {
   name                   = "origin-docker-juiceshop-aws-${var.region}"
-  namespace              = "${var.namespace}"
+  namespace              = var.namespace
   endpoint_selection     = "LOCAL_PREFERRED"
   loadbalancer_algorithm = "LB_OVERRIDE"
 
   origin_servers {
-     private_name {
-      dns_name = "web-01.de1chk1nd-mcn.aws"
+    private_name {
+      dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
+          tenant    = "f5-emea-ent-bceuutam"
           namespace = "shared"
-          name = var.vsite_conf
-          }
+          name      = var.vsite_conf
         }
-      inside_network = true
       }
+      inside_network = true
     }
- 
-   origin_servers {
-     private_name {
-      dns_name = "web-02.de1chk1nd-mcn.aws"
-      site_locator {
-        virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
-          namespace = "shared"
-          name = var.vsite_conf
-          }
-        }
-      inside_network = true
-      }
-    } 
-
-  healthcheck {
-    tenant = "f5-emea-ent-bceuutam"
-    namespace = "${var.namespace}"
-    name = "hello-check"
   }
 
-  port = "3000"
+  origin_servers {
+    private_name {
+      dns_name = "web-02.${local.domain_suffix}"
+      site_locator {
+        virtual_site {
+          tenant    = "f5-emea-ent-bceuutam"
+          namespace = "shared"
+          name      = var.vsite_conf
+        }
+      }
+      inside_network = true
+    }
+  }
+
+  healthcheck {
+    tenant    = "f5-emea-ent-bceuutam"
+    namespace = var.namespace
+    name      = "hello-check"
+  }
+
+  port   = "3000"
   no_tls = true
 
   depends_on = [
@@ -171,28 +171,28 @@ resource "volterra_origin_pool" "webserver-juiceshop" {
 
 resource "volterra_origin_pool" "webserver-bigip-echossl" {
   name                   = "origin-bigip-echossl-aws-${var.region}"
-  namespace              = "${var.namespace}"
+  namespace              = var.namespace
   endpoint_selection     = "LOCAL_PREFERRED"
   loadbalancer_algorithm = "LB_OVERRIDE"
 
   origin_servers {
     private_name {
-      dns_name = "bigip-echo-ssl.de1chk1nd-mcn.aws"
+      dns_name = "bigip-echo-ssl.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant = "f5-emea-ent-bceuutam"
+          tenant    = "f5-emea-ent-bceuutam"
           namespace = "shared"
-          name = var.vsite_conf
-          }
+          name      = var.vsite_conf
         }
-      inside_network = true
       }
+      inside_network = true
     }
-  
+  }
+
   healthcheck {
-    tenant = "f5-emea-ent-bceuutam"
-    namespace = "${var.namespace}"
-    name = "hello-check"
+    tenant    = "f5-emea-ent-bceuutam"
+    namespace = var.namespace
+    name      = "hello-check"
   }
 
   port = "443"
