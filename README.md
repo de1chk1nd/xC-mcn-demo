@@ -1,14 +1,17 @@
 # xC-mcn-demo - Lab Introduction & Set Up
 
 [GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
-[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.<student>-xc-mcn-lab.aws
-[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.<student>-xc-mcn-lab.aws
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.<student>.xc-mcn-lab.aws
+[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.<student>.xc-mcn-lab.aws
 
 Welcome to my lab. This lab contains many F5 Distributed Cloud (xC) application solutions and use cases. Pre-configured and prepared to be built in AWS within a couple of minutes.
 
 The installation is fairly simple and based on a local Python script to deploy the whole infrastructure.
 
-> For detailed prerequisites, tool installation instructions, repository structure, and step-by-step setup, see the **[Installation & Setup Guide](docs/install-and-setup.md)**.
+> **ATTENTION:** The full HTML Lab Guide lives at **[docs/lab-guide/index.html](docs/lab-guide/index.html)**.
+> It includes Quick Start, Detailed Setup, and all Use Case steps in one place.
+
+> For prerequisites, tool installation instructions, repository structure, and step-by-step setup, see the **[Installation & Setup Guide](docs/install-and-setup.md)**.
 
 &nbsp;
 
@@ -68,79 +71,14 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 
 ---
 
-## Quick Start
+## Getting Started
 
-1. Install prerequisites (Terraform, Python 3, yq, curl, openssl) — see the **[Installation & Setup Guide](docs/install-and-setup.md#prerequisites)** for details.
+The Quick Start, Detailed Setup, and Teardown steps live in the HTML Lab Guide.
 
-2. Clone and configure:
+- **Lab Guide (HTML):** `docs/lab-guide/index.html`
+- **Setup Guide (Markdown):** `docs/install-and-setup.md`
 
-    ```shell
-    git clone https://github.com/de1chk1nd/xC-mcn-demo.git
-    cd xC-mcn-demo
-    cp ./setup-init/template/config.yaml ./setup-init/config.yaml
-    ```
-
-3. Edit `./setup-init/config.yaml` with your AWS credentials, xC tenant info, and student details.
-
-4. Place your F5 xC API certificate (`.p12` file) into `./setup-init/.xC/`.
-
-5. Deploy:
-
-    ```shell
-    ./setup-init/bin/initialize.sh init
-    ```
-
-6. Wait for all components to come online:
-
-    | Process / Device      | Estimated Time      |
-    |:----------------------|:--------------------|
-    | Terraform             | ***2-3 minutes***   |
-    | BigIP vAppliances     | ***5-7 minutes***   |
-    | xC Gateway            | ***15-20 minutes*** |
-
-7. Post Install — add local `/etc/hosts` entries and open SSH sessions:
-
-    ```shell
-    # Copy /etc/hosts entries to clipboard
-    terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
-    sudo vim /etc/hosts
-
-    # Fix SSH key permissions and open SSH to all lab servers
-    ./setup-init/.ssh/ssh-key-permission_lnx.sh all
-    ```
-
-&nbsp;
-
-### Device Access
-
-| Device                | Username | Password (lab-default)  |
-|:----------------------|:---------|:------------------------|
-| [BigIP - eu-central]  | admin    | DefaultLabPwd!2026      |
-| [BigIP - eu-west]     | admin    | DefaultLabPwd!2026      |
-
-> **Note:** The BigIP FQDN is based on your `student.name` from `config.yaml` (e.g., `bigip-mgmt-eu-central-1.<student>-xc-mcn-lab.aws`). Add local `/etc/hosts` entries before accessing.
-
-&nbsp;
-
----
-
-## Delete / Teardown
-
-```shell
-./setup-init/bin/delete.sh
-```
-
-> If AWS credentials have expired, update `./setup-init/config.yaml` and run `./setup-init/bin/initialize.sh update-creds` first.
-
-&nbsp;
-
-- Manually remove local hosts entries:
-
-    ```shell
-    sudo vim /etc/hosts
-    ```
-
-&nbsp;
+Use the Lab Guide as the primary workflow. The README stays as a project overview.
 
 ---
 

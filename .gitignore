@@ -15,7 +15,8 @@ setup-init/.xC/*.txt
 setup-init/.ssh/*.crt
 setup-init/.ssh/*.pem
 setup-init/.ssh/*.ppk
-setup-init/.cert/
+setup-init/.cert/ca/
+setup-init/.cert/domains/
 setup-init/config.yaml
 
 xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-*

@@ -2,6 +2,9 @@
 
 This directory contains all scripts and configuration for initializing the xC MCN Demo Lab.
 
+> **ATTENTION:** The full HTML Lab Guide lives at **[docs/lab-guide/index.html](../docs/lab-guide/index.html)**.
+> It includes Quick Start, Detailed Setup, and all Use Case steps in one place.
+
 ## Quick Start
 
 ```bash
@@ -117,7 +120,7 @@ setup-init/
 
 <tr>
 <td><code>student.name</code></td>
-<td>Unique identifier for this lab instance. Used in resource naming. Must be unique in shared AWS environments.</td>
+<td>Unique identifier for this lab instance. Used in resource naming. DNS-safe: lowercase <code>[a-z0-9-]</code>, 1-16 chars, start/end alphanumeric.</td>
 <td>Yes</td>
 <td>—</td>
 </tr>
@@ -241,5 +244,3 @@ cd tools/s-certificate
 ```
 
 CA paths and the output directory are read from `setup-init/config.yaml` — no need to configure them in the tool's own config.
-
-

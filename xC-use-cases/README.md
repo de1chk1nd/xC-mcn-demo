@@ -2,6 +2,9 @@
 
 A collection of F5 Distributed Cloud (xC) use cases for the xC-mcn-demo lab. Each use case has automated `setup.sh` and `delete.sh` scripts.
 
+> **ATTENTION:** The full HTML Lab Guide lives at **[docs/lab-guide/index.html](../docs/lab-guide/index.html)**.
+> It includes Quick Start, Detailed Setup, and all Use Case steps in one place.
+
 > **All use cases require the base infrastructure to be deployed first.** See the [main README](../README.md) for installation instructions.
 
 ## Quick Reference
