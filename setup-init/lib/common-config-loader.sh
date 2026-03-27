@@ -30,7 +30,7 @@ export CERT_FILE="${REPO_ROOT}/setup-init/.xC/xc-curl.crt.pem"
 # Validate PEM certificate exists
 if [ ! -f "$CERT_FILE" ]; then
     echo "ERROR: PEM certificate not found: ${CERT_FILE}"
-    echo "HINT: Run 'python3 ${REPO_ROOT}/setup-init/initialize_infrastructure.py' first"
+    echo "HINT: Run '${REPO_ROOT}/setup-init/bin/initialize.sh init' first"
     exit 1
 fi
 echo "✓ Configuration loaded (using PEM certificate)"

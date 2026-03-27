@@ -1,23 +1,35 @@
-adv_modules:
-  xc: false
 aws:
-  auth_profile: terraform
+  auth_profile: xc-mcn-lab
   aws_access_key_id: <AWS ACCESS KEY>
   aws_secret_access_key: <AWS SECRET KEY>
   aws_session_token: <AWS SESSION TOKEN>
   region_site_1: eu-central-1
   region_site_2: eu-west-1
   tmp_aws_cred: true
+
 student:
   email: <STUDENT E-MAIL>
-  ip-address: <DO NOT CHANGE>
+  ip-address: <AUTO-POPULATED>
   name: <STUDENT NAME>
+
 f5:
   f5_password: DefaultLabPwd!2026
+
 xC:
-  p12_auth: ../setup-init/.xC/<P12_CERT_FILE_NAME>.p12
+  p12_auth: .xC/<P12_CERT_FILE_NAME>.p12
   p_12_pwd: <P12 PASSWORD STRING>
   tenant: <XC TENANT NAME>
   tenant_shrt: <XC TENANT SHORT NAME>
   tenant_api: https://<TENANT>.console.ves.volterra.io/api
   namespace: <NAMESPACE>
+
+# Certificate paths (relative to setup-init/)
+# CA is auto-generated during initialization using settings from
+# tools/s-certificate/config/config.yaml (ca: section).
+# Server/client certificates are created via tools/s-certificate.
+cert:
+  ca_dir: .cert/ca
+  cert_dir: .cert/domains
+  # Paths below are auto-populated after CA generation
+  ca_key: ""
+  ca_cert: ""
