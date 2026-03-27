@@ -241,7 +241,7 @@ pre-commit install
     - `xC.p12_auth`, `p_12_pwd`, `tenant`, `tenant_shrt`, `tenant_api`, `namespace`
     - `student.name`, `email`
 
-    > **ATTENTION:** Terraform expects (by default) that AWS auth uses the profile `terraform`. This can be changed within the **config.yaml** file.
+    > **ATTENTION:** Terraform expects (by default) that AWS auth uses the profile `xc-mcn-lab`. This can be changed within the **config.yaml** file.
 
 3. Place your F5 xC API certificate (`.p12` file) into `./setup-init/.xC/`.
 

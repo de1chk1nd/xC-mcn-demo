@@ -113,7 +113,8 @@ setup-init/
 │   ├── aws.py        # AWS credential management
 │   ├── ca.py         # CA generation
 │   ├── terraform.py  # Terraform wrapper
-│   └── xc.py         # xC certificate handling
+│   ├── xc.py         # xC certificate handling
+│   └── network.py    # Public IP detection
 ├── lib/              # Shared shell libraries for use-cases
 └── template/         # Config templates (tracked)
 ```
@@ -127,3 +128,5 @@ setup-init/
 - CA is generated once per lab instance in `setup-init/.cert/ca/` — gitignored
 - Server/client certs go to `setup-init/.cert/domains/` — gitignored
 - Tools generate artifacts (ca/, domains/, venv/) — all gitignored
+- Domain suffix is dynamized via `local.domain_suffix` = `${var.student}-xc-mcn-lab.aws`
+- Use-case JSON templates use `${STUDENT}` (resolved by `envsubst` at runtime)

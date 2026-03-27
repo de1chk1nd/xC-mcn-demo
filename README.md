@@ -1,8 +1,8 @@
 # xC-mcn-demo - Lab Introduction & Set Up
 
 [GitHub - MCN repository]: https://github.com/de1chk1nd/xC-mcn-demo
-[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.de1chk1nd-lab.aws
-[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.de1chk1nd-lab.aws
+[BigIP - eu-central]: https://bigip-mgmt-eu-central-1.<student>-xc-mcn-lab.aws
+[BigIP - eu-west]: https://bigip-mgmt-eu-west-1.<student>-xc-mcn-lab.aws
 
 Welcome to my lab. This lab contains many F5 Distributed Cloud (xC) application solutions and use cases. Pre-configured and prepared to be built in AWS within a couple of minutes.
 
@@ -118,7 +118,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 | [BigIP - eu-central]  | admin    | DefaultLabPwd!2026      |
 | [BigIP - eu-west]     | admin    | DefaultLabPwd!2026      |
 
-> **Note:** The BigIP FQDN is based on your `student.name` from `config.yaml` (e.g., `bigip-mgmt-eu-central-1.<student>-lab.aws`). Add local `/etc/hosts` entries before accessing.
+> **Note:** The BigIP FQDN is based on your `student.name` from `config.yaml` (e.g., `bigip-mgmt-eu-central-1.<student>-xc-mcn-lab.aws`). Add local `/etc/hosts` entries before accessing.
 
 &nbsp;
 

@@ -74,7 +74,7 @@ setup-init/
 <td><code>aws.auth_profile</code></td>
 <td>Name of the AWS credential profile in <code>~/.aws/credentials</code></td>
 <td>Yes</td>
-<td><code>terraform</code></td>
+<td><code>xc-mcn-lab</code></td>
 </tr>
 <tr>
 <td><code>aws.aws_access_key_id</code></td>
@@ -242,14 +242,4 @@ cd tools/s-certificate
 
 CA paths and the output directory are read from `setup-init/config.yaml` — no need to configure them in the tool's own config.
 
----
 
-## Legacy Scripts
-
-The following legacy scripts are deprecated and will be removed in a future version:
-
-| Legacy Script | Replacement |
-|---------------|-------------|
-| `initialize_infrastructure.py` | `./bin/initialize.sh init` |
-| `cred-aws.py` | `./bin/initialize.sh update-creds` |
-| `bin/delete-linux.sh` | `./bin/delete.sh` |
