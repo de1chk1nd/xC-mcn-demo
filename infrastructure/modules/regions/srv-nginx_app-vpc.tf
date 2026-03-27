@@ -2,14 +2,7 @@ resource "aws_network_interface" "xC-mcn-app-ubuntu" {
   subnet_id       = aws_subnet.xC-mcn-app-subnet.id
   security_groups = [aws_security_group.xC-mcn-app-allow-linux.id]
   tags = {
-    Name  = "${var.student}-xC-mcn-app-ubuntu-public-nic"
-  }
-}
-
-data "template_file" "user_data_app_nginx" {
-  template = file("${path.module}/etc/ubuntu/ubuntu_app.tmpl")
-  vars = {
-    region                = var.region
+    Name = "${var.student}-xC-mcn-app-ubuntu-public-nic"
   }
 }
 
@@ -28,10 +21,12 @@ resource "aws_instance" "xC-mcn-app-ubuntu" {
     volume_type = "gp3"
     encrypted   = true
   }
- 
-  user_data = data.template_file.user_data_app_nginx.rendered 
+
+  user_data = templatefile("${path.module}/etc/ubuntu/ubuntu_app.tmpl", {
+    region = var.region
+  })
 
   tags = {
-    Name  = "${var.student}-xC-mcn-app-ubuntu"
+    Name = "${var.student}-xC-mcn-app-ubuntu"
   }
 }

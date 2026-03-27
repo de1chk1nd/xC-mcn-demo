@@ -201,20 +201,6 @@ resource "aws_eip" "xC-mcn-slo-v2-eip-02" {
   }
 }
 
-data "template_file" "user_data_smsv2-01" {
-  template = file("${path.module}/etc/smsv2/user-data.tmpl")
-  vars = {
-    token = volterra_token.xC-mcn-sitetoken-01.id
-  }
-}
-
-data "template_file" "user_data_smsv2-02" {
-  template = file("${path.module}/etc/smsv2/user-data.tmpl")
-  vars = {
-    token = volterra_token.xC-mcn-sitetoken-02.id
-  }
-}
-
 ### AWS Instances
 ###
 
@@ -223,7 +209,9 @@ resource "aws_instance" "xC-mcn-ce-v2-01" {
   key_name      = aws_key_pair.generated_key.key_name
   monitoring    = false
   instance_type = "m5.2xlarge"
-  user_data     = data.template_file.user_data_smsv2-01.rendered
+  user_data = templatefile("${path.module}/etc/smsv2/user-data.tmpl", {
+    token = volterra_token.xC-mcn-sitetoken-01.id
+  })
 
   root_block_device {
     volume_size = 120
@@ -263,7 +251,9 @@ resource "aws_instance" "xC-mcn-ce-v2-02" {
   key_name      = aws_key_pair.generated_key.key_name
   monitoring    = false
   instance_type = "m5.2xlarge"
-  user_data     = data.template_file.user_data_smsv2-02.rendered
+  user_data = templatefile("${path.module}/etc/smsv2/user-data.tmpl", {
+    token = volterra_token.xC-mcn-sitetoken-02.id
+  })
 
   root_block_device {
     volume_size = 120

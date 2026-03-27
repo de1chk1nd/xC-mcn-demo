@@ -100,9 +100,12 @@ resource "aws_eip" "bigip-ext-4" {
   }
 }
 
-data "template_file" "user_data_bigip" {
-  template = file("${path.module}/etc/bigip/user-data.tmpl")
-  vars = {
+resource "aws_instance" "f5_bigip" {
+  instance_type = "m5n.2xlarge"
+  ami           = var.f5_ami
+  key_name      = aws_key_pair.generated_key.key_name
+  monitoring    = true
+  user_data = templatefile("${path.module}/etc/bigip/user-data.tmpl", {
     bigip_username         = "admin"
     ssh_keypair            = aws_key_pair.generated_key.key_name
     aws_secretmanager_auth = aws_secretsmanager_secret.bigip.id
@@ -121,26 +124,16 @@ data "template_file" "user_data_bigip" {
     iIP_3                  = data.aws_network_interface.bigip-internal.private_ips[3]
     iIP_4                  = data.aws_network_interface.bigip-internal.private_ips[4]
     domain_suffix          = local.domain_suffix
-    INIT_URL               = var.INIT_URL,
-    DO_URL                 = var.DO_URL,
+    INIT_URL               = var.INIT_URL
+    DO_URL                 = var.DO_URL
     DO_VER                 = split("/", var.DO_URL)[7]
-    AS3_URL                = var.AS3_URL,
+    AS3_URL                = var.AS3_URL
     AS3_VER                = split("/", var.AS3_URL)[7]
     TS_VER                 = split("/", var.TS_URL)[7]
-    TS_URL                 = var.TS_URL,
-    CFE_URL                = var.CFE_URL,
+    TS_URL                 = var.TS_URL
+    CFE_URL                = var.CFE_URL
     CFE_VER                = split("/", var.CFE_URL)[7]
-    //FAST_URL               = var.FAST_URL,
-    //FAST_VER               = split("/", var.FAST_URL)[7]
-  }
-}
-
-resource "aws_instance" "f5_bigip" {
-  instance_type = "m5n.2xlarge"
-  ami           = var.f5_ami
-  key_name      = aws_key_pair.generated_key.key_name
-  monitoring    = true
-  user_data     = data.template_file.user_data_bigip.rendered
+  })
 
   root_block_device {
     delete_on_termination = true
