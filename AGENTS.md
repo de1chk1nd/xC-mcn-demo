@@ -23,17 +23,20 @@ Target environment: lab / demo — not production.
 ├── setup-init/           # Initialization scripts & credentials
 │   ├── bin/              # Shell entry points (initialize.sh, delete.sh)
 │   ├── src/setup_init/   # Python initialization package
-│   ├── lib/              # Shared shell libraries
+│   ├── lib/              # Shared shell libraries for use-cases
 │   ├── template/         # config.yaml template
 │   ├── .cert/            # Generated certificates (gitignored)
-│   │   ├── ca/           #   CA key + cert
-│   │   └── domains/      #   Server + client certs
+│   │   ├── ca/           #   CA key + cert + serial
+│   │   └── domains/      #   Server + client certs (per use case)
+│   ├── .ssh/             # SSH helper scripts (Linux, macOS, Windows)
 │   └── .xC/              # xC API certs (gitignored)
 ├── tools/                # Standalone utilities
 │   └── s-certificate/    # CA-signed certificate generator + xC upload
 ├── xC-use-cases/         # Use-case deployment scripts (curl → xC API)
 │   └── */bin/            # setup.sh / delete.sh per use case
-└── docs/                 # Architecture documentation & diagrams
+└── docs/                 # Documentation, diagrams & lab guide
+    ├── images/           # Architecture & use-case diagrams
+    └── lab-guide/        # Interactive single-page lab guide (HTML)
 ```
 
 ---
@@ -69,7 +72,7 @@ Target environment: lab / demo — not production.
 tflint --recursive
 shellcheck setup-init/**/*.sh xC-use-cases/**/bin/*.sh
 
-# Tools — s-certificate
+# Tools — s-certificate (key flags: --no-p12, --keep-pem, --xc-upload)
 cd tools/s-certificate && ./bin/run-s-certificate.sh --help
 
 # Documentation — Lab Guide (open in browser)
@@ -82,7 +85,7 @@ open docs/lab-guide/index.html
 
 - Terraform: tag all resources with `environment` and `owner`
 - Never suggest `terraform apply` without a prior `plan` review
-- Shell scripts: always start with `set -euo pipefail`
+- Shell scripts: start with `set -euo pipefail` (init/tools) or `set -e` (use-case scripts)
 - Sensitive variables: document in `*.example`, never commit real values
 - Tools: each tool lives in `tools/<name>/` with own README, bin/, src/, config/
 - CA: auto-generated during init, stored in `setup-init/.cert/ca/`, gitignored
@@ -124,6 +127,38 @@ setup-init/
 
 ---
 
+## Use-Case TLS Workflow
+
+Use-case `setup.sh` scripts generate CA-signed server certificates (not Let's Encrypt).
+Each script follows this sequence:
+
+1. Ensure `tools/s-certificate/config/config.yaml` exists (copy from `.example` if missing)
+2. Generate server cert via `s-certificate --no-p12 --keep-pem` → PEM files in `setup-init/.cert/domains/`
+3. Base64-encode cert + key, upload to xC via `POST /api/config/namespaces/{ns}/certificates`
+4. Generate LB payloads from templates (`envsubst`) — templates reference the cert via `tls_cert_params`
+5. Create origin pools + HTTP load balancers via xC API
+
+Corresponding `delete.sh` scripts reverse the process: delete LBs, delete cert objects from xC, remove local PEM files.
+
+**Cert naming convention:** `tls-${STUDENT}-<host-part-of-fqdn>` (e.g. `tls-jdoe-echo-public`)
+
+---
+
+## SSH Helper Scripts
+
+Platform-specific scripts in `setup-init/.ssh/`:
+
+| Script | Platform | Terminal support |
+|--------|----------|-----------------|
+| `ssh-key-permission_lnx.sh` | Linux | gnome-terminal, xfce4, konsole, terminator |
+| `ssh-key-permission_mac.sh` | macOS | Terminal.app, iTerm2 |
+| `ssh-key-permission_win.ps1` | Windows | WinSCP + PuTTY |
+
+All scripts accept a target argument: `all`, `ubuntu`, `bigip`, `central`, `west`, `fix-perms`.
+The `known_hosts` cleanup removes only lab hosts (`*.${STUDENT}.xc-mcn-lab.aws`), preserving other entries.
+
+---
+
 ## Known Pitfalls
 
 - Never suggest `terraform destroy` without explicit confirmation
@@ -133,3 +168,8 @@ setup-init/
 - Tools generate artifacts (ca/, domains/, venv/) — all gitignored
 - Domain suffix is dynamized via `local.domain_suffix` = `${var.student}.xc-mcn-lab.aws`
 - Use-case JSON templates use `${STUDENT}` (resolved by `envsubst` at runtime)
+- CA must exist before running any use-case setup.sh (`initialize.sh init` or `generate-ca`)
+- Use-case scripts require `s-certificate --keep-pem` — without it, PEM files are deleted before upload
+- Certs are CA-signed (not public CA) — browsers show TLS warnings unless lab CA is trusted
+- SSH scripts are OS-specific: `_mac.sh` for macOS, `_lnx.sh` for Linux — choose the correct one
+- SSH `known_hosts` cleanup is selective — only `*.${STUDENT}.xc-mcn-lab.aws` entries are removed
