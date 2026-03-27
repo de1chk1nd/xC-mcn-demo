@@ -132,24 +132,13 @@ def fetch_tenant_anycast_ip(
     timeout: int = 15,
 ) -> str:
     """
-    Fetch the tenant's default Anycast IP.
+    Fetch the tenant's default Anycast IP via the xC API.
 
-    Strategy:
-    1. If already set in config, return it (manual override).
-    2. Query the xC API (whoami) to get the tenant CNAME, then
-       create a temporary HTTP LB, resolve its FQDN, and delete it.
-       (Not implemented — too invasive for an init script.)
-    3. Prompt the user.
-
-    The Anycast IP is tenant-specific and cannot be reliably resolved
-    via public DNS or a single API call. The user must provide it.
-
-    How to find it: xC Console -> DNS Management -> check the IP
-    that delegated domains point to, or check an existing HTTP LB's
-    CNAME record.
+    Queries GET /api/config/tenants/{tenant}/summary which returns
+    the dedicated VIP assigned to the tenant for RE load balancers.
 
     Args:
-        xc_config: xC configuration
+        xc_config: xC configuration with tenant name and API URL
         base_dir: Base directory (setup-init/)
         timeout: HTTP request timeout in seconds
 
@@ -161,18 +150,35 @@ def fetch_tenant_anycast_ip(
         print(f"  Anycast IP (from config): {xc_config.tenant_anycast_ip}")
         return xc_config.tenant_anycast_ip
 
-    print(f"\nTenant Anycast IP is not set in config.yaml.")
-    print(f"  This IP is needed for /etc/hosts entries of xC use-case apps.")
-    print(f"  You can find it in the xC Console:")
-    print(f"    - DNS Management -> check delegated domain CNAME target IP")
-    print(f"    - Or: create any HTTP LB and check its advertised IP")
-    print()
+    pem_path = get_pem_path(base_dir)
+    if not pem_path.is_file():
+        print("  WARNING: PEM certificate not found, cannot query xC API")
+        return ""
 
-    ip = input("  Enter tenant Anycast IP (or press Enter to skip): ").strip()
+    print(f"\nFetching tenant Anycast IP from xC API...")
+    print(f"  Tenant: {xc_config.tenant}")
 
-    if ip:
-        print(f"  Anycast IP: {ip}")
-        return ip
+    base_url = xc_config.tenant_api.rstrip("/")
+    url = f"{base_url}/config/tenants/{xc_config.tenant}/summary"
 
-    print("  Skipped — /etc/hosts use-case app entries will be incomplete.")
+    try:
+        resp = requests.get(
+            url,
+            cert=str(pem_path),
+            timeout=timeout,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        vip = data.get("vip", "")
+        if vip:
+            vip_type = data.get("type", "unknown")
+            print(f"  Anycast IP: {vip} ({vip_type})")
+            return vip
+
+        print(f"  WARNING: No VIP in response: {data}")
+
+    except Exception as e:
+        print(f"  WARNING: API call failed: {e}")
+
     return ""
