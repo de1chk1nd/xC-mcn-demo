@@ -28,7 +28,7 @@ def cmd_init(args: argparse.Namespace) -> int:
         terraform_plan,
         verify_terraform,
     )
-    from setup_init.xc import convert_p12_to_pem
+    from setup_init.xc import convert_p12_to_pem, fetch_tenant_anycast_ip
 
     print("=" * 60)
     print(f"  xC MCN Demo Lab — Initialization v{__version__}")
@@ -71,12 +71,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     print("\n--- AWS Credentials ---")
     update_aws_credentials(config.aws)
 
-    # Step 4: Save config with updated IP and CA paths
-    print("\n--- Saving configuration ---")
-    save_config(config, CONFIG_FILE)
-    print(f"  Config written to {CONFIG_FILE}")
-
-    # Step 5: Convert xC P12 to PEM
+    # Step 4: Convert xC P12 to PEM
     print("\n--- xC Certificate ---")
     try:
         convert_p12_to_pem(config.xc, BASE_DIR)
@@ -84,7 +79,20 @@ def cmd_init(args: argparse.Namespace) -> int:
         print(f"ERROR: {e}")
         return 1
 
-    # Step 6: Terraform deployment
+    # Step 5: Resolve tenant Anycast IP
+    print("\n--- Tenant Anycast IP ---")
+    anycast_ip = fetch_tenant_anycast_ip(config.xc, BASE_DIR)
+    if anycast_ip:
+        config.xc.tenant_anycast_ip = anycast_ip
+    else:
+        print("  WARNING: Could not resolve Anycast IP (non-fatal, continuing)")
+
+    # Step 6: Save config with all auto-populated values
+    print("\n--- Saving configuration ---")
+    save_config(config, CONFIG_FILE)
+    print(f"  Config written to {CONFIG_FILE}")
+
+    # Step 7: Terraform deployment
     print("\n--- Terraform Deployment ---")
     tf_env = {"VES_P12_PASSWORD": config.xc.p12_pwd}
 

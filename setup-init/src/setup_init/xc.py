@@ -1,9 +1,12 @@
-"""F5 Distributed Cloud (xC) certificate handling."""
+"""F5 Distributed Cloud (xC) certificate handling and tenant discovery."""
 
 import os
+import socket
 import subprocess
 import sys
 from pathlib import Path
+
+import requests
 
 from setup_init.config import XCConfig
 
@@ -95,3 +98,62 @@ def remove_pem(base_dir: Path) -> None:
     if pem_path.exists():
         pem_path.unlink()
         print(f"Removed: {pem_path}")
+
+
+def fetch_tenant_anycast_ip(
+    xc_config: XCConfig,
+    base_dir: Path,
+    timeout: int = 10,
+) -> str:
+    """
+    Resolve the tenant's default Anycast IP address.
+
+    Uses a DNS lookup on the tenant's console hostname, which resolves
+    to the Anycast IP advertised by the F5 Distributed Cloud global network.
+
+    Args:
+        xc_config: xC configuration with tenant name
+        base_dir: Base directory (setup-init/)
+        timeout: DNS timeout in seconds
+
+    Returns:
+        Anycast IP address as string, or empty string on failure
+    """
+    # The tenant's console FQDN resolves to the Anycast IP
+    tenant_fqdn = f"{xc_config.tenant}.console.ves.volterra.io"
+
+    print(f"\nResolving tenant Anycast IP...")
+    print(f"  Tenant FQDN: {tenant_fqdn}")
+
+    try:
+        ip = socket.gethostbyname(tenant_fqdn)
+        print(f"  Anycast IP:  {ip}")
+        return ip
+    except socket.gaierror as e:
+        print(f"  WARNING: Could not resolve {tenant_fqdn}: {e}")
+        print(f"  Trying API fallback...")
+
+    # Fallback: query the xC API for the VIP
+    pem_path = get_pem_path(base_dir)
+    if not pem_path.is_file():
+        print(f"  WARNING: PEM not available, skipping API fallback")
+        return ""
+
+    try:
+        url = f"{xc_config.tenant_api}/config/namespaces/system/virtual_ips"
+        resp = requests.get(
+            url,
+            cert=str(pem_path),
+            timeout=timeout,
+        )
+        resp.raise_for_status()
+        items = resp.json().get("items", [])
+        if items:
+            ip = items[0].get("spec", {}).get("vip", "")
+            if ip:
+                print(f"  Anycast IP (via API): {ip}")
+                return ip
+    except Exception as e:
+        print(f"  WARNING: API fallback failed: {e}")
+
+    return ""

@@ -10,6 +10,7 @@ aws:
 student:
   email: <STUDENT E-MAIL>
   ip-address: <AUTO-POPULATED>
+  # DNS-safe label, lowercase: [a-z0-9-], 1-16 chars, start/end alphanumeric
   name: <STUDENT NAME>
 
 f5:
@@ -22,6 +23,8 @@ xC:
   tenant_shrt: <XC TENANT SHORT NAME>
   tenant_api: https://<TENANT>.console.ves.volterra.io/api
   namespace: <NAMESPACE>
+  # Auto-populated during initialization
+  tenant_anycast_ip: ""
 
 # Certificate paths (relative to setup-init/)
 # CA is auto-generated during initialization using settings from

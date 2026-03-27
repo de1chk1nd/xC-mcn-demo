@@ -1,6 +1,7 @@
 """Configuration loading and validation for the setup process."""
 
 import os
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -41,6 +42,7 @@ class XCConfig:
     tenant_shrt: str
     tenant_api: str
     namespace: str
+    tenant_anycast_ip: str = ""
 
 
 @dataclass
@@ -113,6 +115,7 @@ def load_config(config_path: Path) -> Config:
         tenant_shrt=xc_data.get("tenant_shrt", ""),
         tenant_api=xc_data.get("tenant_api", ""),
         namespace=xc_data.get("namespace", ""),
+        tenant_anycast_ip=xc_data.get("tenant_anycast_ip", ""),
     )
 
     # Parse cert paths
@@ -159,6 +162,12 @@ def save_config(config: Config, config_path: Path) -> None:
         data["cert"]["ca_dir"] = config.cert.ca_dir
         data["cert"]["cert_dir"] = config.cert.cert_dir
 
+    # Update xC tenant anycast IP if resolved
+    if config.xc.tenant_anycast_ip:
+        if "xC" not in data:
+            data["xC"] = {}
+        data["xC"]["tenant_anycast_ip"] = config.xc.tenant_anycast_ip
+
     with open(config_path, "w", encoding="utf-8") as f:
         yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
@@ -180,8 +189,20 @@ def validate_config(config: Config) -> list[str]:
         errors.append("aws.aws_session_token is required when tmp_aws_cred is true")
 
     # Student validation
-    if not config.student.name or "<" in config.student.name:
+    student_name = config.student.name
+    student_name_max_length = 16
+    student_name_pattern = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,14}[a-z0-9])?$")
+
+    if not student_name or "<" in student_name:
         errors.append("student.name is required")
+    else:
+        if len(student_name) > student_name_max_length:
+            errors.append(f"student.name must be <= {student_name_max_length} characters")
+        if not student_name_pattern.match(student_name):
+            errors.append(
+                "student.name must be lowercase alphanumeric or hyphen, "
+                "start/end with alphanumeric"
+            )
     if not config.student.email or "<" in config.student.email:
         errors.append("student.email is required")
 
