@@ -67,17 +67,35 @@ xC-mcn-demo/
 │           └── smsv2/user-data.tmpl       #       xC CE (SMSv2) cloud-init
 │
 ├── setup-init/                            # Initialization scripts & credentials
-│   ├── initialize_infrastructure.py       #   Main deployment script (Python)
-│   ├── cred-aws.py                        #   AWS credential updater (Python)
-│   ├── config.yaml                        #   * User config - NOT committed (gitignored)
-│   ├── template/config.yaml               #   Template for config.yaml
-│   ├── bin/delete-linux.sh                #   Full teardown script
+│   ├── bin/
+│   │   ├── initialize.sh                  #   Main initialization script
+│   │   └── delete.sh                      #   Full teardown script
+│   ├── src/setup_init/                    #   Python initialization package
+│   │   ├── cli.py                         #     CLI orchestration
+│   │   ├── config.py                      #     Configuration loading
+│   │   ├── aws.py                         #     AWS credential management
+│   │   ├── ca.py                          #     CA generation
+│   │   ├── terraform.py                   #     Terraform wrapper
+│   │   ├── xc.py                          #     xC certificate handling
+│   │   └── network.py                     #     Network utilities
 │   ├── lib/common-config-loader.sh        #   Shared config loader for shell scripts
+│   ├── template/config.yaml               #   Template for config.yaml
+│   ├── config.yaml                        #   * User config - NOT committed (gitignored)
 │   ├── .xC/                               #   * xC API credentials (gitignored)
-│   ├── .ssh/                              #   * SSH keys (gitignored) + permission scripts
-│   │   ├── ssh-key-permission_lnx.sh      #     SSH key permissions + multi-tab SSH
-│   │   └── ssh-key-permission_win.ps1     #     SSH key permissions (Windows)
-│   └── .nginx/                            #   * NGINX Plus license files (gitignored)
+│   ├── .cert/                             #   * Generated certificates (gitignored)
+│   │   ├── ca/                            #       CA key + cert
+│   │   └── domains/                       #       Server + client certs
+│   └── .ssh/                              #   * SSH keys (gitignored) + permission scripts
+│       ├── ssh-key-permission_lnx.sh      #     SSH key permissions + multi-tab SSH
+│       └── ssh-key-permission_win.ps1     #     SSH key permissions (Windows)
+│
+├── tools/                                 # Standalone utilities
+│   ├── README.md                          #   Tools overview and conventions
+│   └── s-certificate/                     #   CA-signed certificate generator
+│       ├── bin/run-s-certificate.sh       #     CLI entry point
+│       ├── src/s_certificate/             #     Python package
+│       ├── config/                        #     Configuration (*.example)
+│       └── docs/REFERENCE.md              #     Technical reference
 │
 ├── xC-use-cases/                          # Use case scripts & configurations
 │   ├── README.md                          #   Use case overview and quick reference
@@ -109,6 +127,7 @@ xC-mcn-demo/
 ├── LICENSE                                # MIT License
 ├── CONTRIBUTING.md                        # Contribution guidelines
 ├── SECURITY.md                            # Security policy
+├── AGENTS.md                              # AI agent instructions
 └── README.md                              # Project overview
 ```
 
@@ -125,10 +144,10 @@ xC-mcn-demo/
 | Tool | Min. Version | Used By | Purpose |
 |:-----|:-------------|:--------|:--------|
 | **Terraform** | >= 1.0 | `infrastructure/`, `vk8s/terraform/` | Infrastructure provisioning |
-| **Python 3** | >= 3.8 | `setup-init/*.py` | Deployment scripts, config management |
+| **Python 3** | >= 3.9 | `setup-init/src/`, `tools/` | Deployment scripts, CA generation |
 | **yq** | >= 4.x | All shell scripts via `common-config-loader.sh` | YAML parsing in shell |
 | **curl** | any | Use case `setup.sh` / `delete.sh` scripts | xC API calls |
-| **openssl** | any | `initialize_infrastructure.py` | P12 to PEM certificate conversion |
+| **openssl** | any | `setup-init/`, `tools/s-certificate` | Certificate generation and conversion |
 | **git** | any | All shell scripts (`git rev-parse`) | Repository root detection |
 | **AWS CLI** | >= 2.x | Optional, for manual AWS operations | AWS credential management |
 
@@ -139,7 +158,7 @@ xC-mcn-demo/
 | **PyYAML** | `yaml` | Parse `config.yaml` |
 | **requests** | `requests` | Public IP detection during init |
 
-> All other Python imports (`os`, `time`, `subprocess`, `configparser`, `pathlib`) are part of the standard library.
+> All other Python imports (`os`, `subprocess`, `configparser`, `pathlib`, `dataclasses`) are part of the standard library.
 
 ### Required Accounts & Credentials
 
@@ -148,7 +167,6 @@ xC-mcn-demo/
 | **AWS Access Keys** (or STS session) | `setup-init/config.yaml` | AWS infrastructure provisioning |
 | **F5 xC API Certificate** (.p12) | `setup-init/.xC/` | xC Terraform provider + API calls |
 | **F5 xC Tenant** | `setup-init/config.yaml` | xC Console API endpoint |
-| **NGINX Plus License** (optional) | `setup-init/.nginx/license/` | NGINX Plus installation on Ubuntu servers |
 
 ### Optional Tools
 
@@ -219,25 +237,30 @@ pre-commit install
     ```
 
     Edit `./setup-init/config.yaml` and fill in:
-    - aws.**aws_access_key_id**
-    - aws.**aws_secret_access_key**
-    - aws.**aws_session_token**
-    - xC.**p12_auth**, **p_12_pwd**, **tenant**, **tenant_shrt**, **tenant_api**, **namespace**
-    - student.**name**, **email**
+    - `aws.aws_access_key_id`, `aws_secret_access_key`, `aws_session_token`
+    - `xC.p12_auth`, `p_12_pwd`, `tenant`, `tenant_shrt`, `tenant_api`, `namespace`
+    - `student.name`, `email`
 
     > **ATTENTION:** Terraform expects (by default) that AWS auth uses the profile `terraform`. This can be changed within the **config.yaml** file.
 
 3. Place your F5 xC API certificate (`.p12` file) into `./setup-init/.xC/`.
 
-4. Run the setup script to deploy AWS infrastructure, EC2 instances, xC Gateways, and basic xC configuration:
+4. Run the initialization script:
 
     ```shell
-    python3 ./setup-init/initialize_infrastructure.py
+    ./setup-init/bin/initialize.sh init
     ```
+
+    This will:
+    - Detect your public IP address
+    - Generate a Certificate Authority (CA) in `./setup-init/.cert/ca/`
+    - Update AWS credentials in `~/.aws/credentials`
+    - Convert the xC P12 certificate to PEM format
+    - Run `terraform fmt`, `init`, `plan`, and `apply`
 
 &nbsp;
 
-- Approximate installation times -- must complete before starting the use cases:
+- Approximate installation times — must complete before starting the use cases:
 
     | Process / Device      | Estimated Time      | Comment                                                             |
     |:----------------------|:--------------------|:--------------------------------------------------------------------|
@@ -283,16 +306,16 @@ Fix SSH key permissions, clear known hosts, and open SSH sessions to all lab ser
 
 ## Delete / Teardown
 
-- **Optional:** If AWS credentials have expired, update them in `./setup-init/config.yaml` and run the credential updater:
+- **Optional:** If AWS credentials have expired, update them in `./setup-init/config.yaml` and run:
 
     ```shell
-    python3 ./setup-init/cred-aws.py
+    ./setup-init/bin/initialize.sh update-creds
     ```
 
 - Delete infrastructure in AWS and within the xC Console:
 
     ```shell
-    ./setup-init/bin/delete-linux.sh
+    ./setup-init/bin/delete.sh
     ```
 
 - Manually remove local hosts entries:

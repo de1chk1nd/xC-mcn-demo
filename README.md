@@ -70,7 +70,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 
 ## Quick Start
 
-1. Install prerequisites (Terraform, Python 3, yq, curl, openssl) -- see the **[Installation & Setup Guide](docs/install-and-setup.md#prerequisites)** for details.
+1. Install prerequisites (Terraform, Python 3, yq, curl, openssl) — see the **[Installation & Setup Guide](docs/install-and-setup.md#prerequisites)** for details.
 
 2. Clone and configure:
 
@@ -87,7 +87,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 5. Deploy:
 
     ```shell
-    python3 ./setup-init/initialize_infrastructure.py
+    ./setup-init/bin/initialize.sh init
     ```
 
 6. Wait for all components to come online:
@@ -98,7 +98,7 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
     | BigIP vAppliances     | ***5-7 minutes***   |
     | xC Gateway            | ***15-20 minutes*** |
 
-7. Post Install -- add local `/etc/hosts` entries and open SSH sessions:
+7. Post Install — add local `/etc/hosts` entries and open SSH sessions:
 
     ```shell
     # Copy /etc/hosts entries to clipboard
@@ -127,10 +127,10 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 ## Delete / Teardown
 
 ```shell
-./setup-init/bin/delete-linux.sh
+./setup-init/bin/delete.sh
 ```
 
-> If AWS credentials have expired, update `./setup-init/config.yaml` and run `python3 ./setup-init/cred-aws.py` first.
+> If AWS credentials have expired, update `./setup-init/config.yaml` and run `./setup-init/bin/initialize.sh update-creds` first.
 
 &nbsp;
 
@@ -144,12 +144,27 @@ The servers are accompanied by AWS services such as **NLB**, **Route 53** (priva
 
 ---
 
+## Tools
+
+The `tools/` directory contains standalone utilities for the lab environment:
+
+| Tool | Purpose |
+|:-----|:--------|
+| **[s-certificate](tools/s-certificate/)** | Generate CA-signed server/client certificates, optional upload to xC |
+
+See [tools/README.md](tools/README.md) for details and conventions.
+
+&nbsp;
+
+---
+
 ## Documentation
 
 | Document | Description |
 |:---------|:------------|
 | **[Installation & Setup Guide](docs/install-and-setup.md)** | Prerequisites, tool installation, repository structure, detailed setup |
 | **[xC Use Cases](xC-use-cases/README.md)** | All available use cases with setup/delete scripts |
+| **[Tools Overview](tools/README.md)** | Standalone utilities and tool conventions |
 | **[Contributing](CONTRIBUTING.md)** | How to contribute to this project |
 | **[Security Policy](SECURITY.md)** | Reporting vulnerabilities, credential handling |
 | **[License](LICENSE)** | MIT License |
