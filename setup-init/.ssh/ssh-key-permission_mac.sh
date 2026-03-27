@@ -33,8 +33,16 @@ if [ -f "$SSH_KEY" ]; then
 else
     echo "WARNING: SSH key not found: ${SSH_KEY}"
 fi
-rm -f ~/.ssh/known_hosts 2>/dev/null
-echo "Cleared ~/.ssh/known_hosts"
+# Remove only lab hosts from known_hosts (preserve other entries like github.com)
+LAB_SUFFIX="${STUDENT}.xc-mcn-lab.aws"
+if [ -f ~/.ssh/known_hosts ]; then
+    grep -o "^[^ ,]*" ~/.ssh/known_hosts | grep "${LAB_SUFFIX}" | while read -r host; do
+        ssh-keygen -R "${host}" 2>/dev/null
+    done
+    echo "Removed lab hosts (*${LAB_SUFFIX}) from ~/.ssh/known_hosts"
+else
+    echo "No ~/.ssh/known_hosts found, skipping cleanup"
+fi
 
 #######################################
 # SSH Connection Definitions
