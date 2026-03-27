@@ -50,19 +50,21 @@ def convert_p12_to_pem(
     print(f"  Target: {pem_path}")
 
     # Build OpenSSL command
-    # Note: -legacy flag is needed for OpenSSL 3.x with older P12 files
-    # -nodes / -passout pass: produces an unencrypted PEM (required by requests/curl)
-    cmdline = [
+    # -legacy: needed for OpenSSL 3.x with older P12 files
+    # -passout pass: unencrypted output (required by requests/curl)
+    # -nokeys / -nocerts: split into separate files for clean PEM
+    raw_pem = pem_path.parent / "xc-curl-raw.pem"
+    cmdline_base = [
         openssl_bin, "pkcs12",
         "-in", str(p12_path),
-        "-out", str(pem_path),
+        "-out", str(raw_pem),
         "-passin", f"pass:{xc_config.p12_pwd}",
         "-passout", "pass:",
     ]
 
     # Try with -legacy flag first (OpenSSL 3.x)
     result = subprocess.run(
-        cmdline + ["-legacy"],
+        cmdline_base + ["-legacy"],
         capture_output=True,
         text=True,
     )
@@ -70,7 +72,7 @@ def convert_p12_to_pem(
     # If -legacy fails, try without it (older OpenSSL)
     if result.returncode != 0:
         result = subprocess.run(
-            cmdline,
+            cmdline_base,
             capture_output=True,
             text=True,
         )
@@ -79,6 +81,27 @@ def convert_p12_to_pem(
         raise RuntimeError(
             f"Failed to convert P12 to PEM: {result.stderr.strip()}"
         )
+
+    # Strip Bag Attributes and keep only PEM blocks
+    # (Python SSL cannot parse OpenSSL's Bag Attributes metadata)
+    with open(raw_pem, "r", encoding="utf-8") as f:
+        raw_content = f.read()
+
+    pem_blocks = []
+    in_block = False
+    for line in raw_content.splitlines():
+        if line.startswith("-----BEGIN "):
+            in_block = True
+        if in_block:
+            pem_blocks.append(line)
+        if line.startswith("-----END "):
+            in_block = False
+
+    with open(pem_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(pem_blocks) + "\n")
+
+    # Cleanup raw file
+    raw_pem.unlink(missing_ok=True)
 
     # Set secure permissions
     os.chmod(pem_path, 0o600)
