@@ -51,12 +51,13 @@ def convert_p12_to_pem(
 
     # Build OpenSSL command
     # Note: -legacy flag is needed for OpenSSL 3.x with older P12 files
+    # -nodes / -passout pass: produces an unencrypted PEM (required by requests/curl)
     cmdline = [
         openssl_bin, "pkcs12",
         "-in", str(p12_path),
         "-out", str(pem_path),
         "-passin", f"pass:{xc_config.p12_pwd}",
-        "-passout", f"pass:{xc_config.p12_pwd}",
+        "-passout", "pass:",
     ]
 
     # Try with -legacy flag first (OpenSSL 3.x)
@@ -111,9 +112,10 @@ def fetch_tenant_anycast_ip(
     VIP (Virtual IP) assigned to the tenant for RE load balancers.
 
     Requires the PEM certificate to be generated first (P12 -> PEM).
+    The PEM must be unencrypted (passout pass: during conversion).
 
     Args:
-        xc_config: xC configuration with tenant API URL and P12 password
+        xc_config: xC configuration with tenant API URL
         base_dir: Base directory (setup-init/)
         timeout: HTTP request timeout in seconds
 
@@ -128,21 +130,18 @@ def fetch_tenant_anycast_ip(
     print(f"\nFetching tenant Anycast IP from xC API...")
     print(f"  Tenant: {xc_config.tenant}")
 
-    # Try tenant summary endpoint
     url = f"{xc_config.tenant_api}/web/namespaces/system/summary"
     try:
         resp = requests.get(
             url,
-            cert=(str(pem_path), str(pem_path)),
+            cert=str(pem_path),
             headers={"Content-Type": "application/json"},
             timeout=timeout,
-            verify=True,
         )
         resp.raise_for_status()
         data = resp.json()
 
         # Extract the default VIP from the tenant summary
-        # The response contains tenant_setting with default_vip
         vip = (
             data.get("tenant_setting", {}).get("default_vip", "")
             or data.get("default_vip", "")
@@ -151,46 +150,16 @@ def fetch_tenant_anycast_ip(
             print(f"  Anycast IP: {vip}")
             return vip
 
-        # Fallback: check for ip in different response paths
+        # Fallback: check alternative response keys
         for key in ("anycast_ip", "vip", "default_ip"):
             val = data.get(key, "")
             if val:
                 print(f"  Anycast IP: {val}")
                 return val
 
-        # TODO: verify — log the response keys for debugging
+        # Debug: log response keys if IP not found
         print(f"  WARNING: Could not extract Anycast IP from response")
         print(f"  Response keys: {list(data.keys())}")
-
-    except requests.exceptions.SSLError as e:
-        # P12 password may be needed for the cert tuple
-        print(f"  Retrying with password-protected PEM...")
-        try:
-            import subprocess
-            # Create a temporary decrypted PEM
-            dec_pem = pem_path.parent / "xc-curl-dec.pem"
-            subprocess.run(
-                ["openssl", "rsa", "-in", str(pem_path),
-                 "-out", str(dec_pem),
-                 "-passin", f"pass:{xc_config.p12_pwd}"],
-                capture_output=True, check=True,
-            )
-            resp = requests.get(
-                url,
-                cert=str(pem_path),
-                headers={"Content-Type": "application/json"},
-                timeout=timeout,
-                verify=True,
-            )
-            dec_pem.unlink(missing_ok=True)
-            resp.raise_for_status()
-            data = resp.json()
-            vip = data.get("tenant_setting", {}).get("default_vip", "")
-            if vip:
-                print(f"  Anycast IP: {vip}")
-                return vip
-        except Exception as e2:
-            print(f"  WARNING: Retry failed: {e2}")
 
     except Exception as e:
         print(f"  WARNING: API call failed: {e}")
