@@ -22,13 +22,13 @@ ${module.eu-west-1.Service-1-via-BigIP}        service-bigip-eu-west-1.${local.s
 ${module.eu-central-1.Service-2-via-BigIP}     service-bigip-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 ${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
-# AWS NLB IP / Application Names to resolve to NLB IP >> CE IP
-${module.eu-central-1.nlb_ip}     app-1.eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
-${module.eu-west-1.nlb_ip}        app-1.eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+# AWS NLB IP / CE via CLB — resolve to NLB IP >> CE IP
+${module.eu-central-1.nlb_ip}     app-ce-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.nlb_ip}        app-ce-west.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # Uncomment (comment above) for direct EIP Access to MCN (no cLB)
-# ${module.eu-central-1.mcn_ip_gw01}     app-1.eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
-# ${module.eu-west-1.mcn_ip_gw01}        app-1.eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+# ${module.eu-central-1.mcn_ip_gw01}     app-ce-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+# ${module.eu-west-1.mcn_ip_gw01}        app-ce-west.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # =============================================
 # xC Use Case Apps (resolve to xC Anycast IP)

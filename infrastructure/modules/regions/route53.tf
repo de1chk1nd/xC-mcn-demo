@@ -128,3 +128,18 @@ resource "aws_route53_record" "bigip-mgmt-via-int" {
   ]
 
 }
+
+resource "aws_route53_record" "app-ce" {
+  zone_id = aws_route53_zone.private.zone_id
+  name    = "app-ce-${var.region}.${local.domain_suffix}"
+  type    = "A"
+  ttl     = "300"
+  records = [
+    aws_network_interface.xC-mcn-slo-v2-priv-01.private_ip
+  ]
+
+  depends_on = [
+    aws_network_interface.xC-mcn-slo-v2-priv-01
+  ]
+
+}

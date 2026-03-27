@@ -265,7 +265,12 @@ def generate_pem(
         "-config", dfile("config"),
     )
 
-    # Sign with CA
+    # Sign with CA — use explicit serial file path next to the CA cert
+    ca_serial = os.path.splitext(ca_cert)[0] + ".srl"
+    serial_args = ["-CAserial", ca_serial]
+    if not os.path.exists(ca_serial):
+        serial_args.append("-CAcreateserial")
+
     run_openssl(
         openssl_bin,
         "x509", "-req",
@@ -273,7 +278,7 @@ def generate_pem(
         "-in", dfile("request"),
         "-CA", ca_cert,
         "-CAkey", ca_key,
-        "-CAcreateserial",
+        *serial_args,
         "-out", dfile("cert"),
         "-extensions", "v3_req",
         "-extfile", dfile("config"),
@@ -341,7 +346,12 @@ def generate_client_pem(
         "-config", dfile("config"),
     )
 
-    # Sign with CA
+    # Sign with CA — use explicit serial file path next to the CA cert
+    ca_serial = os.path.splitext(ca_cert)[0] + ".srl"
+    serial_args = ["-CAserial", ca_serial]
+    if not os.path.exists(ca_serial):
+        serial_args.append("-CAcreateserial")
+
     run_openssl(
         openssl_bin,
         "x509", "-req",
@@ -349,7 +359,7 @@ def generate_client_pem(
         "-in", dfile("request"),
         "-CA", ca_cert,
         "-CAkey", ca_key,
-        "-CAcreateserial",
+        *serial_args,
         "-out", dfile("cert"),
         "-extensions", "v3_req",
         "-extfile", dfile("config"),

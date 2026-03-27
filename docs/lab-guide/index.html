@@ -10,6 +10,11 @@
 
 <nav class="sidebar">
   <div class="brand">xC MCN Lab Guide</div>
+  <h2>Architecture</h2>
+  <a href="#" data-target="arch-overview" onclick="show('arch-overview', event)">Overview</a>
+  <a href="#" class="sub" data-target="arch-saas" onclick="show('arch-saas', event)">SaaS</a>
+  <a href="#" class="sub" data-target="arch-hybrid" onclick="show('arch-hybrid', event)">Hybrid</a>
+  <a href="#" class="sub" data-target="arch-multisite" onclick="show('arch-multisite', event)">Multi-Site</a>
   <h2>Setup &amp; Delete</h2>
   <a href="#" data-target="home" onclick="show('home', event)">Home</a>
   <a href="#" data-target="before-start" onclick="show('before-start', event)">Before You Start</a>
@@ -22,14 +27,16 @@
   <a href="#" class="sub" data-target="ns-re-ce" onclick="show('ns-re-ce', event)">RE to CE</a>
   <a href="#" class="sub" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">RE to CE via BIG-IP</a>
   <a href="#" class="sub" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">CE via CLB</a>
-  <h2>East-West</h2>
-  <a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>
-  <a href="#" data-target="ew-nwc" onclick="show('ew-nwc', event)">Network Connect</a>
-  <h2>Service Discovery</h2>
-  <a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">Kubernetes</a>
-  <a href="#" data-target="sd-bigip" onclick="show('sd-bigip', event)">BIG-IP</a>
-  <h2>Edge Computing</h2>
-  <a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a>
+  <a href="#" class="sub" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>
+  <a href="#" class="sub" data-target="sd-k8s" onclick="show('sd-k8s', event)">Kubernetes SD <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="vk8s" onclick="show('vk8s', event)">vk8s <span class="draft-dot"></span></a>
+  <hr class="divider">
+  <h2>Work in Progress</h2>
+  <a href="#" class="sub" data-target="wip" onclick="show('wip', event)">Use Cases</a>
+  <hr class="divider">
+  <h2>TL;DR</h2>
+  <a href="#" class="sub" data-target="tldr-setup" onclick="show('tldr-setup', event)">Quick Setup</a>
+  <a href="#" class="sub" data-target="tldr-teardown" onclick="show('tldr-teardown', event)">Teardown</a>
 </nav>
 
 <div class="main">
@@ -46,6 +53,34 @@
     <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
     <div class="progress-label" id="progress-label">Step 1 of 12</div>
   </div>
+
+  <!-- ===== ARCHITECTURE OVERVIEW ===== -->
+  <section id="arch-overview">
+    <h1>Architecture Overview</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="arch-overview" data-prev="home" data-next="arch-saas"></div>
+
+  <!-- ===== ARCHITECTURE SAAS ===== -->
+  <section id="arch-saas">
+    <h1>SaaS</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="arch-saas" data-prev="arch-overview" data-next="arch-hybrid"></div>
+
+  <!-- ===== ARCHITECTURE HYBRID ===== -->
+  <section id="arch-hybrid">
+    <h1>Hybrid</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="arch-hybrid" data-prev="arch-saas" data-next="arch-multisite"></div>
+
+  <!-- ===== ARCHITECTURE MULTI-SITE ===== -->
+  <section id="arch-multisite">
+    <h1>Multi-Site</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="arch-multisite" data-prev="arch-hybrid" data-next="home"></div>
 
   <!-- ===== HOME ===== -->
   <section id="home" class="active">
@@ -68,7 +103,7 @@
 
     <p>Use the sidebar to navigate through setup and each use case. A full overview is available under <b>Use Cases</b>.</p>
   </section>
-  <div class="section-nav" data-for="home" data-prev="vk8s" data-next="before-start"></div>
+  <div class="section-nav" data-for="home" data-prev="arch-multisite" data-next="before-start"></div>
 
   <!-- ===== BEFORE YOU START ===== -->
   <section id="before-start">
@@ -153,6 +188,15 @@ pip install -r requirements.txt
   <!-- ===== USE CASE OVERVIEW ===== -->
   <section id="use-cases">
     <h1>Use Cases Overview</h1>
+
+    <div class="admonition info">
+      <strong>Student name required</strong>
+      All FQDNs and test links on the following pages are generated dynamically based on your student name. Make sure it is set in the bar above before proceeding.
+      <ul>
+        <li><b>Domain suffix:</b> <span class="domain-badge pending">__DOMAIN__</span></li>
+      </ul>
+    </div>
+
     <p>All automated use cases live under <code>xC-use-cases/</code> and have <code>setup.sh</code> and <code>delete.sh</code> scripts.</p>
     <table>
       <tr><th>Use Case</th><th>Direction</th><th>Ingress</th><th>Egress</th><th>WAF</th></tr>
@@ -238,18 +282,28 @@ vim ./setup-init/config.yaml</code></pre>
     </ul>
 
     <h2 class="step">5. Post Install</h2>
-    <p>Add local <code>/etc/hosts</code> entries and open SSH sessions:</p>
-<pre><code># Copy /etc/hosts entries to clipboard
-terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
-sudo vim /etc/hosts
-
-# Fix SSH key permissions and open sessions to all lab servers
-./setup-init/.ssh/ssh-key-permission_lnx.sh all</code></pre>
+    <p>Add local <code>/etc/hosts</code> entries and open SSH sessions to all lab servers.</p>
 
     <div class="admonition warning">
       <strong>Important</strong>
       Add local <code>/etc/hosts</code> entries before accessing any devices.
     </div>
+
+    <p class="platform-heading">Linux</p>
+    <p>Hostfile</p>
+<pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
+sudo vim /etc/hosts</code></pre>
+    <p>SSH Access</p>
+<pre><code>chmod +x ./setup-init/.ssh/ssh-key-permission_lnx.sh
+./setup-init/.ssh/ssh-key-permission_lnx.sh all</code></pre>
+
+    <p class="platform-heading mac">macOS</p>
+    <p>Hostfile</p>
+<pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | pbcopy
+sudo vim /etc/hosts</code></pre>
+    <p>SSH Access</p>
+<pre><code>chmod +x ./setup-init/.ssh/ssh-key-permission_mac.sh
+./setup-init/.ssh/ssh-key-permission_mac.sh all</code></pre>
 
     <hr>
 
@@ -314,109 +368,322 @@ sudo vim /etc/hosts
   <!-- ===== NS RE ONLY ===== -->
   <section id="ns-re">
     <h1>North-South: RE Only</h1>
-    <p>Public HTTP load balancer via Regional Edge with DNS service discovery of AWS NLB names. Traffic does not touch a Customer Edge.</p>
+    <p>Create an HTTP load balancer with ingress and egress via <b>Regional Edge (RE)</b>.</p>
+    <p>Egress goes directly via the Internet using DNS service discovery (FQDN) of AWS NLB names across EU-Central-1 and EU-West-1. A default <b>Web Application Firewall</b> policy is attached to the load balancer, guaranteeing common security policies and metrics across different environments.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/RE-only.png')">
+      <img src="../images/use-cases/RE-only.png" alt="Use Case - RE Only">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"</code></pre>
+    <p>The script fetches NLB DNS names from Terraform outputs, generates origin pool and load balancer payloads from templates, and creates both objects via the xC API.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
+"./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"</code></pre>
+
     <h2>Test</h2>
-    <p>Access the load balancer FQDN (<code>echo-public.__DOMAIN__</code>) and verify the <b>hostname</b> in the JSON response. Load balancing alternates between eu-central-1 and eu-west-1.</p>
+    <p>Access the load balancer FQDN and verify the <b>hostname</b> field in the JSON response. Load balancing alternates between eu-central-1 and eu-west-1.</p>
+    <p>
+      <a class="test-access" href="https://echo-public.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> echo-public.__DOMAIN__
+      </a>
+    </p>
+
     <h2>Delete</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"</code></pre>
+    <p>Removes the HTTP load balancer, origin pool, and cleans up generated payload files.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
+"./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"</code></pre>
+
+    <h2>Files</h2>
+    <table>
+      <tr><th>Path</th><th>Description</th></tr>
+      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
+      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
+      <tr><td><code>etc/__template__origin-pool.json</code></td><td>Origin pool template (uses NLB DNS from Terraform)</td></tr>
+      <tr><td><code>etc/__template_http-loadbalancer.json</code></td><td>HTTP load balancer template</td></tr>
+    </table>
   </section>
   <div class="section-nav" data-for="ns-re" data-prev="use-cases" data-next="ns-re-ce"></div>
 
   <!-- ===== NS RE to CE ===== -->
   <section id="ns-re-ce">
     <h1>North-South: RE to CE</h1>
-    <p>Public HTTP load balancers via Regional Edge with egress through Customer Edge to private backend servers. Three LBs are deployed: combined, eu-central only, eu-west only.</p>
+    <p>Create HTTP load balancers with ingress via <b>Regional Edge (RE)</b> and egress via <b>Customer Edge (CE)</b> on AWS.</p>
+    <p>Three load balancers are deployed: a combined LB routing to both regions, and one dedicated LB per region (eu-central, eu-west). A default <b>Web Application Firewall</b> policy is attached to each load balancer.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/RE-to-CE.png')">
+      <img src="../images/use-cases/RE-to-CE.png" alt="Use Case - RE to CE">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"</code></pre>
+    <p>The script generates server certificates for all three FQDNs, uploads them to xC, and creates the HTTP load balancers via the xC API.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
+"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"</code></pre>
+
     <h2>Test</h2>
-    <p>Access each FQDN and verify load balancing between web-01 and web-02:</p>
-    <ul>
-      <li><code>echo-hybrid.__DOMAIN__</code> &mdash; both regions</li>
-      <li><code>echo-hybrid-central.__DOMAIN__</code> &mdash; eu-central only</li>
-      <li><code>echo-hybrid-west.__DOMAIN__</code> &mdash; eu-west only</li>
-    </ul>
+    <p>Verify the <b>hostname</b> field in the JSON response. The regional LBs return servers from their region only, while the combined LB load balances across both regions.</p>
+    <p>
+      <a class="test-access" href="https://echo-hybrid.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> echo-hybrid.__DOMAIN__
+      </a>
+      &mdash; both regions
+    </p>
+    <p>
+      <a class="test-access" href="https://echo-hybrid-central.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> echo-hybrid-central.__DOMAIN__
+      </a>
+      &mdash; eu-central only
+    </p>
+    <p>
+      <a class="test-access" href="https://echo-hybrid-west.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> echo-hybrid-west.__DOMAIN__
+      </a>
+      &mdash; eu-west only
+    </p>
+
     <h2>Delete</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"</code></pre>
+    <p>Removes all three HTTP load balancers, certificates from xC, and cleans up generated files.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
+"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"</code></pre>
+
+    <h2>Files</h2>
+    <table>
+      <tr><th>Path</th><th>Description</th></tr>
+      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
+      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
+      <tr><td><code>etc/__template_lb-echo-ssl.json</code></td><td>LB template &mdash; both regions</td></tr>
+      <tr><td><code>etc/__template_lb-echo-ssl-central.json</code></td><td>LB template &mdash; eu-central only</td></tr>
+      <tr><td><code>etc/__template_lb-echo-ssl-west.json</code></td><td>LB template &mdash; eu-west only</td></tr>
+    </table>
   </section>
   <div class="section-nav" data-for="ns-re-ce" data-prev="ns-re" data-next="ns-re-ce-bigip"></div>
 
   <!-- ===== NS RE to CE via BIG-IP ===== -->
   <section id="ns-re-ce-bigip">
     <h1>North-South: RE to CE via BIG-IP</h1>
-    <p>Public HTTP load balancers via RE, egress through CE to a local BIG-IP appliance. Demonstrates F5 "better together" integration with iRule header manipulation.</p>
+    <p>Create HTTP load balancers with ingress via <b>Regional Edge (RE)</b> and egress via <b>Customer Edge (CE)</b> on AWS, forwarding traffic to a local <b>BIG-IP</b> appliance. One load balancer per region, each pointing to the BIG-IP origin pool in its respective region.</p>
+    <p>A default <b>Web Application Firewall</b> policy is attached to each load balancer. The BIG-IP appliance injects a custom header via an iRule, demonstrating F5 "better together" integration.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/RE-to-CE w bigip.png')">
+      <img src="../images/use-cases/RE-to-CE w bigip.png" alt="Use Case - RE to CE via BIG-IP">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"</code></pre>
+    <p>The script generates server certificates for both FQDNs, uploads them to xC, and creates the HTTP load balancers via the xC API.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"
+"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"</code></pre>
+
     <h2>Test</h2>
-    <p>Access the FQDN and check for the <b>custom-header</b> injected by the BIG-IP iRule:</p>
-    <ul>
-      <li><code>bigip-echo-eu-central.__DOMAIN__</code></li>
-      <li><code>bigip-echo-eu-west.__DOMAIN__</code></li>
-    </ul>
-    <h3>BIG-IP Access</h3>
+    <p>Access each FQDN and verify the JSON response. Since traffic passes through the BIG-IP, you should see a <b>custom header</b> injected by a BIG-IP iRule in the response.</p>
+    <p>
+      <a class="test-access" href="https://bigip-echo-eu-central.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> bigip-echo-eu-central.__DOMAIN__
+      </a>
+      &mdash; eu-central
+    </p>
+    <p>
+      <a class="test-access" href="https://bigip-echo-eu-west.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> bigip-echo-eu-west.__DOMAIN__
+      </a>
+      &mdash; eu-west
+    </p>
+
+    <h3>iRule Custom Header</h3>
+    <p>The BIG-IP iRule adds a custom header to every response. Look for the additional header entry in the JSON output:</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/00-header-json.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/00-header-json.png" alt="iRule custom header in JSON response">
+    </a>
+
+    <h2>Delete</h2>
+    <p>Removes both HTTP load balancers, certificates from xC, and cleans up generated files.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"
+"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"</code></pre>
+
+    <h2>Advanced: BIG-IP APM Local Authentication</h2>
+    <p>Add an APM access policy with local user authentication on the eu-central BIG-IP. This demonstrates how BIG-IP APM can enforce authentication in front of application workloads, even when traffic is routed through the xC fabric.</p>
+
+    <h3>BIG-IP Management Access</h3>
     <table>
       <tr><th>Device</th><th>Username</th><th>Password</th></tr>
-      <tr><td><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
-      <tr><td><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
     </table>
-    <h2>Delete</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"</code></pre>
+
+    <h3>Step 1: Create Local User Database</h3>
+    <p>Navigate to <b>Access &rarr; Authentication &rarr; Local User DB &rarr; Instances</b> and create a new instance <code>local-user-db</code>.</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/01-bigip-local-db.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/01-bigip-local-db.png" alt="BIG-IP Local User Database">
+    </a>
+
+    <h3>Step 2: Create a User</h3>
+    <p>Add a user to the local database: username <code>alice</code>, password of your choice, instance <code>local-user-db</code>.</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/02-bigip-local-user.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/02-bigip-local-user.png" alt="BIG-IP Local User">
+    </a>
+
+    <h3>Step 3: Create Access Profile</h3>
+    <p>Navigate to <b>Access &rarr; Profiles / Policies &rarr; Access Profiles</b> and create a new profile <code>local-auth</code> (type: <b>All</b>, language: <b>English</b>).</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/03-access-profile.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/03-access-profile.png" alt="BIG-IP Access Profile">
+    </a>
+
+    <h3>Step 4: Edit Access Policy</h3>
+    <p>Open the Visual Policy Editor and configure the flow:</p>
+    <p><b>Start &rarr; Login Page &rarr; LocalDB Auth</b> (instance <code>local-user-db</code>) <b>&rarr; Allow</b></p>
+    <p>Click <b>Apply Access Policy</b> when done.</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/04-access-vpe.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/04-access-vpe.png" alt="BIG-IP Visual Policy Editor">
+    </a>
+
+    <h3>Step 5: Assign Policy to Virtual Server</h3>
+    <p>Switch to partition <code>xcmcnlab</code>, then assign the <code>local-auth</code> access profile to the virtual server <code>echo443tlspass</code>.</p>
+
+    <h3>Step 6: Test Authentication</h3>
+    <p>Access the FQDN again. An authentication prompt should appear. Log in with the user <code>alice</code> you created earlier.</p>
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/re-to-ce-bigip/003-auth-screen.png')">
+      <img src="../images/use-cases/re-to-ce-bigip/003-auth-screen.png" alt="BIG-IP APM Authentication Screen">
+    </a>
+
+    <h2>Files</h2>
+    <table>
+      <tr><th>Path</th><th>Description</th></tr>
+      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
+      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
+      <tr><td><code>etc/__template_lb-bigip-echo-eu-central.json</code></td><td>LB template &mdash; eu-central</td></tr>
+      <tr><td><code>etc/__template_lb-bigip-echo-eu-west.json</code></td><td>LB template &mdash; eu-west</td></tr>
+    </table>
   </section>
   <div class="section-nav" data-for="ns-re-ce-bigip" data-prev="ns-re-ce" data-next="ns-ce-clb"></div>
 
   <!-- ===== NS CE via CLB ===== -->
   <section id="ns-ce-clb">
     <h1>North-South: CE via Cloud Load Balancer</h1>
-    <p>Client sessions terminated directly at the Customer Edge via a public NLB or internal request. SaaS-managed local WAAP without Regional Edge.</p>
-    <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"</code></pre>
-    <h2>Test &mdash; External (via NLB)</h2>
-    <p>Requires local <code>/etc/hosts</code> entries.</p>
-    <table>
-      <tr><th>Region</th><th>App</th><th>XSS Test</th></tr>
-      <tr><td>EU-Central-1</td><td><code>http://app-1.eu-central-1.__DOMAIN__</code></td><td><code>http://app-1.eu-central-1.__DOMAIN__?a=&lt;script&gt;</code></td></tr>
-      <tr><td>EU-West-1</td><td><code>http://app-1.eu-west-1.__DOMAIN__</code></td><td><code>http://app-1.eu-west-1.__DOMAIN__?a=&lt;script&gt;</code></td></tr>
-    </table>
-    <h2>Test &mdash; Internal (via SSH)</h2>
-<pre><code># SSH to a web server
-./setup-init/.ssh/ssh-key-permission_lnx.sh central
+    <p>Create HTTPS load balancers that are <b>advertised directly on the Customer Edge (CE)</b> rather than on the Regional Edge. Traffic never leaves the local region and does not traverse the global F5 network.</p>
+    <p>An AWS <b>Network Load Balancer (NLB)</b> in each region forwards external traffic to the CE node. A default <b>Web Application Firewall</b> policy is attached, providing SaaS-managed WAAP at the edge without requiring a Regional Edge.</p>
 
-# Normal request
-curl --silent http://local-web.__DOMAIN__ | grep "Server address"
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/CE-via-clb.png')">
+      <img src="../images/use-cases/CE-via-clb.png" alt="Use Case - CE via CLB">
+    </a>
+
+    <h2>Deploy</h2>
+    <p>The script generates server certificates, uploads them to xC, and creates one HTTPS load balancer per region, each advertised on the CE virtual site in its respective region.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
+"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"</code></pre>
+
+    <h2>Test &mdash; External (via NLB)</h2>
+    <p>External clients reach the application through the AWS NLB, which forwards traffic to the CE node. The CE terminates the TLS session and applies the WAF policy locally. Requires local <code>/etc/hosts</code> entries (see Post Install).</p>
+    <p>
+      <a class="test-access" href="https://app-ce-central.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> app-ce-central.__DOMAIN__
+      </a>
+      &mdash; eu-central
+    </p>
+    <p>
+      <a class="test-access" href="https://app-ce-west.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> app-ce-west.__DOMAIN__
+      </a>
+      &mdash; eu-west
+    </p>
+    <p>To verify the WAF is active, append a simple XSS payload to the URL &mdash; the request should be blocked:</p>
+<pre><code>https://app-ce-central.__DOMAIN__?a=&lt;script&gt;</code></pre>
+
+    <h2>Test &mdash; Internal (via SSH)</h2>
+    <p>Because the load balancer is advertised on the <b>CE node itself</b> (not on the Regional Edge), any host inside the same VPC can reach it directly by resolving the FQDN to the CE&rsquo;s local IP address. This means the same WAF policy protects both external and internal traffic without any additional configuration.</p>
+    <p>This is a key advantage of CE-based load balancers: a single deployment covers two scenarios at once:</p>
+    <ul>
+      <li><b>External &rarr; CE:</b> Internet clients reach the app via the NLB, which NATs to the CE address. The CE terminates TLS, applies the WAF, and forwards to the origin.</li>
+      <li><b>Internal &rarr; CE:</b> Local servers (e.g. Ubuntu web servers) resolve the same FQDN to the CE directly. Every internal request also passes through the xC WAF &mdash; no separate internal load balancer or policy is needed.</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>Why does this work?</strong>
+      When a load balancer is advertised on a CE virtual site, the CE node binds the FQDN to its own local interfaces (inside and outside). Any DNS query within the VPC resolves to the CE&rsquo;s private IP, so local traffic flows directly to the CE without leaving the network &mdash; but still receives the full xC WAF treatment.
+    </div>
+
+    <p>SSH into one of the Ubuntu servers and test. If you have not imported the lab CA, you can skip TLS verification with <code>-k</code>:</p>
+<pre><code># Normal request (skip TLS verification)
+curl --silent -k https://app-ce-central.__DOMAIN__ | grep "Server address"
 
 # XSS test -- WAF should block
-curl --silent "http://local-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+curl --silent -k "https://app-ce-central.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+
     <h2>Delete</h2>
-<pre><code>"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"</code></pre>
+    <p>Removes both HTTPS load balancers, certificates from xC, and cleans up generated files.</p>
+<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
+"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"</code></pre>
+
+    <h2>Files</h2>
+    <table>
+      <tr><th>Path</th><th>Description</th></tr>
+      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
+      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
+      <tr><td><code>etc/__template_lb-ce-eu-central.json</code></td><td>LB template &mdash; eu-central (advertised on CE)</td></tr>
+      <tr><td><code>etc/__template_lb-ce-eu-west.json</code></td><td>LB template &mdash; eu-west (advertised on CE)</td></tr>
+    </table>
   </section>
   <div class="section-nav" data-for="ns-ce-clb" data-prev="ns-re-ce-bigip" data-next="ew-ce"></div>
 
   <!-- ===== EW CE to CE ===== -->
   <section id="ew-ce">
     <h1>East-West: CE to CE</h1>
-    <p>Internal HTTP load balancers for cross-region east-west traffic between CE sites. No VPC peering &mdash; connectivity provided entirely by the xC fabric.</p>
+    <p>Create internal HTTPS load balancers for <b>cross-region east-west traffic</b> between Customer Edge sites. Each region gets an LB that routes to the <b>opposite</b> region&rsquo;s origin pool.</p>
+    <p>No VPC peering or Transit Gateway is required &mdash; connectivity is provided entirely by the <b>xC fabric</b>. Both load balancers share the same FQDN (<code>remote-web</code>) but are advertised on different CE virtual sites, so each region resolves the name to its local CE and gets routed to the remote origin. A default <b>Web Application Firewall</b> policy is attached.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/CE-to-CE.png')">
+      <img src="../images/use-cases/CE-to-CE.png" alt="Use Case - CE to CE">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"</code></pre>
+    <p>The script generates a server certificate for the shared FQDN, uploads it to xC, and creates two HTTPS load balancers (one per region, each pointing to the opposite region&rsquo;s origin pool).</p>
+<pre><code>chmod +x "./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"
+"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"</code></pre>
+
     <h2>Test</h2>
-    <p>SSH to a web server and curl the internal LB. The response should come from the <b>opposite</b> region:</p>
-<pre><code># SSH to eu-central
-./setup-init/.ssh/ssh-key-permission_lnx.sh central
+    <p>SSH into an Ubuntu server and curl the internal LB. The response should come from the <b>opposite</b> region, proving cross-region connectivity via the xC fabric:</p>
+<pre><code># From eu-central: response should come from eu-west
+curl -k --silent https://remote-web.__DOMAIN__ | grep "Server name"
 
-# Test cross-region connectivity
-curl --silent http://remote-web.__DOMAIN__ | grep "Server name"
+# From eu-west: response should come from eu-central
+curl -k --silent https://remote-web.__DOMAIN__ | grep "Server name"
 
-# Test WAF (should be blocked)
-curl --silent "http://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+# WAF test -- should be blocked
+curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+
     <table>
-      <tr><th>SSH into</th><th>curl remote-web</th><th>Response from</th></tr>
-      <tr><td>EU-Central-1</td><td><code>lb-api-int-central</code></td><td>EU-West-1 NGINX</td></tr>
-      <tr><td>EU-West-1</td><td><code>lb-api-int-west</code></td><td>EU-Central-1 NGINX</td></tr>
+      <tr><th>SSH into</th><th>LB Name</th><th>Traffic Flow</th><th>Response from</th></tr>
+      <tr>
+        <td><span class="region-central">EU-Central-1</span></td>
+        <td><code>lb-api-int-central</code></td>
+        <td><span class="region-central">Central</span> <span class="route-arrow">&#10132;</span> <span class="region-west">West</span></td>
+        <td><span class="region-west">EU-West-1 NGINX</span></td>
+      </tr>
+      <tr>
+        <td><span class="region-west">EU-West-1</span></td>
+        <td><code>lb-api-int-west</code></td>
+        <td><span class="region-west">West</span> <span class="route-arrow">&#10132;</span> <span class="region-central">Central</span></td>
+        <td><span class="region-central">EU-Central-1 NGINX</span></td>
+      </tr>
     </table>
+
+    <div class="admonition info">
+      <strong>How does this work?</strong>
+      Both load balancers use the same FQDN <code>remote-web.__DOMAIN__</code>, but each is advertised only on the CE virtual site in its own region (<code>SITE_NETWORK_INSIDE</code>). When an Ubuntu server in eu-central resolves the FQDN, it reaches the local CE, which routes the request through the xC fabric to the origin pool in eu-west &mdash; and vice versa. This enables secure cross-region connectivity without any direct VPC peering.
+    </div>
+
     <h2>Delete</h2>
-<pre><code>"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"</code></pre>
+    <p>Removes both HTTPS load balancers, the certificate from xC, and cleans up generated files.</p>
+<pre><code>chmod +x "./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"
+"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"</code></pre>
+
+    <h2>Files</h2>
+    <table>
+      <tr><th>Path</th><th>Description</th></tr>
+      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
+      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
+      <tr><td><code>etc/__template_ew_loadbalancing-eu-central.json</code></td><td>LB template &mdash; advertised on eu-central, routes to eu-west</td></tr>
+      <tr><td><code>etc/__template_ew_loadbalancing-eu-west.json</code></td><td>LB template &mdash; advertised on eu-west, routes to eu-central</td></tr>
+    </table>
   </section>
-  <div class="section-nav" data-for="ew-ce" data-prev="ns-ce-clb" data-next="ew-nwc"></div>
+  <div class="section-nav" data-for="ew-ce" data-prev="ns-ce-clb" data-next="sd-k8s"></div>
 
   <!-- ===== EW Network Connect ===== -->
   <section id="ew-nwc">
@@ -452,7 +719,7 @@ curl --silent "http://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
     <h2>Delete</h2>
 <pre><code>"./xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"</code></pre>
   </section>
-  <div class="section-nav" data-for="sd-k8s" data-prev="ew-nwc" data-next="sd-bigip"></div>
+  <div class="section-nav" data-for="sd-k8s" data-prev="ew-ce" data-next="vk8s"></div>
 
   <!-- ===== SD BIG-IP ===== -->
   <section id="sd-bigip">
@@ -494,7 +761,75 @@ curl --silent "http://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
     <h2>Delete</h2>
 <pre><code>./xC-use-cases/vk8s/bin/delete.sh</code></pre>
   </section>
-  <div class="section-nav" data-for="vk8s" data-prev="sd-bigip" data-next="home"></div>
+  <div class="section-nav" data-for="vk8s" data-prev="sd-k8s" data-next="wip"></div>
+
+  <!-- ===== WIP ===== -->
+  <section id="wip">
+    <h1>Work in Progress</h1>
+    <p>The following use cases are planned or in early development and not yet part of the guided lab.</p>
+    <table>
+      <tr><th>Use Case</th><th>Category</th><th>Status</th><th>Notes</th></tr>
+      <tr><td><a href="../../xC-use-cases/East-West Network Connect/README.md" target="_blank" rel="noopener">Network Connect (L3 VPN)</a></td><td>East-West</td><td>Beta</td><td>Routing limited to GW01-to-GW01 CE nodes</td></tr>
+      <tr><td><a href="../../xC-use-cases/Service Discovery/bigip/README.md" target="_blank" rel="noopener">BIG-IP Service Discovery</a></td><td>Service Discovery</td><td>Early Access</td><td>Automatic endpoint discovery from BIG-IP</td></tr>
+      <tr><td><a href="../../xC-use-cases/misc/bgp anycast routing/README.md" target="_blank" rel="noopener">BGP Anycast Routing</a></td><td>Networking</td><td>Reference</td><td>BGP peering with CE nodes via FRR</td></tr>
+      <tr><td><a href="../../xC-use-cases/misc/mTLS/README.md" target="_blank" rel="noopener">mTLS</a></td><td>Security</td><td>Reference</td><td>Mutual TLS between CE sites and origin servers</td></tr>
+      <tr><td><a href="../../xC-use-cases/misc/jwt-validation/README.md" target="_blank" rel="noopener">JWT Validation</a></td><td>API Security</td><td>Reference</td><td>JWT token validation on xC HTTP load balancers</td></tr>
+      <tr><td><a href="../../xC-use-cases/Web Application Scan/README.md" target="_blank" rel="noopener">Web Application Scan</a></td><td>Security</td><td>Planned</td><td>Automated vulnerability scanning (Juice Shop)</td></tr>
+    </table>
+  </section>
+  <div class="section-nav" data-for="wip" data-prev="vk8s" data-next="tldr-setup"></div>
+
+  <!-- ===== TL;DR QUICK SETUP ===== -->
+  <section id="tldr-setup">
+    <h1>TL;DR &mdash; Quick Setup</h1>
+
+    <h2>1. Clone &amp; Prepare</h2>
+<pre><code>git clone https://github.com/de1chk1nd/xC-mcn-demo.git
+cd xC-mcn-demo
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+
+    <h2>2. Config</h2>
+<pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
+vim ./setup-init/config.yaml</code></pre>
+
+    <h2>3. Deploy</h2>
+<pre><code>./setup-init/bin/initialize.sh init</code></pre>
+
+    <h2>4. Post Install</h2>
+    <p class="platform-heading">Linux</p>
+<pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
+sudo vim /etc/hosts
+chmod +x ./setup-init/.ssh/ssh-key-permission_lnx.sh
+./setup-init/.ssh/ssh-key-permission_lnx.sh all</code></pre>
+    <p class="platform-heading mac">macOS</p>
+<pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | pbcopy
+sudo vim /etc/hosts
+chmod +x ./setup-init/.ssh/ssh-key-permission_mac.sh
+./setup-init/.ssh/ssh-key-permission_mac.sh all</code></pre>
+
+  </section>
+  <div class="section-nav" data-for="tldr-setup" data-prev="wip" data-next="tldr-teardown"></div>
+
+  <!-- ===== TL;DR TEARDOWN ===== -->
+  <section id="tldr-teardown">
+    <h1>TL;DR &mdash; Teardown</h1>
+
+    <h2>Update Credentials (after STS rotation)</h2>
+<pre><code>./setup-init/bin/initialize.sh update-creds</code></pre>
+
+    <h2>Destroy</h2>
+<pre><code># Update expired creds first
+./setup-init/bin/initialize.sh update-creds
+
+# Destroy infrastructure
+./setup-init/bin/delete.sh
+
+# Remove /etc/hosts entries
+sudo vim /etc/hosts</code></pre>
+  </section>
+  <div class="section-nav" data-for="tldr-teardown" data-prev="tldr-setup" data-next="home"></div>
 
 </div>
 

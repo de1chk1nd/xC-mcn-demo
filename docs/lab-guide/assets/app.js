@@ -64,17 +64,16 @@
   };
 
   function updateDomainStatus(student) {
-    var domainEl = document.getElementById("domain-status");
-    if (!domainEl) return;
-
-    if (!student) {
-      domainEl.className = "domain-badge pending";
-      domainEl.innerHTML = "__DOMAIN__ <span class=\"icon\">✖</span>";
-      return;
+    var badges = document.querySelectorAll(".domain-badge");
+    for (var i = 0; i < badges.length; i++) {
+      if (!student) {
+        badges[i].className = "domain-badge pending";
+        badges[i].innerHTML = "__DOMAIN__ <span class=\"icon\">✖</span>";
+      } else {
+        badges[i].className = "domain-badge ready";
+        badges[i].innerHTML = student + ".xc-mcn-lab.aws <span class=\"icon\">✔</span>";
+      }
     }
-
-    domainEl.className = "domain-badge ready";
-    domainEl.innerHTML = student + ".xc-mcn-lab.aws <span class=\"icon\">✔</span>";
   }
 
   window.show = function(id, ev) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 #######################################
 # Load Common Configuration
@@ -12,7 +12,7 @@ fi
 
 CONFIG_FILE="${REPO_ROOT}/setup-init/config.yaml"
 if ! command -v yq &> /dev/null; then
-    echo "ERROR: yq not installed"
+    echo "ERROR: yq not installed (brew install yq)"
     exit 1
 fi
 if [ ! -f "$CONFIG_FILE" ]; then
@@ -63,31 +63,63 @@ usage() {
     echo "  west         - Ubuntu 01+02 and BigIP in eu-west-1"
     echo "  fix-perms    - Only fix SSH key permissions (no SSH sessions)"
     echo ""
-    echo "Each session opens in a new terminal tab/window."
+    echo "Each session opens in a new terminal tab."
+    echo "Supports: Terminal.app (default), iTerm2"
     exit 1
 }
 
 #######################################
-# Detect terminal emulator
+# Detect macOS terminal emulator
 #######################################
 detect_terminal() {
-    if command -v gnome-terminal &> /dev/null; then
-        echo "gnome-terminal"
-    elif command -v xfce4-terminal &> /dev/null; then
-        echo "xfce4-terminal"
-    elif command -v konsole &> /dev/null; then
-        echo "konsole"
-    elif command -v x-terminal-emulator &> /dev/null; then
-        echo "x-terminal-emulator"
-    elif command -v terminator &> /dev/null; then
-        echo "terminator"
+    if [ -d "/Applications/iTerm.app" ]; then
+        echo "iterm2"
+    elif [ -d "/System/Applications/Utilities/Terminal.app" ] || [ -d "/Applications/Terminal.app" ]; then
+        echo "terminal"
     else
         echo "none"
     fi
 }
 
 #######################################
-# Open SSH in a new terminal window
+# Open SSH in a new tab — Terminal.app
+#######################################
+open_tab_terminal_app() {
+    local title="$1"
+    local ssh_cmd="$2"
+
+    osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "${ssh_cmd}"
+    set custom title of front tab of front window to "${title}"
+end tell
+EOF
+}
+
+#######################################
+# Open SSH in a new tab — iTerm2
+#######################################
+open_tab_iterm2() {
+    local title="$1"
+    local ssh_cmd="$2"
+
+    osascript <<EOF
+tell application "iTerm2"
+    activate
+    tell current window
+        create tab with default profile
+        tell current session of current tab
+            set name to "${title}"
+            write text "${ssh_cmd}"
+        end tell
+    end tell
+end tell
+EOF
+}
+
+#######################################
+# Open SSH in a new terminal tab
 #######################################
 open_ssh_window() {
     local title="$1"
@@ -95,21 +127,12 @@ open_ssh_window() {
     local terminal="$3"
     local ssh_cmd="ssh ${SSH_OPTIONS} -i ${SSH_KEY} ${host}"
 
-    case $terminal in
-        "gnome-terminal")
-            gnome-terminal --tab --title="${title}" -- bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read"
+    case "$terminal" in
+        "iterm2")
+            open_tab_iterm2 "${title}" "${ssh_cmd}"
             ;;
-        "xfce4-terminal")
-            xfce4-terminal --tab --title="${title}" -e "bash -c '${ssh_cmd}; echo \"Connection closed. Press Enter to exit.\"; read'" &
-            ;;
-        "konsole")
-            konsole --new-tab -p tabtitle="${title}" -e bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read" &
-            ;;
-        "x-terminal-emulator")
-            x-terminal-emulator -T "${title}" -e bash -c "${ssh_cmd}; echo 'Connection closed. Press Enter to exit.'; read" &
-            ;;
-        "terminator")
-            terminator --new-tab --title="${title}" -e "bash -c '${ssh_cmd}; echo \"Connection closed. Press Enter to exit.\"; read'" &
+        "terminal")
+            open_tab_terminal_app "${title}" "${ssh_cmd}"
             ;;
         *)
             echo "Error: No supported terminal emulator found"
@@ -134,9 +157,9 @@ open_sessions() {
         local title="${entry##*|}"
 
         echo "  Opening: ${title} (${host})"
-            if open_ssh_window "${title}" "${host}" "${terminal}"; then
-                count=$((count + 1))   # <-- safe, no set -e trap
-                sleep 1.5
+        if open_ssh_window "${title}" "${host}" "${terminal}"; then
+            count=$((count + 1))
+            sleep 1.5
         else
             echo "  Failed to open session for ${host}"
         fi
@@ -149,6 +172,11 @@ open_sessions() {
 #######################################
 # Main
 #######################################
+if [ "$(uname -s)" != "Darwin" ]; then
+    echo "ERROR: This script is for macOS only. Use ssh-key-permission_lnx.sh on Linux."
+    exit 1
+fi
+
 TARGET="${1:-all}"
 
 # fix-perms exits early -- permissions already fixed above
@@ -166,12 +194,12 @@ fi
 TERMINAL=$(detect_terminal)
 if [ "$TERMINAL" = "none" ]; then
     echo "Error: No supported terminal emulator found."
-    echo "Install one of: gnome-terminal, xfce4-terminal, konsole, x-terminal-emulator, terminator"
+    echo "Expected: Terminal.app or iTerm2 in /Applications"
     exit 1
 fi
 
 echo ""
-echo "=== SSH Multi-Tab Connection Script ==="
+echo "=== SSH Multi-Tab Connection Script (macOS) ==="
 echo "Student:  ${STUDENT}"
 echo "SSH Key:  ${SSH_KEY}"
 echo "Terminal: ${TERMINAL}"

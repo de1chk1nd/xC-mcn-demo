@@ -85,6 +85,7 @@ def process_domain(
     *,
     upload_xc: bool,
     skip_p12: bool,
+    keep_pem: bool = False,
     mtls: bool = False,
     client_cfg=None,
 ) -> bool:
@@ -110,8 +111,11 @@ def process_domain(
         else:
             print("  Skipped .p12 creation (--no-p12).")
 
-        cleanup_pem_files(pem_files)
-        print("  PEM files cleaned up.")
+        if keep_pem:
+            print("  PEM files kept on disk (--keep-pem).")
+        else:
+            cleanup_pem_files(pem_files)
+            print("  PEM files cleaned up.")
 
         if mtls and client_cfg is not None:
             print(f"\n  Generating client certificate for mTLS: {domain}")
@@ -169,6 +173,12 @@ def parse_args() -> argparse.Namespace:
         help="Skip .p12 bundle creation (useful with --xc-upload when only uploading)",
     )
     parser.add_argument(
+        "--keep-pem",
+        action="store_true",
+        default=False,
+        help="Keep PEM cert/key files on disk (do not clean up after generation)",
+    )
+    parser.add_argument(
         "--namespace", "-n",
         default=None,
         help="XC namespace override (only with --xc-upload; default: from config.yaml)",
@@ -198,6 +208,7 @@ def main() -> None:
     args = parse_args()
     upload_xc = args.xc_upload
     skip_p12 = args.no_p12
+    keep_pem = args.keep_pem
     mtls = args.mtls
     ns_override = args.namespace
 
@@ -268,6 +279,7 @@ def main() -> None:
             xc_cfg,
             upload_xc=upload_xc,
             skip_p12=skip_p12,
+            keep_pem=keep_pem,
             mtls=mtls,
             client_cfg=client_cfg,
         )
