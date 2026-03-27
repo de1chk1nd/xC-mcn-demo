@@ -8,7 +8,7 @@
     },
     "spec": {
       "domains": [
-        "bigip-echo-eu-west.edge.${STUDENT}.de"
+        "bigip-echo-eu-west.${STUDENT}.xc-mcn-lab.aws"
       ],
       "https_auto_cert": {
         "http_redirect": true,

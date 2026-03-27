@@ -8,7 +8,7 @@
   },
   "spec": {
     "domains": [
-      "echo-hybrid-central.edge.${STUDENT}.de"
+      "echo-hybrid-central.${STUDENT}.xc-mcn-lab.aws"
     ],
     "https_auto_cert": {
       "http_redirect": true,

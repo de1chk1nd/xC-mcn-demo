@@ -1,32 +1,49 @@
 output "etc-hosts" {
   value = <<EOF
-# AWS lab section
-# ubuntu - server
-${module.eu-central-1.xC-mcn-site-ubuntu-01-eip}     ubuntu-01-eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-central-1.xC-mcn-site-ubuntu-02-eip}     ubuntu-02-eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.xC-mcn-site-ubuntu-01-eip}        ubuntu-01-eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.xC-mcn-site-ubuntu-02-eip}        ubuntu-02-eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+# =============================================
+# AWS Infrastructure
+# =============================================
+
+# Ubuntu servers
+${module.eu-central-1.xC-mcn-site-ubuntu-01-eip}     ubuntu-01-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-central-1.xC-mcn-site-ubuntu-02-eip}     ubuntu-02-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.xC-mcn-site-ubuntu-01-eip}        ubuntu-01-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.xC-mcn-site-ubuntu-02-eip}        ubuntu-02-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # BIG-IP MGMT
-${module.eu-central-1.xC-mcn-site-bigip-mgmt-eip}     bigip-mgmt-eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.xC-mcn-site-bigip-mgmt-eip}        bigip-mgmt-eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+${module.eu-central-1.xC-mcn-site-bigip-mgmt-eip}     bigip-mgmt-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.xC-mcn-site-bigip-mgmt-eip}        bigip-mgmt-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # BIG-IP Service 1
-${module.eu-central-1.Service-1-via-BigIP}     service-bigip-eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.Service-1-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+${module.eu-central-1.Service-1-via-BigIP}     service-bigip-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.Service-1-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # BIG-IP Service 2
-${module.eu-central-1.Service-2-via-BigIP}     service-bigip-eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+${module.eu-central-1.Service-2-via-BigIP}     service-bigip-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # AWS NLB IP / Application Names to resolve to NLB IP >> CE IP
-${module.eu-central-1.nlb_ip}     app-1.eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-${module.eu-west-1.nlb_ip}        app-1.eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+${module.eu-central-1.nlb_ip}     app-1.eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.nlb_ip}        app-1.eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # Uncomment (comment above) for direct EIP Access to MCN (no cLB)
-# ${module.eu-central-1.mcn_ip_gw01}     app-1.eu-central-1.${local.setup-init.student.name}-xc-mcn-lab.aws
-# ${module.eu-west-1.mcn_ip_gw01}        app-1.eu-west-1.${local.setup-init.student.name}-xc-mcn-lab.aws
+# ${module.eu-central-1.mcn_ip_gw01}     app-1.eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+# ${module.eu-west-1.mcn_ip_gw01}        app-1.eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
+# =============================================
+# xC Use Case Apps (resolve to xC Anycast IP)
+# =============================================
+${local.setup-init.xC.tenant_anycast_ip}     echo-public.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     echo-hybrid.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     echo-hybrid-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     echo-hybrid-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     bigip-echo-eu-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     bigip-echo-eu-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     k8s.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     k8s-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     k8s-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     vk8s-eu-central.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     vk8s-eu-west.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 EOF
 }

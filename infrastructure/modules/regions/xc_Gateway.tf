@@ -8,7 +8,7 @@ resource "random_id" "xC-mcn-eu-central-1-id" {
 locals {
   smsv2-site-name-gw01 = "${var.student}-${random_id.xC-mcn-eu-central-1-id.hex}-aws-${var.region}-01"
   smsv2-site-name-gw02 = "${var.student}-${random_id.xC-mcn-eu-central-1-id.hex}-aws-${var.region}-02"
-  domain_suffix        = "${var.student}-xc-mcn-lab.aws"
+  domain_suffix        = "${var.student}.xc-mcn-lab.aws"
 }
 
 ### Configure Gateways in xC Console (GW01 and GW02) and Generate Tokens

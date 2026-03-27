@@ -5,7 +5,7 @@
     },
     "spec": {
       "domains": [
-        "k8s-central.edge.${STUDENT}.de"
+        "k8s-central.${STUDENT}.xc-mcn-lab.aws"
       ],
       "https_auto_cert": {
         "http_redirect": true,

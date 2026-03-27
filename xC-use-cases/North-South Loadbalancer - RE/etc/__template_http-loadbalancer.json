@@ -5,7 +5,7 @@
   },
   "spec": {
     "domains": [
-      "echo-public.edge.${STUDENT}.de"
+      "echo-public.${STUDENT}.xc-mcn-lab.aws"
     ],
     "https_auto_cert": {
       "http_redirect": true,
