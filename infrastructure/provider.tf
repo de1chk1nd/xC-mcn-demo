@@ -1,5 +1,5 @@
 provider "volterra" {
-  api_p12_file = local.setup-init.xC.p12_auth
+  api_p12_file = "../setup-init/${local.setup-init.xC.p12_auth}"
   url          = local.setup-init.xC.tenant_api
 }
 
