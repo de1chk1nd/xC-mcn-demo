@@ -8,7 +8,7 @@
     },
     "spec": {
       "domains": [
-        "bigip-echo-eu-west.edge.de1chk1nd.de"
+        "bigip-echo-eu-west.edge.${STUDENT}.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,

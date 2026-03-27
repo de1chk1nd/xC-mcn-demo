@@ -5,7 +5,7 @@
     },
     "spec": {
       "domains": [
-        "remote-web.de1chk1nd-mcn.aws"
+        "remote-web.${STUDENT}-xc-mcn-lab.aws"
       ],
       "http": {
         "dns_volterra_managed": false,

@@ -5,7 +5,7 @@
     },
     "spec": {
       "domains": [
-        "k8s-central.edge.de1chk1nd.de"
+        "k8s-central.edge.${STUDENT}.de"
       ],
       "https_auto_cert": {
         "http_redirect": true,

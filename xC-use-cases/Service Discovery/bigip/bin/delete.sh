@@ -7,6 +7,9 @@ set -e  # Exit on error
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 
+CONFIG_FILE="${REPO_ROOT}/setup-init/config.yaml"
+export STUDENT=$(yq '.student.name' "$CONFIG_FILE")
+
 USE_CASE_DIR="${REPO_ROOT}/xC-use-cases/Service Discovery/kubernetes"
 
 #######################################
@@ -43,15 +46,15 @@ curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
 #######################################
 # Delete Service Discovery (system namespace)
 #######################################
-echo "Deleting service discovery: sd-k8s-de1chk1nd-eu-central..."
+echo "Deleting service discovery: sd-k8s-${STUDENT}-eu-central..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-de1chk1nd-eu-central"
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-${STUDENT}-eu-central"
 
-echo "Deleting service discovery: sd-k8s-de1chk1nd-eu-west..."
+echo "Deleting service discovery: sd-k8s-${STUDENT}-eu-west..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-de1chk1nd-eu-west"
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/system/discoverys/sd-k8s-${STUDENT}-eu-west"
 
 #######################################
 # Cleanup generated files

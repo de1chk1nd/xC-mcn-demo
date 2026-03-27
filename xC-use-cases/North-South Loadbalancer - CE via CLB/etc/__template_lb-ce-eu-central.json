@@ -5,8 +5,8 @@
     },
     "spec": {
       "domains": [
-        "app-1.eu-central-1.de1chk1nd-lab.aws",
-        "local-web.de1chk1nd-mcn.aws"
+        "app-1.eu-central-1.${STUDENT}-xc-mcn-lab.aws",
+        "local-web.${STUDENT}-xc-mcn-lab.aws"
       ],
       "http": {
         "dns_volterra_managed": false,

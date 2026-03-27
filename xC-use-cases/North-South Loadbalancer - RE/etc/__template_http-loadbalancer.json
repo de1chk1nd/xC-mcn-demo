@@ -5,7 +5,7 @@
   },
   "spec": {
     "domains": [
-      "echo-public.edge.de1chk1nd.de"
+      "echo-public.edge.${STUDENT}.de"
     ],
     "https_auto_cert": {
       "http_redirect": true,

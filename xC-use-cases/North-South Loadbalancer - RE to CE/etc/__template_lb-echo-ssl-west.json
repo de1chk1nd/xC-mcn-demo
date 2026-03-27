@@ -8,7 +8,7 @@
   },
   "spec": {
     "domains": [
-      "echo-hybrid-west.edge.de1chk1nd.de"
+      "echo-hybrid-west.edge.${STUDENT}.de"
     ],
     "https_auto_cert": {
       "http_redirect": true,
