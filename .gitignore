@@ -2,12 +2,20 @@
 docs-priv/
 *.json
 
+####### Tools — runtime/generated artifacts
+tools/*/venv/
+tools/*/ca/
+tools/*/domains/
+tools/s-certificate/config/config.yaml
+tools/s-certificate/config/domains.txt
+
 setup-init/.xC/*.p12
 setup-init/.xC/*.pem
 setup-init/.xC/*.txt
 setup-init/.ssh/*.crt
 setup-init/.ssh/*.pem
 setup-init/.ssh/*.ppk
+setup-init/.cert/
 setup-init/config.yaml
 
 xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-*

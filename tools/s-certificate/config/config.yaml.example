@@ -1,0 +1,127 @@
+# =============================================================================
+# S-Certificate Tool - Configuration (EXAMPLE)
+# =============================================================================
+# Copy this file to config.yaml and fill in your values.
+# DO NOT commit config.yaml with real credentials to version control.
+#
+# PATHS (ca_cert, ca_key, output_dir):
+#   When using --project-config, CA paths and the output directory are read
+#   from the project's setup-init/config.yaml. The paths below are only used
+#   as fallback when --project-config is NOT provided (standalone mode).
+# =============================================================================
+
+
+# =============================================================================
+# SERVER CERTIFICATE SETTINGS
+# =============================================================================
+# These settings control the server certificates generated for your domains.
+# Each run produces a key + cert signed by the CA.
+
+certificate:
+  # OpenSSL binary path
+  openssl_bin: "/usr/bin/openssl"
+
+  # RSA key size in bits for the server certificate
+  key_size: 2048
+
+  # Server certificate validity in days
+  validity_days: 365
+
+  # Password for the .p12 bundle.
+  # If set, OpenSSL uses this password automatically (no interactive prompt).
+  # If empty or omitted, OpenSSL will prompt for a passphrase interactively.
+  # Set this for batch/automation use — leave empty for interactive single-domain use.
+  p12_password: ""
+
+  # Subject fields for the server certificate CSR
+  distinguished_name:
+    country: "XX"
+    state: "Your-State"
+    locality: "Your-City"
+    organization: "Your-Organization"
+    organizational_unit: "Your-Unit"
+    email: "your-email@example.com"
+
+  # --- Fallback paths (only used without --project-config) ---
+  # When using --project-config / -p, these are overridden by the project config.
+  ca_cert: "ca/ca.cer"
+  ca_key: "ca/ca.key"
+  output_dir: "domains"
+
+  # CA auto-generation settings (standalone mode only)
+  ca:
+    # RSA key size for the CA key (should be >= server key size)
+    key_size: 4096
+
+    # CA certificate validity in days (default: ~10 years)
+    validity_days: 3650
+
+    # Subject fields for the CA certificate.
+    # If omitted, the server certificate distinguished_name above is used.
+    # The CN is always set to "{organization} CA" automatically.
+    distinguished_name:
+      country: "ME"
+      state: "Mordor"
+      locality: "Barad-dur"
+      organization: "One Ring Authority"
+      organizational_unit: "Mount Doom Certificate Forge"
+      email: "sauron@one.ring.to.rule.them.all"
+
+
+# =============================================================================
+# CLIENT CERTIFICATE SETTINGS — optional, used with --mtls / -m flag
+# =============================================================================
+# Settings for client certificates used in mTLS authentication.
+# The client cert is signed by the same CA as the server certificate.
+# If this section is omitted, the server certificate settings above are used
+# as defaults for any missing fields.
+
+client_certificate:
+  # RSA key size in bits for the client certificate
+  key_size: 2048
+
+  # Client certificate validity in days
+  validity_days: 365
+
+  # Fallback output directory (overridden by --project-config cert_dir)
+  output_dir: "domains"
+
+  # Subject fields for the client certificate CSR
+  # If omitted, falls back to the server certificate distinguished_name above.
+  distinguished_name:
+    country: "ME"
+    state: "Aurenland"
+    locality: "Hobbingten"
+    organization: "One Ring Authority"
+    organizational_unit: "Mount Doom Certificate Forge"
+    email: "nazgul-1@one.ring.to.rule.them.all"
+
+
+# =============================================================================
+# F5 DISTRIBUTED CLOUD (XC) SETTINGS — optional, used with --xc flag
+# =============================================================================
+# Only needed if you want to upload certificates to F5 XC.
+# Skip this section entirely if you only generate local .p12 bundles.
+
+xc:
+  # Tenant name — the part before .console.ves.volterra.io
+  # Example: "acmecorp" -> https://acmecorp.console.ves.volterra.io
+  tenant: "your-tenant-name"
+
+  # API Token generated from F5 XC Console
+  # Navigate to: Administration -> Credentials -> API Credentials
+  # Type: API Token
+  api_token: "REPLACE_WITH_YOUR_API_TOKEN"
+
+  # Namespace where the certificate object will be created
+  # Can be overridden on the CLI with --namespace / -n
+  namespace: "default"
+
+  # Certificate object name prefix in XC (domain name will be appended)
+  # Example: with prefix "lab-cert" and domain "app.example.com"
+  #          -> object name: "lab-cert-app-example-com"
+  cert_name_prefix: "lab-cert"
+
+  # Description template for the certificate object in XC
+  # %s will be replaced with the domain name
+  cert_description: "Auto-generated server certificate for %s"
