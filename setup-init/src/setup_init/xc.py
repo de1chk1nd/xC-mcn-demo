@@ -1,7 +1,6 @@
 """F5 Distributed Cloud (xC) certificate handling and tenant discovery."""
 
 import os
-import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -103,57 +102,97 @@ def remove_pem(base_dir: Path) -> None:
 def fetch_tenant_anycast_ip(
     xc_config: XCConfig,
     base_dir: Path,
-    timeout: int = 10,
+    timeout: int = 15,
 ) -> str:
     """
-    Resolve the tenant's default Anycast IP address.
+    Fetch the tenant's default Anycast IP via the xC API.
 
-    Uses a DNS lookup on the tenant's console hostname, which resolves
-    to the Anycast IP advertised by the F5 Distributed Cloud global network.
+    Queries the tenant summary endpoint which returns the default
+    VIP (Virtual IP) assigned to the tenant for RE load balancers.
+
+    Requires the PEM certificate to be generated first (P12 -> PEM).
 
     Args:
-        xc_config: xC configuration with tenant name
+        xc_config: xC configuration with tenant API URL and P12 password
         base_dir: Base directory (setup-init/)
-        timeout: DNS timeout in seconds
+        timeout: HTTP request timeout in seconds
 
     Returns:
         Anycast IP address as string, or empty string on failure
     """
-    # The tenant's console FQDN resolves to the Anycast IP
-    tenant_fqdn = f"{xc_config.tenant}.console.ves.volterra.io"
-
-    print(f"\nResolving tenant Anycast IP...")
-    print(f"  Tenant FQDN: {tenant_fqdn}")
-
-    try:
-        ip = socket.gethostbyname(tenant_fqdn)
-        print(f"  Anycast IP:  {ip}")
-        return ip
-    except socket.gaierror as e:
-        print(f"  WARNING: Could not resolve {tenant_fqdn}: {e}")
-        print(f"  Trying API fallback...")
-
-    # Fallback: query the xC API for the VIP
     pem_path = get_pem_path(base_dir)
     if not pem_path.is_file():
-        print(f"  WARNING: PEM not available, skipping API fallback")
+        print("  WARNING: PEM certificate not found, cannot query xC API")
         return ""
 
+    print(f"\nFetching tenant Anycast IP from xC API...")
+    print(f"  Tenant: {xc_config.tenant}")
+
+    # Try tenant summary endpoint
+    url = f"{xc_config.tenant_api}/web/namespaces/system/summary"
     try:
-        url = f"{xc_config.tenant_api}/config/namespaces/system/virtual_ips"
         resp = requests.get(
             url,
-            cert=str(pem_path),
+            cert=(str(pem_path), str(pem_path)),
+            headers={"Content-Type": "application/json"},
             timeout=timeout,
+            verify=True,
         )
         resp.raise_for_status()
-        items = resp.json().get("items", [])
-        if items:
-            ip = items[0].get("spec", {}).get("vip", "")
-            if ip:
-                print(f"  Anycast IP (via API): {ip}")
-                return ip
+        data = resp.json()
+
+        # Extract the default VIP from the tenant summary
+        # The response contains tenant_setting with default_vip
+        vip = (
+            data.get("tenant_setting", {}).get("default_vip", "")
+            or data.get("default_vip", "")
+        )
+        if vip:
+            print(f"  Anycast IP: {vip}")
+            return vip
+
+        # Fallback: check for ip in different response paths
+        for key in ("anycast_ip", "vip", "default_ip"):
+            val = data.get(key, "")
+            if val:
+                print(f"  Anycast IP: {val}")
+                return val
+
+        # TODO: verify — log the response keys for debugging
+        print(f"  WARNING: Could not extract Anycast IP from response")
+        print(f"  Response keys: {list(data.keys())}")
+
+    except requests.exceptions.SSLError as e:
+        # P12 password may be needed for the cert tuple
+        print(f"  Retrying with password-protected PEM...")
+        try:
+            import subprocess
+            # Create a temporary decrypted PEM
+            dec_pem = pem_path.parent / "xc-curl-dec.pem"
+            subprocess.run(
+                ["openssl", "rsa", "-in", str(pem_path),
+                 "-out", str(dec_pem),
+                 "-passin", f"pass:{xc_config.p12_pwd}"],
+                capture_output=True, check=True,
+            )
+            resp = requests.get(
+                url,
+                cert=str(pem_path),
+                headers={"Content-Type": "application/json"},
+                timeout=timeout,
+                verify=True,
+            )
+            dec_pem.unlink(missing_ok=True)
+            resp.raise_for_status()
+            data = resp.json()
+            vip = data.get("tenant_setting", {}).get("default_vip", "")
+            if vip:
+                print(f"  Anycast IP: {vip}")
+                return vip
+        except Exception as e2:
+            print(f"  WARNING: Retry failed: {e2}")
+
     except Exception as e:
-        print(f"  WARNING: API fallback failed: {e}")
+        print(f"  WARNING: API call failed: {e}")
 
     return ""
