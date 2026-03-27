@@ -49,59 +49,62 @@ def convert_p12_to_pem(
     print(f"  Source: {p12_path}")
     print(f"  Target: {pem_path}")
 
-    # Build OpenSSL command
-    # -legacy: needed for OpenSSL 3.x with older P12 files
-    # -passout pass: unencrypted output (required by requests/curl)
-    # -nokeys / -nocerts: split into separate files for clean PEM
-    raw_pem = pem_path.parent / "xc-curl-raw.pem"
-    cmdline_base = [
-        openssl_bin, "pkcs12",
-        "-in", str(p12_path),
-        "-out", str(raw_pem),
-        "-passin", f"pass:{xc_config.p12_pwd}",
-        "-passout", "pass:",
-    ]
+    # Extract certificates and private key separately, then combine.
+    # OpenSSL 3.x with -legacy still produces ENCRYPTED PRIVATE KEY
+    # even with -passout pass:, so we must use -nodes explicitly.
+    xc_dir = pem_path.parent
+    cert_tmp = xc_dir / "xc-certs.tmp"
+    key_tmp = xc_dir / "xc-key.tmp"
+    p12_pass = xc_config.p12_pwd
 
-    # Try with -legacy flag first (OpenSSL 3.x)
-    result = subprocess.run(
-        cmdline_base + ["-legacy"],
-        capture_output=True,
-        text=True,
+    def _run_openssl(*args):
+        """Run openssl, try with -legacy first (OpenSSL 3.x)."""
+        base = [openssl_bin, *args]
+        r = subprocess.run(base + ["-legacy"], capture_output=True, text=True)
+        if r.returncode != 0:
+            r = subprocess.run(base, capture_output=True, text=True)
+        return r
+
+    # Step 1: Extract certificates only (-nokeys)
+    result = _run_openssl(
+        "pkcs12", "-in", str(p12_path),
+        "-out", str(cert_tmp),
+        "-passin", f"pass:{p12_pass}",
+        "-nokeys",
     )
-
-    # If -legacy fails, try without it (older OpenSSL)
     if result.returncode != 0:
-        result = subprocess.run(
-            cmdline_base,
-            capture_output=True,
-            text=True,
-        )
+        raise RuntimeError(f"Failed to extract certs: {result.stderr.strip()}")
 
+    # Step 2: Extract private key only (-nocerts -nodes for unencrypted)
+    result = _run_openssl(
+        "pkcs12", "-in", str(p12_path),
+        "-out", str(key_tmp),
+        "-passin", f"pass:{p12_pass}",
+        "-nocerts", "-nodes",
+    )
     if result.returncode != 0:
-        raise RuntimeError(
-            f"Failed to convert P12 to PEM: {result.stderr.strip()}"
-        )
+        raise RuntimeError(f"Failed to extract key: {result.stderr.strip()}")
 
-    # Strip Bag Attributes and keep only PEM blocks
-    # (Python SSL cannot parse OpenSSL's Bag Attributes metadata)
-    with open(raw_pem, "r", encoding="utf-8") as f:
-        raw_content = f.read()
-
-    pem_blocks = []
-    in_block = False
-    for line in raw_content.splitlines():
-        if line.startswith("-----BEGIN "):
-            in_block = True
-        if in_block:
-            pem_blocks.append(line)
-        if line.startswith("-----END "):
-            in_block = False
+    # Step 3: Combine into clean PEM (strip Bag Attributes)
+    clean_lines = []
+    for tmp_file in [key_tmp, cert_tmp]:
+        in_block = False
+        with open(tmp_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.rstrip("\n")
+                if line.startswith("-----BEGIN "):
+                    in_block = True
+                if in_block:
+                    clean_lines.append(line)
+                if line.startswith("-----END "):
+                    in_block = False
 
     with open(pem_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(pem_blocks) + "\n")
+        f.write("\n".join(clean_lines) + "\n")
 
-    # Cleanup raw file
-    raw_pem.unlink(missing_ok=True)
+    # Cleanup temp files
+    cert_tmp.unlink(missing_ok=True)
+    key_tmp.unlink(missing_ok=True)
 
     # Set secure permissions
     os.chmod(pem_path, 0o600)
@@ -129,62 +132,47 @@ def fetch_tenant_anycast_ip(
     timeout: int = 15,
 ) -> str:
     """
-    Fetch the tenant's default Anycast IP via the xC API.
+    Fetch the tenant's default Anycast IP.
 
-    Queries the tenant summary endpoint which returns the default
-    VIP (Virtual IP) assigned to the tenant for RE load balancers.
+    Strategy:
+    1. If already set in config, return it (manual override).
+    2. Query the xC API (whoami) to get the tenant CNAME, then
+       create a temporary HTTP LB, resolve its FQDN, and delete it.
+       (Not implemented — too invasive for an init script.)
+    3. Prompt the user.
 
-    Requires the PEM certificate to be generated first (P12 -> PEM).
-    The PEM must be unencrypted (passout pass: during conversion).
+    The Anycast IP is tenant-specific and cannot be reliably resolved
+    via public DNS or a single API call. The user must provide it.
+
+    How to find it: xC Console -> DNS Management -> check the IP
+    that delegated domains point to, or check an existing HTTP LB's
+    CNAME record.
 
     Args:
-        xc_config: xC configuration with tenant API URL
+        xc_config: xC configuration
         base_dir: Base directory (setup-init/)
         timeout: HTTP request timeout in seconds
 
     Returns:
         Anycast IP address as string, or empty string on failure
     """
-    pem_path = get_pem_path(base_dir)
-    if not pem_path.is_file():
-        print("  WARNING: PEM certificate not found, cannot query xC API")
-        return ""
+    # If already set in config, reuse it
+    if xc_config.tenant_anycast_ip:
+        print(f"  Anycast IP (from config): {xc_config.tenant_anycast_ip}")
+        return xc_config.tenant_anycast_ip
 
-    print(f"\nFetching tenant Anycast IP from xC API...")
-    print(f"  Tenant: {xc_config.tenant}")
+    print(f"\nTenant Anycast IP is not set in config.yaml.")
+    print(f"  This IP is needed for /etc/hosts entries of xC use-case apps.")
+    print(f"  You can find it in the xC Console:")
+    print(f"    - DNS Management -> check delegated domain CNAME target IP")
+    print(f"    - Or: create any HTTP LB and check its advertised IP")
+    print()
 
-    url = f"{xc_config.tenant_api}/web/namespaces/system/summary"
-    try:
-        resp = requests.get(
-            url,
-            cert=str(pem_path),
-            headers={"Content-Type": "application/json"},
-            timeout=timeout,
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    ip = input("  Enter tenant Anycast IP (or press Enter to skip): ").strip()
 
-        # Extract the default VIP from the tenant summary
-        vip = (
-            data.get("tenant_setting", {}).get("default_vip", "")
-            or data.get("default_vip", "")
-        )
-        if vip:
-            print(f"  Anycast IP: {vip}")
-            return vip
+    if ip:
+        print(f"  Anycast IP: {ip}")
+        return ip
 
-        # Fallback: check alternative response keys
-        for key in ("anycast_ip", "vip", "default_ip"):
-            val = data.get(key, "")
-            if val:
-                print(f"  Anycast IP: {val}")
-                return val
-
-        # Debug: log response keys if IP not found
-        print(f"  WARNING: Could not extract Anycast IP from response")
-        print(f"  Response keys: {list(data.keys())}")
-
-    except Exception as e:
-        print(f"  WARNING: API call failed: {e}")
-
+    print("  Skipped — /etc/hosts use-case app entries will be incomplete.")
     return ""

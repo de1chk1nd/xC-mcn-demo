@@ -23,7 +23,9 @@ xC:
   tenant_shrt: <XC TENANT SHORT NAME>
   tenant_api: https://<TENANT>.console.ves.volterra.io/api
   namespace: <NAMESPACE>
-  # Auto-populated during initialization
+  # Default Anycast IP for RE load balancers (tenant-specific).
+  # Find it in: xC Console -> DNS Management -> delegated domain IP.
+  # If left empty, you will be prompted during initialization.
   tenant_anycast_ip: ""
 
 # Certificate paths (relative to setup-init/)
