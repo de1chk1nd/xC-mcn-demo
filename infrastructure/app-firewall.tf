@@ -164,7 +164,7 @@ resource "volterra_app_firewall" "mcn-default-waf" {
 
   # Blocking Page (loaded from HTML file, base64-encoded at plan time)
   blocking_page {
-    blocking_page = "string:///${base64encode(file("${path.module}/modules/regions/etc/waf/blocking-page.html"))}"
+    blocking_page = "string:///${base64encode(file("${path.module}/etc/waf/blocking-page.html"))}"
     response_code = "OK"
   }
 
