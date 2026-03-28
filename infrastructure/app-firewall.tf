@@ -42,6 +42,8 @@ resource "volterra_app_firewall" "mcn-default-waf" {
     response_code = "OK"
   }
 
-  # TODO: enable_ai_enhancements (mitigate_high_risk_action)
-  # Not yet supported by the Volterra Terraform provider — enable manually in xC Console
+  # AI-powered risk-based analysis
+  enable_ai_enhancements {
+    mitigate_high_risk_action = true
+  }
 }
