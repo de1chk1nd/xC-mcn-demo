@@ -423,24 +423,25 @@ vim ./setup-init/config.yaml</code></pre>
     <p>The configuration file has four sections:</p>
 
     <table>
-      <tr><th>Section</th><th>Parameter</th><th>Description</th></tr>
-      <tr><td rowspan="5"><b>aws</b></td><td><code>auth_profile</code></td><td>AWS CLI profile name (default: <code>xc-mcn-lab</code>)</td></tr>
-      <tr><td><code>aws_access_key_id</code></td><td>Your AWS Access Key</td></tr>
-      <tr><td><code>aws_secret_access_key</code></td><td>Your AWS Secret Key</td></tr>
-      <tr><td><code>aws_session_token</code></td><td>STS session token (leave empty for static keys)</td></tr>
-      <tr><td><code>tmp_aws_cred</code></td><td>Set <code>true</code> for STS, <code>false</code> for static</td></tr>
-      <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td>Your unique lab ID (DNS-safe, max 16 chars). Example: <code>__STUDENT__</code></td></tr>
-      <tr><td><code>email</code></td><td>Contact email for resource tagging</td></tr>
-      <tr><td rowspan="4"><b>xC</b></td><td><code>p12_auth</code></td><td>Path to the <code>.p12</code> file, e.g. <code>.xC/your-cert.p12</code></td></tr>
-      <tr><td><code>p_12_pwd</code></td><td>Password for the P12 certificate</td></tr>
-      <tr><td><code>tenant</code></td><td>Your xC tenant name</td></tr>
-      <tr><td><code>tenant_api</code></td><td>API endpoint, e.g. <code>https://&lt;tenant&gt;.console.ves.volterra.io/api</code></td></tr>
-      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td>BIG-IP admin password &mdash; change this to a secure value before deploying</td></tr>
+      <tr><th>Section</th><th>Parameter</th><th></th><th>Description</th></tr>
+      <tr><td rowspan="5"><b>aws</b></td><td><code>auth_profile</code></td><td></td><td>AWS CLI profile name (default: <code>xc-mcn-lab</code>)</td></tr>
+      <tr><td><code>aws_access_key_id</code></td><td><b>*</b></td><td>Your AWS Access Key</td></tr>
+      <tr><td><code>aws_secret_access_key</code></td><td><b>*</b></td><td>Your AWS Secret Key</td></tr>
+      <tr><td><code>aws_session_token</code></td><td></td><td>STS session token (leave empty for static keys)</td></tr>
+      <tr><td><code>tmp_aws_cred</code></td><td></td><td>Set <code>true</code> for STS, <code>false</code> for static</td></tr>
+      <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td><b>*</b></td><td>Your unique lab ID &mdash; <b>drives DNS names, cert names, and resource naming across the entire lab</b></td></tr>
+      <tr><td><code>email</code></td><td><b>*</b></td><td>Contact email for resource tagging</td></tr>
+      <tr><td rowspan="4"><b>xC</b></td><td><code>p12_auth</code></td><td><b>*</b></td><td>Path to the <code>.p12</code> file, e.g. <code>.xC/your-cert.p12</code></td></tr>
+      <tr><td><code>p_12_pwd</code></td><td><b>*</b></td><td>Password for the P12 certificate</td></tr>
+      <tr><td><code>tenant</code></td><td><b>*</b></td><td>Your xC tenant name</td></tr>
+      <tr><td><code>tenant_api</code></td><td><b>*</b></td><td>API endpoint, e.g. <code>https://&lt;tenant&gt;.console.ves.volterra.io/api</code></td></tr>
+      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td></td><td>BIG-IP admin password (default provided &mdash; change for production)</td></tr>
     </table>
+    <p><small><b>*</b> = mandatory &mdash; other parameters have sensible defaults or are auto-populated during initialization.</small></p>
 
     <div class="admonition warning">
-      <strong>Student name rules</strong>
-      Lowercase letters, digits, and hyphens only (<code>[a-z0-9-]</code>). Must start and end with a letter or digit. Maximum 16 characters. This value becomes part of your DNS domain suffix: <code>__DOMAIN__</code>.
+      <strong>About the student name</strong>
+      This is the most important parameter. It defines your DNS domain suffix (<code>__DOMAIN__</code>) and is used in certificate names, xC object names, SSH key paths, and Route53 records. Choose it carefully &mdash; changing it later requires a full teardown and redeploy. Rules: lowercase letters, digits, and hyphens only (<code>[a-z0-9-]</code>), max 16 characters.
     </div>
 
     <h2 class="step">4. Deploy</h2>

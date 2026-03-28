@@ -13,7 +13,7 @@ resource "volterra_origin_pool" "webserver-nginx" {
       dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -27,7 +27,7 @@ resource "volterra_origin_pool" "webserver-nginx" {
       dns_name = "web-02.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -37,7 +37,7 @@ resource "volterra_origin_pool" "webserver-nginx" {
   }
 
   healthcheck {
-    tenant    = "f5-emea-ent-bceuutam"
+    tenant    = var.tenant
     namespace = var.namespace
     name      = "hello-check"
   }
@@ -67,7 +67,7 @@ resource "volterra_origin_pool" "webserver-echossl" {
       dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -81,7 +81,7 @@ resource "volterra_origin_pool" "webserver-echossl" {
       dns_name = "web-02.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -91,7 +91,7 @@ resource "volterra_origin_pool" "webserver-echossl" {
   }
 
   healthcheck {
-    tenant    = "f5-emea-ent-bceuutam"
+    tenant    = var.tenant
     namespace = var.namespace
     name      = "hello-check"
   }
@@ -126,7 +126,7 @@ resource "volterra_origin_pool" "webserver-juiceshop" {
       dns_name = "web-01.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -140,7 +140,7 @@ resource "volterra_origin_pool" "webserver-juiceshop" {
       dns_name = "web-02.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -150,7 +150,7 @@ resource "volterra_origin_pool" "webserver-juiceshop" {
   }
 
   healthcheck {
-    tenant    = "f5-emea-ent-bceuutam"
+    tenant    = var.tenant
     namespace = var.namespace
     name      = "hello-check"
   }
@@ -180,7 +180,7 @@ resource "volterra_origin_pool" "webserver-bigip-echossl" {
       dns_name = "bigip-echo-ssl.${local.domain_suffix}"
       site_locator {
         virtual_site {
-          tenant    = "f5-emea-ent-bceuutam"
+          tenant    = var.tenant
           namespace = "shared"
           name      = var.vsite_conf
         }
@@ -190,7 +190,7 @@ resource "volterra_origin_pool" "webserver-bigip-echossl" {
   }
 
   healthcheck {
-    tenant    = "f5-emea-ent-bceuutam"
+    tenant    = var.tenant
     namespace = var.namespace
     name      = "hello-check"
   }

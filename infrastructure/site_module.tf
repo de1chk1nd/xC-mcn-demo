@@ -27,6 +27,7 @@ module "eu-central-1" {
   f5_password = local.setup-init.f5.f5_password
 
   namespace    = local.setup-init.xC.namespace
+  tenant       = local.setup-init.xC.tenant
   vsite_k8s    = volterra_virtual_site.vk8s_sites.name
   vsite_conf   = volterra_virtual_site.eu-central_sites.name
   vsite-region = "eu-central"
@@ -62,6 +63,7 @@ module "eu-west-1" {
   f5_password = local.setup-init.f5.f5_password
 
   namespace    = local.setup-init.xC.namespace
+  tenant       = local.setup-init.xC.tenant
   vsite_k8s    = volterra_virtual_site.vk8s_sites.name
   vsite_conf   = volterra_virtual_site.eu-west_sites.name
   vsite-region = "eu-west"
