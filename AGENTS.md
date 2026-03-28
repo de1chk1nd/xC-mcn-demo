@@ -33,13 +33,20 @@ Target environment: lab / demo — not production.
 ├── tools/                # Standalone utilities
 │   └── s-certificate/    # CA-signed certificate generator + xC upload
 ├── xC-use-cases/         # Use-case deployment scripts (curl → xC API)
-│   ├── Architecture/     # Architecture use cases (RE, CE, E-W, SD, vk8s)
-│   │   └── */bin/        # setup.sh / delete.sh per use case
+│   ├── Architecture/     # Architecture use cases
+│   │   ├── RE-only/      #   RE-only load balancing
+│   │   ├── RE-to-CE/     #   RE ingress, CE egress
+│   │   ├── RE-to-CE-bigip/ # RE → CE → BIG-IP
+│   │   ├── CE-via-CLB/   #   CE direct via cloud LB (NLB)
+│   │   ├── CE-to-CE/     #   Cross-region east-west
+│   │   ├── k8s-service-discovery/ # K8s SD via kubeconfig
+│   │   └── vk8s/         #   Virtual K8s edge computing
 │   ├── Services/         # Platform services (mTLS, JWT, etc.)
 │   │   ├── tls-authentication/  # mTLS with client cert auth + service policy
 │   │   └── jwt-validation/      # JWT validation (RS256, blocking mode)
-│   └── Evaluation/       # Use cases under evaluation
-│       └── bgp-anycast-routing/ # BGP peering with CE nodes via FRR
+│   ├── Evaluation/       # Use cases under evaluation
+│   │   └── bgp-anycast-routing/ # BGP peering with CE nodes via FRR
+│   └── misc/             # Legacy references (may overlap with above)
 └── docs/                 # Documentation, diagrams & lab guide
     ├── images/           # Architecture & use-case diagrams
     └── lab-guide/        # Interactive single-page lab guide (HTML)
@@ -161,6 +168,17 @@ The mTLS service extends the standard TLS workflow with client certificate authe
 
 The CA must have `basicConstraints = CA:TRUE` for xC to accept it as a trusted CA.
 
+### JWT Workflow (Services/jwt-validation)
+
+The JWT service uses the lab CA private key to sign tokens (RS256):
+
+1. Generate server cert via `s-certificate` (same as standard workflow)
+2. Generate JWT tokens + JWKS via `generate-tokens.py` using the **lab CA private key** for RS256 signing
+3. Base64-encode JWKS, embed inline in LB template via `jwks_config.cleartext` (`string:///` prefix)
+4. Create HTTP LB with `jwt_validation` block (blocking mode, RS256, issuer + audience claims)
+
+Token claims validated: `iss` (issuer), `aud` (audience), `sub` (subject), `exp` (expiration).
+
 ---
 
 ## SSH Helper Scripts
@@ -192,3 +210,6 @@ The `known_hosts` cleanup removes only lab hosts (`*.${STUDENT}.xc-mcn-lab.aws`)
 - Certs are CA-signed (not public CA) — browsers show TLS warnings unless lab CA is trusted
 - SSH scripts are OS-specific: `_mac.sh` for macOS, `_lnx.sh` for Linux — choose the correct one
 - SSH `known_hosts` cleanup is selective — only `*.${STUDENT}.xc-mcn-lab.aws` entries are removed
+- JWT tokens are RS256-signed with the lab CA private key — same key used for TLS and JWT signing
+- `base64` encoding: always use `base64 < file` (stdin redirect), not `base64 file` — behavior differs on macOS vs Linux
+- `xC-use-cases/misc/` contains legacy copies of some use cases — canonical versions live in `Services/` and `Evaluation/`
