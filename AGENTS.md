@@ -44,9 +44,8 @@ Target environment: lab / demo — not production.
 │   ├── Services/         # Platform services (mTLS, JWT, etc.)
 │   │   ├── tls-authentication/  # mTLS with client cert auth + service policy
 │   │   └── jwt-validation/      # JWT validation (RS256, blocking mode)
-│   ├── Evaluation/       # Use cases under evaluation
-│   │   └── bgp-anycast-routing/ # BGP peering with CE nodes via FRR
-│   └── misc/             # Legacy references (may overlap with above)
+│   └── Evaluation/       # Use cases under evaluation
+│       └── bgp-anycast-routing/ # BGP peering with CE nodes via FRR
 └── docs/                 # Documentation, diagrams & lab guide
     ├── images/           # Architecture & use-case diagrams
     └── lab-guide/        # Interactive single-page lab guide (HTML)
@@ -189,7 +188,6 @@ Platform-specific scripts in `setup-init/.ssh/`:
 |--------|----------|-----------------|
 | `ssh-key-permission_lnx.sh` | Linux | gnome-terminal, xfce4, konsole, terminator |
 | `ssh-key-permission_mac.sh` | macOS | Terminal.app, iTerm2 |
-| `ssh-key-permission_win.ps1` | Windows | WinSCP + PuTTY |
 
 All scripts accept a target argument: `all`, `ubuntu`, `bigip`, `central`, `west`, `fix-perms`.
 The `known_hosts` cleanup removes only lab hosts (`*.${STUDENT}.xc-mcn-lab.aws`), preserving other entries.
@@ -212,4 +210,3 @@ The `known_hosts` cleanup removes only lab hosts (`*.${STUDENT}.xc-mcn-lab.aws`)
 - SSH `known_hosts` cleanup is selective — only `*.${STUDENT}.xc-mcn-lab.aws` entries are removed
 - JWT tokens are RS256-signed with the lab CA private key — same key used for TLS and JWT signing
 - `base64` encoding: always use `base64 < file` (stdin redirect), not `base64 file` — behavior differs on macOS vs Linux
-- `xC-use-cases/misc/` contains legacy copies of some use cases — canonical versions live in `Services/` and `Evaluation/`

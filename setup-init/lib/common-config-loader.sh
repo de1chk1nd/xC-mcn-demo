@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Common Configuration Loader
 # Usage: source "${REPO_ROOT}/setup-init/lib/common-config-loader.sh"
 # Detect repo root if not set

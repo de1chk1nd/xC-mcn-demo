@@ -16,7 +16,6 @@ xC-mcn-demo/
 │   ├── vsite.tf                           #   xC Virtual Site definition
 │   ├── labels.tf                          #   xC labels / tags
 │   ├── app-firewall.tf                    #   xC Web Application Firewall policy
-│   ├── xC_http-loadbalancer.tf            #   xC HTTP load balancer (global)
 │   ├── outputs.tf                         #   Terraform outputs (IPs, hostnames)
 │   └── modules/regions/                   #   Per-region module (eu-central-1, eu-west-1)
 │       ├── vpc.tf                         #     VPC definitions
@@ -152,7 +151,7 @@ cp setup-init/template/config.yaml setup-init/config.yaml
 
 | Section | Key Fields |
 |:--------|:-----------|
-| **aws** | `aws_access_key_id`, `aws_secret_access_key`, `aws_session_token`, `aws_profile` |
+| **aws** | `aws_access_key_id`, `aws_secret_access_key`, `aws_session_token`, `auth_profile` |
 | **xC** | `p12_auth`, `p_12_pwd`, `tenant`, `tenant_shrt`, `tenant_api`, `namespace` |
 | **student** | `name`, `email`, `ip-address` |
 | **f5** | `f5_password` (BIG-IP admin password) |
