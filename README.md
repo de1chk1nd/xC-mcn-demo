@@ -87,3 +87,11 @@ See [tools/README.md](tools/README.md) for details.
 | **[Contributing](CONTRIBUTING.md)** | How to contribute |
 | **[Security Policy](SECURITY.md)** | Credential handling, vulnerability reporting |
 | **[License](LICENSE)** | MIT License |
+
+---
+
+## Disclaimer
+
+This is a **personal project** maintained in my own time. It is not affiliated with, endorsed by, or representative of any employer or organization. All opinions, configurations, and code in this repository are my own.
+
+This repository is intended for **demonstration and educational purposes only**. It is not designed for production use. Use at your own risk. No warranties or guarantees are provided.
