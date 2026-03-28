@@ -416,9 +416,8 @@ pre .copy-btn:hover { background: #374151; color: #fff; }
   align-items: center;
   gap: 12px;
   margin: 6px 0;
-  flex-wrap: wrap;
 }
-.test-row .test-access { margin: 0; }
+.test-row .test-access { margin: 0; min-width: 420px; }
 
 .test-waf {
   display: inline-flex;
