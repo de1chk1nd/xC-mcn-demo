@@ -1,6 +1,6 @@
 # xC-mcn-demo
 
-Lab/demo environment for F5 Distributed Cloud (xC) Multi-Cloud Networking (MCN). Provisions AWS infrastructure in two regions with CE nodes, BIG-IP appliances, and Ubuntu web servers. Demonstrates hybrid cloud connectivity, multi-cloud networking, and WAAP use cases.
+Lab/demo environment for F5 Distributed Cloud (xC) Multi-Cloud Networking (MCN). Pre-configured and prepared to be built in AWS within a couple of minutes.
 
 > **[Lab Guide](docs/lab-guide/index.html)** — Interactive single-page guide with setup, use cases, and tests
 >
@@ -10,7 +10,18 @@ Lab/demo environment for F5 Distributed Cloud (xC) Multi-Cloud Networking (MCN).
 
 ## Overview
 
+This lab provisions AWS infrastructure in two regions (eu-central-1, eu-west-1) with **F5 Distributed Cloud Customer Edge (CE)** nodes. The environment is divided into a **Main VPC** and an **App VPC**, interconnected via a **Transit Gateway (TGW)**.
+
+The installation is based on a local Python script that deploys the entire infrastructure. Once deployed, use-case scripts automate the creation of xC load balancers, service discovery, and security services via the xC API.
+
 ![AWS Lab Overview](docs/images/overview-aws-lab-v3.png)
+
+### Components
+
+- **Customer Edge (CE)**: Deployed in both the public subnet and transfer TGW subnet. Supports routing and connectivity testing. Uses BGP to communicate with the App VPC.
+- **Ubuntu Servers**: Host application workloads (NGINX echo, minikube). Deployed in both the Main VPC and the App VPC. Accessible locally or remotely via BGP routing.
+- **BIG-IP Appliances**: Local traffic management with iRules and APM. Supports routing between CE nodes and application servers.
+- **Network Load Balancers (NLBs)**: Distribute incoming traffic to CE nodes and BIG-IP instances across different subnets.
 
 ### Infrastructure
 
@@ -28,6 +39,10 @@ Lab/demo environment for F5 Distributed Cloud (xC) Multi-Cloud Networking (MCN).
 | **Architecture** | RE Only, RE to CE, RE to CE via BIG-IP, CE via CLB, CE to CE, k8s SD, vk8s |
 | **Services** | TLS Authentication (mTLS), JWT Validation |
 | **Evaluation** | BGP Anycast Routing |
+
+This architecture showcases flexible traffic routing, high availability, and hybrid connectivity use cases using F5 Distributed Cloud and AWS components. The servers are accompanied by AWS services such as NLB, Route 53 (private hosted zone), and NAT Gateway.
+
+> **Note:** For simplicity, all components are deployed within a single Availability Zone per region.
 
 See the [Use Cases Overview](xC-use-cases/README.md) for details, or jump directly into the [Lab Guide](docs/lab-guide/index.html).
 
