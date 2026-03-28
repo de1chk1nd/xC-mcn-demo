@@ -60,28 +60,198 @@
   <!-- ===== ARCHITECTURE OVERVIEW ===== -->
   <section id="arch-overview">
     <h1>Architecture Overview</h1>
-    <p>Content coming soon.</p>
+
+    <h2>What is F5 Distributed Cloud?</h2>
+    <p>F5 Distributed Cloud (xC) is a platform that helps organizations make their applications <b>faster, more secure, and easier to manage</b> &mdash; no matter where they run.</p>
+    <p>Whether your application is hosted in the public cloud, in a private data center, or spread across multiple environments: xC connects everything through <b>one global platform</b> with a single console and a unified policy engine. Instead of juggling separate tools for load balancing, WAF, DDoS, and networking, everything is consolidated in one place.</p>
+    <p>The result: faster deployments, consistent security everywhere, and significantly less operational overhead.</p>
+
+    <h2>The Global Network (PoPs)</h2>
+    <p>At the core of xC is a global network of <b>Points of Presence (PoPs)</b> &mdash; think of them as secure entry points distributed around the world.</p>
+    <p>When a user opens an application:</p>
+    <ul>
+      <li>They automatically connect to the <b>closest PoP</b></li>
+      <li>Traffic is inspected, secured, and optimized right there</li>
+      <li>Then it is safely forwarded to the application backend</li>
+    </ul>
+    <p>Every PoP is a full <b>Regional Edge (RE)</b> &mdash; not just a cache node. It can terminate TLS, apply WAF policies, mitigate DDoS attacks, and route requests to any backend, regardless of whether it runs in AWS, Azure, GCP, or on-premises.</p>
+    <p>Because the PoPs are interconnected via a <b>private high-performance backbone</b> (not the public internet), traffic between locations is faster and more secure than traditional architectures.</p>
+    <p>What makes this powerful:</p>
+    <ul>
+      <li>Users get <b>faster response times</b> &mdash; traffic is handled at the nearest edge</li>
+      <li>Applications are <b>protected before traffic reaches them</b> &mdash; attacks are stopped at the PoP</li>
+      <li>Organizations don&rsquo;t need to build their own global infrastructure</li>
+    </ul>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('https://cdn.studio.f5.com/images/k6fem79d/production/f84444e070fd17eb003bcc18f01c0b40e561f7e3-8000x4500.png')">
+      <img src="https://cdn.studio.f5.com/images/k6fem79d/production/f84444e070fd17eb003bcc18f01c0b40e561f7e3-8000x4500.png" alt="F5 Global Network PoP Infrastructure" style="max-width:100%">
+    </a>
+    <p><small>Source: <a href="https://www.f5.com/cloud" target="_blank" rel="noopener">f5.com/cloud</a></small></p>
+
+    <h2>Business Use Cases</h2>
+
+    <h3>Fast and Secure Public Applications</h3>
+    <p>Deliver websites and APIs globally without worrying about infrastructure or attacks. The F5 network handles load balancing, security, and TLS &mdash; your team focuses on the application.</p>
+    <p><b>Business value:</b> better user experience, higher conversion rates, fewer outages.</p>
+
+    <h3>Secure Access to Private Applications</h3>
+    <p>Employees and partners can access internal applications securely &mdash; without complex VPN setups. A lightweight Customer Edge in your environment connects to the platform automatically.</p>
+    <p><b>Business value:</b> improved security (Zero Trust approach), easier access for users, reduced operational complexity.</p>
+
+    <h3>Simplifying Multi-Cloud and Hybrid Environments</h3>
+    <p>Applications often run in different places &mdash; AWS, Azure, on-prem, or all of the above. xC connects them into one consistent platform with unified policies and networking.</p>
+    <p><b>Business value:</b> less complexity, faster deployments, more flexibility.</p>
+
+    <h3>Connecting Legacy and Modern Applications</h3>
+    <p>Existing systems in data centers can be securely connected or exposed without major redesign. Modernize at your own pace while keeping existing investments protected.</p>
+    <p><b>Business value:</b> protect existing investments, enable gradual modernization, reduce risk during transformation.</p>
+
+    <h2>Three Ways to Deploy</h2>
+    <p>The platform is highly flexible and adapts to your environment &mdash; not the other way around. Depending on your requirements, you can deploy in three models:</p>
+    <table>
+      <tr><th>Model</th><th>Best For</th><th>How It Works</th></tr>
+      <tr>
+        <td><b><a href="#" data-target="arch-saas" onclick="show('arch-saas', event)">SaaS</a></b></td>
+        <td>Quick wins, public-facing apps</td>
+        <td>Traffic enters and exits via the F5 Global Network. No infrastructure to manage.</td>
+      </tr>
+      <tr>
+        <td><b><a href="#" data-target="arch-hybrid" onclick="show('arch-hybrid', event)">Hybrid</a></b></td>
+        <td>Private backends, compliance</td>
+        <td>Traffic enters via the Global Network but exits through a Customer Edge (CE) into your private environment.</td>
+      </tr>
+      <tr>
+        <td><b><a href="#" data-target="arch-multisite" onclick="show('arch-multisite', event)">Multi-Site</a></b></td>
+        <td>East-west, edge computing</td>
+        <td>Customer Edges at multiple locations connect through the xC fabric &mdash; secure cross-site communication without VPN tunnels.</td>
+      </tr>
+    </table>
+    <p>The beauty of this approach: you can start with SaaS today and extend to Hybrid or Multi-Site tomorrow. Same console, same policies, no re-architecture required.</p>
+
+    <hr>
+
+    <h2>Putting It All Together</h2>
+    <p>The following diagram shows how these three models work in practice:</p>
+    <ol>
+      <li><b>SaaS:</b> Users connect directly through the F5 PoP network to applications via the internet &mdash; security and load balancing are applied at the edge, no infrastructure needed.</li>
+      <li><b>Hybrid:</b> Users connect via the PoP, which routes traffic through a private, encrypted tunnel to backend applications in your environment &mdash; no public exposure of your servers required.</li>
+      <li><b>Multi-Site:</b> Internal users and applications at any site can connect n:n with other sites &mdash; with full security capabilities (WAF, DDoS, access control) applied at every hop.</li>
+    </ol>
+    <p>All three models are managed from <b>one console</b>, with <b>centralized policies</b> and <b>centralized logging</b> &mdash; regardless of how many sites, clouds, or deployment models you combine.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/overview-architecture/overview-xc.png')">
+      <img src="../images/overview-architecture/overview-xc.png" alt="F5 Distributed Cloud Overview">
+    </a>
   </section>
   <div class="section-nav" data-for="arch-overview" data-prev="home" data-next="arch-saas"></div>
 
   <!-- ===== ARCHITECTURE SAAS ===== -->
   <section id="arch-saas">
-    <h1>SaaS</h1>
-    <p>Content coming soon.</p>
+    <h1>SaaS Model</h1>
+    <h2>The Fastest Path to Secure Application Delivery</h2>
+    <p>In the SaaS model, your application traffic flows entirely through the <b>F5 Global Network</b>. Users connect to the nearest Regional Edge (PoP), where the platform terminates TLS, applies security policies (WAF, Bot Defense, DDoS), and forwards the request to your origin server over the internet.</p>
+    <p>This is the architecture most people know from traditional CDN and WAF providers &mdash; and it works the same way here. The difference: it&rsquo;s just one deployment model out of three, and it shares the same policy engine and console as the more advanced options.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/overview-architecture/SaaS.png')">
+      <img src="../images/overview-architecture/SaaS.png" alt="SaaS Architecture">
+    </a>
+
+    <h2>When to Use This</h2>
+    <ul>
+      <li>Public-facing web applications and APIs</li>
+      <li>You want WAF, DDoS, and Bot protection <b>without deploying any infrastructure</b></li>
+      <li>Your origin server is reachable over the internet (e.g. behind an AWS NLB, Azure LB, or a public IP)</li>
+      <li>You need a quick, proven setup &mdash; minutes, not weeks</li>
+    </ul>
+
+    <h2>What You Get</h2>
+    <ul>
+      <li><b>Global load balancing</b> with anycast across 30+ PoPs</li>
+      <li><b>Web Application Firewall</b> with managed rulesets (OWASP Top 10, CVEs, custom rules)</li>
+      <li><b>DDoS mitigation</b> at the edge, before traffic reaches your infrastructure</li>
+      <li><b>TLS management</b> with automated or custom certificates</li>
+      <li><b>Observability</b> &mdash; request logs, security events, and dashboards out of the box</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>In this lab</strong>
+      The <a href="#" data-target="ns-re" onclick="show('ns-re', event)">RE Only</a> use case demonstrates the SaaS model: traffic enters via the Regional Edge and exits directly to the AWS backend via the internet.
+    </div>
   </section>
   <div class="section-nav" data-for="arch-saas" data-prev="arch-overview" data-next="arch-hybrid"></div>
 
   <!-- ===== ARCHITECTURE HYBRID ===== -->
   <section id="arch-hybrid">
-    <h1>Hybrid</h1>
-    <p>Content coming soon.</p>
+    <h1>Hybrid Model</h1>
+    <h2>Extending the Platform Into Your Private Environment</h2>
+    <p>The SaaS model works great for public backends &mdash; but what if your application runs in a private subnet, behind a firewall, or in an on-premises data center? That&rsquo;s where the <b>Customer Edge (CE)</b> comes in.</p>
+    <p>A Customer Edge is a lightweight node (virtual machine or bare metal) that you deploy in your own environment. It connects back to the F5 Global Network automatically &mdash; no inbound firewall rules, no VPN configuration, no public IPs required. Traffic enters via the Regional Edge (just like SaaS), but instead of exiting over the internet, it travels through the private xC fabric to the CE, which forwards it to your local backend.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/overview-architecture/Hybrid.png')">
+      <img src="../images/overview-architecture/Hybrid.png" alt="Hybrid Architecture">
+    </a>
+
+    <h2>Why This Matters</h2>
+    <p>Traditional hybrid architectures require you to set up VPN tunnels, manage routing tables, and deploy separate security appliances at each location. With xC, you get all of that in a single deployment:</p>
+    <ul>
+      <li><b>One console</b> for security policies across cloud and on-prem</li>
+      <li><b>No inbound firewall rules</b> &mdash; the CE initiates the connection outward</li>
+      <li><b>Consistent WAF/Bot/DDoS protection</b> regardless of where the backend runs</li>
+      <li><b>Faster time-to-service</b> &mdash; deploy a CE, point the load balancer to it, done</li>
+    </ul>
+    <p>You consolidate load balancing, security, and networking into one platform. That&rsquo;s less infrastructure to manage, fewer moving parts, and faster deployments.</p>
+
+    <h2>When to Use This</h2>
+    <ul>
+      <li>Applications in private subnets (AWS VPC, Azure VNet, on-prem DC)</li>
+      <li>You want the same security posture for cloud and on-prem workloads</li>
+      <li>Compliance requirements that prevent direct internet exposure of backends</li>
+      <li>You&rsquo;re looking to consolidate multiple tools (LB + WAF + networking) into one platform</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>In this lab</strong>
+      The <a href="#" data-target="ns-re-ce" onclick="show('ns-re-ce', event)">RE to CE</a> and <a href="#" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">RE to CE via BIG-IP</a> use cases demonstrate the Hybrid model: traffic enters via RE and exits through the CE to private backends.
+    </div>
   </section>
   <div class="section-nav" data-for="arch-hybrid" data-prev="arch-saas" data-next="arch-multisite"></div>
 
   <!-- ===== ARCHITECTURE MULTI-SITE ===== -->
   <section id="arch-multisite">
-    <h1>Multi-Site</h1>
-    <p>Content coming soon.</p>
+    <h1>Multi-Site Model</h1>
+    <h2>Your Private PoPs &mdash; Everywhere</h2>
+    <p>Think of the Customer Edge as more than just a gateway. In the Multi-Site model, the CE becomes a <b>full application proxy</b> at each location &mdash; capable of running load balancers, web application firewalls, and even container workloads directly at the edge.</p>
+    <p>In simple terms: <b>you extend the F5 Global Network with your own private PoPs.</b> Each CE site can terminate traffic locally, apply security policies, and communicate with other CE sites through the xC fabric &mdash; without VPN tunnels, without VPC peering, without complex routing tables.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/overview-architecture/multi-site.png')">
+      <img src="../images/overview-architecture/multi-site.png" alt="Multi-Site Architecture">
+    </a>
+
+    <h2>East-West Without the Complexity</h2>
+    <p>Traditionally, connecting applications across regions or data centers means setting up VPN tunnels, Transit Gateways, or MPLS circuits. Each new connection adds complexity, cost, and latency.</p>
+    <p>With xC Multi-Site, it&rsquo;s different: every CE automatically connects to every other CE through the xC fabric. Want to route traffic from Frankfurt to Dublin? Just create a load balancer that points from one CE to the other &mdash; the fabric handles the rest. Encrypted, fast, and with full security policies applied.</p>
+
+    <h2>What a Customer Edge Can Do</h2>
+    <ul>
+      <li><b>Local TLS termination</b> &mdash; no round-trip to the cloud for every request</li>
+      <li><b>Local WAF and security policies</b> &mdash; same policies as the global platform, enforced at the edge</li>
+      <li><b>East-west load balancing</b> &mdash; route traffic between sites with low latency</li>
+      <li><b>Service discovery</b> &mdash; automatically discover Kubernetes services or other endpoints</li>
+      <li><b>Edge computing (vk8s)</b> &mdash; run container workloads directly on the CE, managed from the xC console</li>
+    </ul>
+
+    <h2>When to Use This</h2>
+    <ul>
+      <li>Cross-region or cross-cloud communication (east-west traffic)</li>
+      <li>Applications that need local processing at the edge (latency-sensitive workloads)</li>
+      <li>You want a consistent security and networking layer across all your sites</li>
+      <li>You&rsquo;re replacing or consolidating VPN/MPLS/Transit Gateway setups</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>In this lab</strong>
+      The <a href="#" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">CE via CLB</a>, <a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>, <a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">k8s Service Discovery</a>, and <a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a> use cases demonstrate the Multi-Site model.
+    </div>
   </section>
   <div class="section-nav" data-for="arch-multisite" data-prev="arch-hybrid" data-next="home"></div>
 
