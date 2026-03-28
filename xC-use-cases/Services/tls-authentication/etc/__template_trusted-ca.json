@@ -1,0 +1,11 @@
+{
+    "metadata": {
+      "name": "ca-${STUDENT}-mtls",
+      "namespace": "${NAMESPACE}",
+      "description": "Lab CA for mTLS client certificate validation",
+      "disable": false
+    },
+    "spec": {
+      "trusted_ca_url": "string:///${CA_CERT_B64}"
+    }
+  }

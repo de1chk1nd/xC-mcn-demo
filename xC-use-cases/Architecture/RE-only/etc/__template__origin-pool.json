@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "name": "origin-public-echo-aws",
+    "namespace": "${NAMESPACE}",
+    "labels": {},
+    "annotations": {},
+    "disable": false
+  },
+  "spec": {
+    "origin_servers": [
+      {
+        "public_name": {
+          "dns_name": "${UBUNTU_NLB_EU_CENTRAL}",
+          "refresh_interval": 300
+        },
+        "labels": {}
+      },
+      {
+        "public_name": {
+          "dns_name": "${UBUNTU_NLB_EU_WEST}",
+          "refresh_interval": 300
+        }
+      }
+    ],
+    "use_tls": {
+      "use_host_header_as_sni": {},
+      "tls_config": {
+        "default_security": {}
+      },
+      "skip_server_verification": {},
+      "no_mtls": {},
+      "default_session_key_caching": {}
+    },
+    "port": 443,
+    "same_as_endpoint_port": {},
+    "healthcheck": [],
+    "loadbalancer_algorithm": "LB_OVERRIDE",
+    "endpoint_selection": "LOCAL_PREFERRED",
+    "upstream_conn_pool_reuse_type": {
+      "enable_conn_pool_reuse": {}
+    }
+  }
+}

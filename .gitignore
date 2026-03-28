@@ -1,6 +1,8 @@
 ####### Private / Secret files
 docs-priv/
 *.json
+!xC-use-cases/**/etc/__template*.json
+!xC-use-cases/**/etc/*.json.example
 
 ####### Tools — runtime/generated artifacts
 tools/*/venv/

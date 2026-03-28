@@ -1,0 +1,36 @@
+{
+    "metadata": {
+      "name": "sd-k8s-${STUDENT}-eu-west",
+      "disable": false
+    },
+    "spec": {
+      "where": {
+        "virtual_site": {
+          "ref": [
+            {
+              "kind": "virtual_site",
+              "tenant": "${XC_TENANT}",
+              "namespace": "shared",
+              "name": "${STUDENT}-eu-west-sites"
+            }
+          ],
+          "network_type": "VIRTUAL_NETWORK_SITE_LOCAL_INSIDE",
+          "disable_internet_vip": {}
+        }
+      },
+      "discovery_k8s": {
+        "access_info": {
+          "kubeconfig_url": {
+            "clear_secret_info": {
+              "url": "string:///${KUBECONFIG_EU_WEST1}"
+            }
+          },
+          "isolated": {}
+        },
+        "publish_info": {
+          "disable": {}
+        }
+      },
+      "no_cluster_id": {}
+    }
+  }

@@ -1,0 +1,78 @@
+{
+    "metadata": {
+      "name": "sp-${STUDENT}-mtls-cert-check",
+      "namespace": "${NAMESPACE}",
+      "description": "Block clients without @mordor.de in client cert CN",
+      "disable": false
+    },
+    "spec": {
+      "algo": "FIRST_MATCH",
+      "any_server": {},
+      "rule_list": {
+        "rules": [
+          {
+            "metadata": {
+              "name": "deny-non-mordor",
+              "disable": false
+            },
+            "spec": {
+              "action": "DENY",
+              "any_client": {},
+              "label_matcher": {
+                "keys": []
+              },
+              "headers": [
+                {
+                  "name": "x-forwarded-client-cert",
+                  "item": {
+                    "regex_values": [
+                      "CN=[^,]*@mordor\\.de"
+                    ]
+                  },
+                  "invert_matcher": true
+                }
+              ],
+              "any_ip": {},
+              "any_asn": {},
+              "waf_action": {
+                "none": {}
+              },
+              "bot_action": {
+                "none": {}
+              },
+              "mum_action": {
+                "default": {}
+              },
+              "challenge_action": "DEFAULT_CHALLENGE"
+            }
+          },
+          {
+            "metadata": {
+              "name": "allow-mordor",
+              "disable": false
+            },
+            "spec": {
+              "action": "ALLOW",
+              "any_client": {},
+              "label_matcher": {
+                "keys": []
+              },
+              "headers": [],
+              "any_ip": {},
+              "any_asn": {},
+              "waf_action": {
+                "none": {}
+              },
+              "bot_action": {
+                "none": {}
+              },
+              "mum_action": {
+                "default": {}
+              },
+              "challenge_action": "DEFAULT_CHALLENGE"
+            }
+          }
+        ]
+      }
+    }
+  }

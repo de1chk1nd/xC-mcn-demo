@@ -1,0 +1,16 @@
+{
+    "metadata": {
+      "name": "${STUDENT}-vk8s",
+      "namespace": "${NAMESPACE}",
+      "disable": false
+    },
+    "spec": {
+      "vsite_refs": [
+        {
+          "name": "${STUDENT}-vk8s-sites",
+          "namespace": "shared",
+          "kind": "virtual_site"
+        }
+      ]
+    }
+  }
