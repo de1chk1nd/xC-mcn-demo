@@ -81,7 +81,7 @@ See [tools/README.md](tools/README.md) for details.
 |:---------|:------------|
 | **[Lab Guide](docs/lab-guide/index.html)** | Interactive setup, use cases, and test instructions |
 | **[Use Cases](xC-use-cases/README.md)** | Technical docs, API endpoints, script flows |
-| **[Installation Guide](docs/install-and-setup.md)** | Prerequisites and detailed setup |
+| **[Repository Reference](docs/install-and-setup.md)** | Directory structure, prerequisites, technology stack |
 | **[Tools](tools/README.md)** | Standalone utilities |
 | **[Contributing](CONTRIBUTING.md)** | How to contribute |
 | **[Security Policy](SECURITY.md)** | Credential handling, vulnerability reporting |
