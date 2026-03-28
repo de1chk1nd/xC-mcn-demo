@@ -107,6 +107,8 @@
     var img = document.getElementById("image-modal-img");
     if (!modal || !img) return;
     img.src = src;
+    modal.classList.remove("closing");
+    void modal.offsetWidth;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
   };
@@ -115,9 +117,13 @@
     var modal = document.getElementById("image-modal");
     var img = document.getElementById("image-modal-img");
     if (!modal || !img) return;
-    img.src = "";
+    modal.classList.add("closing");
     modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
+    setTimeout(function() {
+      modal.classList.remove("closing");
+      img.src = "";
+      modal.setAttribute("aria-hidden", "true");
+    }, 500);
   };
 
   function addCopyButtons() {
