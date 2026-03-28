@@ -19,7 +19,6 @@ setup-init/.cert/ca/
 setup-init/.cert/domains/
 setup-init/config.yaml
 
-xC-use-cases/Service Discovery/kubernetes/etc/kubeconfig-*
 xC-use-cases/Architecture/k8s-service-discovery/etc/kubeconfig-*
 xC-use-cases/**/payload_final_*.json
 xC-use-cases/**/client-certs/
