@@ -314,12 +314,43 @@ pre .copy-btn:hover { background: #374151; color: #fff; }
 .platform-heading {
   font-size: 19px;
   font-weight: 700;
-  color: var(--primary);
   margin: 12px 0 8px;
-  padding-bottom: 4px;
-  border-bottom: 2px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
 }
-.platform-heading.mac { margin-top: 32px; }
+.platform-heading.linux {
+  background: #dbeafe;
+  color: #1e40af;
+  border-left: 4px solid #1e40af;
+}
+.platform-heading.linux::before { content: "🐧\00a0"; }
+.platform-heading.mac {
+  background: #dcfce7;
+  color: #166534;
+  border-left: 4px solid #166534;
+  margin-top: 32px;
+}
+.platform-heading.mac::before { content: "🍏\00a0"; }
+
+/* Tech doc reference */
+.tech-doc-ref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 6px;
+  margin: 8px 0;
+}
+.tech-doc-ref a {
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+.tech-doc-ref a:hover { text-decoration: underline; }
 
 /* Test access link */
 .test-access {

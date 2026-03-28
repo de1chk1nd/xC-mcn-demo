@@ -33,7 +33,13 @@ Target environment: lab / demo — not production.
 ├── tools/                # Standalone utilities
 │   └── s-certificate/    # CA-signed certificate generator + xC upload
 ├── xC-use-cases/         # Use-case deployment scripts (curl → xC API)
-│   └── */bin/            # setup.sh / delete.sh per use case
+│   ├── Architecture/     # Architecture use cases (RE, CE, E-W, SD, vk8s)
+│   │   └── */bin/        # setup.sh / delete.sh per use case
+│   ├── Services/         # Platform services (mTLS, JWT, etc.)
+│   │   ├── tls-authentication/  # mTLS with client cert auth + service policy
+│   │   └── jwt-validation/      # JWT validation (RS256, blocking mode)
+│   └── Evaluation/       # Use cases under evaluation
+│       └── bgp-anycast-routing/ # BGP peering with CE nodes via FRR
 └── docs/                 # Documentation, diagrams & lab guide
     ├── images/           # Architecture & use-case diagrams
     └── lab-guide/        # Interactive single-page lab guide (HTML)
@@ -141,6 +147,19 @@ Each script follows this sequence:
 Corresponding `delete.sh` scripts reverse the process: delete LBs, delete cert objects from xC, remove local PEM files.
 
 **Cert naming convention:** `tls-${STUDENT}-<host-part-of-fqdn>` (e.g. `tls-jdoe-echo-public`)
+
+### mTLS Workflow (Services/tls-authentication)
+
+The mTLS service extends the standard TLS workflow with client certificate authentication:
+
+1. Generate server cert via `s-certificate` (same as standard workflow)
+2. Generate **client certificates** via `openssl` directly (not s-certificate) — each user needs a unique email/CN
+3. Upload lab CA as `trusted_ca_list` object (`POST .../trusted_ca_lists`)
+4. Create HTTP LB with `use_mtls` block (references `trusted_ca_list`, configures XFCC header injection)
+5. Create **service policy** (`POST .../service_policys`) matching XFCC header for cert-based access control
+6. Service policy must be **manually assigned** to the LB in xC Console
+
+The CA must have `basicConstraints = CA:TRUE` for xC to accept it as a trusted CA.
 
 ---
 

@@ -23,12 +23,12 @@ ${module.eu-central-1.Service-2-via-BigIP}     service-bigip-eu-central-1.${loca
 ${module.eu-west-1.Service-2-via-BigIP}        service-bigip-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # AWS NLB IP / CE via CLB — resolve to NLB IP >> CE IP
-${module.eu-central-1.nlb_ip}     app-ce-central.${local.setup-init.student.name}.xc-mcn-lab.aws
-${module.eu-west-1.nlb_ip}        app-ce-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-central-1.nlb_ip}     app-ce-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+${module.eu-west-1.nlb_ip}        app-ce-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # Uncomment (comment above) for direct EIP Access to MCN (no cLB)
-# ${module.eu-central-1.mcn_ip_gw01}     app-ce-central.${local.setup-init.student.name}.xc-mcn-lab.aws
-# ${module.eu-west-1.mcn_ip_gw01}        app-ce-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+# ${module.eu-central-1.mcn_ip_gw01}     app-ce-eu-central-1.${local.setup-init.student.name}.xc-mcn-lab.aws
+# ${module.eu-west-1.mcn_ip_gw01}        app-ce-eu-west-1.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 # =============================================
 # xC Use Case Apps (resolve to xC Anycast IP)
@@ -44,6 +44,8 @@ ${local.setup-init.xC.tenant_anycast_ip}     k8s-central.${local.setup-init.stud
 ${local.setup-init.xC.tenant_anycast_ip}     k8s-west.${local.setup-init.student.name}.xc-mcn-lab.aws
 ${local.setup-init.xC.tenant_anycast_ip}     vk8s-eu-central.${local.setup-init.student.name}.xc-mcn-lab.aws
 ${local.setup-init.xC.tenant_anycast_ip}     vk8s-eu-west.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     mtls.${local.setup-init.student.name}.xc-mcn-lab.aws
+${local.setup-init.xC.tenant_anycast_ip}     jwt.${local.setup-init.student.name}.xc-mcn-lab.aws
 
 EOF
 }

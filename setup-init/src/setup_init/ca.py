@@ -17,6 +17,7 @@ from setup_init.config import CertPaths
 CA_CONFIG_TEMPLATE = """\
 prompt = no
 distinguished_name = req_distinguished_name
+x509_extensions = v3_ca
 
 [ req_distinguished_name ]
 C                      = {country}
@@ -25,6 +26,11 @@ L                      = {locality}
 O                      = {organization}
 OU                     = {organizational_unit}
 CN                     = {organization} CA
+
+[ v3_ca ]
+basicConstraints = critical, CA:TRUE
+keyUsage = critical, keyCertSign, cRLSign
+subjectKeyIdentifier = hash
 """
 
 # Default CA settings (used when s-certificate config is not available)

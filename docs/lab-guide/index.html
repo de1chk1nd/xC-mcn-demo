@@ -22,14 +22,17 @@
   <a href="#" data-target="setup-quick" onclick="show('setup-quick', event)">Lab Setup</a>
   <a href="#" data-target="lab-delete" onclick="show('lab-delete', event)">Lab Deletion</a>
   <h2>Use Cases</h2>
-  <a href="#" data-target="use-cases" onclick="show('use-cases', event)">Overview</a>
+  <a href="#" data-target="use-cases" onclick="show('use-cases', event)">Architecture</a>
   <a href="#" class="sub" data-target="ns-re" onclick="show('ns-re', event)">RE Only</a>
   <a href="#" class="sub" data-target="ns-re-ce" onclick="show('ns-re-ce', event)">RE to CE</a>
   <a href="#" class="sub" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">RE to CE via BIG-IP</a>
   <a href="#" class="sub" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">CE via CLB</a>
   <a href="#" class="sub" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>
-  <a href="#" class="sub" data-target="sd-k8s" onclick="show('sd-k8s', event)">Kubernetes SD <span class="draft-dot"></span></a>
-  <a href="#" class="sub" data-target="vk8s" onclick="show('vk8s', event)">vk8s <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="sd-k8s" onclick="show('sd-k8s', event)">k8s Service Discovery</a>
+  <a href="#" class="sub" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a>
+  <a href="#" data-target="svc-overview" onclick="show('svc-overview', event)">Services</a>
+  <a href="#" class="sub" data-target="svc-jwt" onclick="show('svc-jwt', event)">JWT Validation</a>
+  <a href="#" class="sub" data-target="svc-tls-auth" onclick="show('svc-tls-auth', event)">TLS Authentication</a>
   <hr class="divider">
   <h2>Work in Progress</h2>
   <a href="#" class="sub" data-target="wip" onclick="show('wip', event)">Use Cases</a>
@@ -146,7 +149,7 @@
 
     <h2 class="step">1. Install Tools</h2>
 
-    <h3>Linux (Ubuntu / Debian)</h3>
+    <p class="platform-heading linux">Linux (Ubuntu / Debian)</p>
 <pre><code># Terraform
 wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
@@ -159,7 +162,7 @@ sudo apt install -y python3 python3-pip
 sudo apt install -y yq curl openssl git gettext-base
 </code></pre>
 
-    <h3>macOS</h3>
+    <p class="platform-heading mac">macOS</p>
 <pre><code>brew install terraform python yq curl openssl git gettext
 </code></pre>
 
@@ -205,8 +208,8 @@ pip install -r requirements.txt
       <tr><td><a href="#" data-target="ns-re-ce-bigip" onclick="show('ns-re-ce-bigip', event)">N-S RE to CE via BigIP</a></td><td>North-South</td><td>RE</td><td>CE &rarr; BigIP</td><td>Yes</td></tr>
       <tr><td><a href="#" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">N-S CE via CLB</a></td><td>North-South</td><td>CE (CLB)</td><td>CE</td><td>Yes</td></tr>
       <tr><td><a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">E-W CE to CE</a></td><td>East-West</td><td>CE</td><td>CE (remote)</td><td>Yes</td></tr>
-      <tr><td><a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">SD Kubernetes</a></td><td>North-South</td><td>RE</td><td>CE &rarr; k8s</td><td>No</td></tr>
-      <tr><td><a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a></td><td>North-South</td><td>RE</td><td>CE (vk8s)</td><td>No</td></tr>
+      <tr><td><a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">k8s Service Discovery</a></td><td>North-South</td><td>RE</td><td>CE &rarr; k8s</td><td>Yes</td></tr>
+      <tr><td><a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a></td><td>North-South</td><td>RE</td><td>CE (vk8s)</td><td>Yes</td></tr>
     </table>
   </section>
   <div class="section-nav" data-for="use-cases" data-prev="lab-delete" data-next="ns-re"></div>
@@ -262,7 +265,7 @@ vim ./setup-init/config.yaml</code></pre>
       <tr><td><code>p_12_pwd</code></td><td>Password for the P12 certificate</td></tr>
       <tr><td><code>tenant</code></td><td>Your xC tenant name</td></tr>
       <tr><td><code>tenant_api</code></td><td>API endpoint, e.g. <code>https://&lt;tenant&gt;.console.ves.volterra.io/api</code></td></tr>
-      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td>BIG-IP admin password (default: <code>DefaultLabPwd!2026</code>)</td></tr>
+      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td>BIG-IP admin password &mdash; change this to a secure value before deploying</td></tr>
     </table>
 
     <div class="admonition warning">
@@ -284,12 +287,7 @@ vim ./setup-init/config.yaml</code></pre>
     <h2 class="step">5. Post Install</h2>
     <p>Add local <code>/etc/hosts</code> entries and open SSH sessions to all lab servers.</p>
 
-    <div class="admonition warning">
-      <strong>Important</strong>
-      Add local <code>/etc/hosts</code> entries before accessing any devices.
-    </div>
-
-    <p class="platform-heading">Linux</p>
+    <p class="platform-heading linux">Linux</p>
     <p>Hostfile</p>
 <pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
 sudo vim /etc/hosts</code></pre>
@@ -319,10 +317,21 @@ sudo vim /etc/hosts</code></pre>
 
     <h3>Device Access</h3>
     <table>
-      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
-      <tr><td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener">BIG-IP EU-Central (<code>bigip-mgmt-eu-central-1.__DOMAIN__</code>)</a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
-      <tr><td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener">BIG-IP EU-West (<code>bigip-mgmt-eu-west-1.__DOMAIN__</code>)</a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><th>Device</th><th>FQDN</th><th>Username</th><th>Password</th></tr>
+      <tr>
+        <td><span class="region-central">BIG-IP EU-Central</span></td>
+        <td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
+      <tr>
+        <td><span class="region-west">BIG-IP EU-West</span></td>
+        <td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
     </table>
+    <p><small>* Default password &mdash; verify the current value in <code>setup-init/config.yaml</code> → <code>f5_password</code></small></p>
 
     <h3>Initialization Commands</h3>
     <table>
@@ -377,8 +386,8 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Deploy</h2>
     <p>The script fetches NLB DNS names from Terraform outputs, generates origin pool and load balancer payloads from templates, and creates both objects via the xC API.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"
-"./xC-use-cases/North-South Loadbalancer - RE/bin/setup.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-only/bin/setup.sh"
+"./xC-use-cases/Architecture/RE-only/bin/setup.sh"</code></pre>
 
     <h2>Test</h2>
     <p>Access the load balancer FQDN and verify the <b>hostname</b> field in the JSON response. Load balancing alternates between eu-central-1 and eu-west-1.</p>
@@ -390,17 +399,15 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Delete</h2>
     <p>Removes the HTTP load balancer, origin pool, and cleans up generated payload files.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"
-"./xC-use-cases/North-South Loadbalancer - RE/bin/delete.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-only/bin/delete.sh"
+"./xC-use-cases/Architecture/RE-only/bin/delete.sh"</code></pre>
 
-    <h2>Files</h2>
-    <table>
-      <tr><th>Path</th><th>Description</th></tr>
-      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
-      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
-      <tr><td><code>etc/__template__origin-pool.json</code></td><td>Origin pool template (uses NLB DNS from Terraform)</td></tr>
-      <tr><td><code>etc/__template_http-loadbalancer.json</code></td><td>HTTP load balancer template</td></tr>
-    </table>
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/RE-only/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="ns-re" data-prev="use-cases" data-next="ns-re-ce"></div>
 
@@ -416,8 +423,8 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Deploy</h2>
     <p>The script generates server certificates for all three FQDNs, uploads them to xC, and creates the HTTP load balancers via the xC API.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"
-"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/setup.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-to-CE/bin/setup.sh"
+"./xC-use-cases/Architecture/RE-to-CE/bin/setup.sh"</code></pre>
 
     <h2>Test</h2>
     <p>Verify the <b>hostname</b> field in the JSON response. The regional LBs return servers from their region only, while the combined LB load balances across both regions.</p>
@@ -442,18 +449,15 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Delete</h2>
     <p>Removes all three HTTP load balancers, certificates from xC, and cleans up generated files.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"
-"./xC-use-cases/North-South Loadbalancer - RE to CE/bin/delete.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-to-CE/bin/delete.sh"
+"./xC-use-cases/Architecture/RE-to-CE/bin/delete.sh"</code></pre>
 
-    <h2>Files</h2>
-    <table>
-      <tr><th>Path</th><th>Description</th></tr>
-      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
-      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
-      <tr><td><code>etc/__template_lb-echo-ssl.json</code></td><td>LB template &mdash; both regions</td></tr>
-      <tr><td><code>etc/__template_lb-echo-ssl-central.json</code></td><td>LB template &mdash; eu-central only</td></tr>
-      <tr><td><code>etc/__template_lb-echo-ssl-west.json</code></td><td>LB template &mdash; eu-west only</td></tr>
-    </table>
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/RE-to-CE/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="ns-re-ce" data-prev="ns-re" data-next="ns-re-ce-bigip"></div>
 
@@ -469,8 +473,8 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Deploy</h2>
     <p>The script generates server certificates for both FQDNs, uploads them to xC, and creates the HTTP load balancers via the xC API.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"
-"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/setup.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-to-CE-bigip/bin/setup.sh"
+"./xC-use-cases/Architecture/RE-to-CE-bigip/bin/setup.sh"</code></pre>
 
     <h2>Test</h2>
     <p>Access each FQDN and verify the JSON response. Since traffic passes through the BIG-IP, you should see a <b>custom header</b> injected by a BIG-IP iRule in the response.</p>
@@ -495,18 +499,31 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Delete</h2>
     <p>Removes both HTTP load balancers, certificates from xC, and cleans up generated files.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"
-"./xC-use-cases/North-South Loadbalancer - RE to CE on big-ip/bin/delete.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/RE-to-CE-bigip/bin/delete.sh"
+"./xC-use-cases/Architecture/RE-to-CE-bigip/bin/delete.sh"</code></pre>
 
-    <h2>Advanced: BIG-IP APM Local Authentication</h2>
+    <hr>
+
+    <h2>Appendix: BIG-IP APM Local Authentication</h2>
     <p>Add an APM access policy with local user authentication on the eu-central BIG-IP. This demonstrates how BIG-IP APM can enforce authentication in front of application workloads, even when traffic is routed through the xC fabric.</p>
 
     <h3>BIG-IP Management Access</h3>
     <table>
-      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
-      <tr><td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
-      <tr><td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></a></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><th>Device</th><th>FQDN</th><th>Username</th><th>Password</th></tr>
+      <tr>
+        <td><span class="region-central">BIG-IP EU-Central</span></td>
+        <td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
+      <tr>
+        <td><span class="region-west">BIG-IP EU-West</span></td>
+        <td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
     </table>
+    <p><small>* Default password &mdash; verify the current value in <code>setup-init/config.yaml</code> → <code>f5_password</code></small></p>
 
     <h3>Step 1: Create Local User Database</h3>
     <p>Navigate to <b>Access &rarr; Authentication &rarr; Local User DB &rarr; Instances</b> and create a new instance <code>local-user-db</code>.</p>
@@ -543,14 +560,12 @@ sudo vim /etc/hosts</code></pre>
       <img src="../images/use-cases/re-to-ce-bigip/003-auth-screen.png" alt="BIG-IP APM Authentication Screen">
     </a>
 
-    <h2>Files</h2>
-    <table>
-      <tr><th>Path</th><th>Description</th></tr>
-      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
-      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
-      <tr><td><code>etc/__template_lb-bigip-echo-eu-central.json</code></td><td>LB template &mdash; eu-central</td></tr>
-      <tr><td><code>etc/__template_lb-bigip-echo-eu-west.json</code></td><td>LB template &mdash; eu-west</td></tr>
-    </table>
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/RE-to-CE-bigip/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="ns-re-ce-bigip" data-prev="ns-re-ce" data-next="ns-ce-clb"></div>
 
@@ -566,25 +581,25 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Deploy</h2>
     <p>The script generates server certificates, uploads them to xC, and creates one HTTPS load balancer per region, each advertised on the CE virtual site in its respective region.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"
-"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/setup.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/CE-via-CLB/bin/setup.sh"
+"./xC-use-cases/Architecture/CE-via-CLB/bin/setup.sh"</code></pre>
 
     <h2>Test &mdash; External (via NLB)</h2>
     <p>External clients reach the application through the AWS NLB, which forwards traffic to the CE node. The CE terminates the TLS session and applies the WAF policy locally. Requires local <code>/etc/hosts</code> entries (see Post Install).</p>
     <p>
-      <a class="test-access" href="https://app-ce-central.__DOMAIN__" target="_blank" rel="noopener">
-        <span class="arrow">&#8594;</span> app-ce-central.__DOMAIN__
+      <a class="test-access" href="https://app-ce-eu-central-1.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> app-ce-eu-central-1.__DOMAIN__
       </a>
       &mdash; eu-central
     </p>
     <p>
-      <a class="test-access" href="https://app-ce-west.__DOMAIN__" target="_blank" rel="noopener">
-        <span class="arrow">&#8594;</span> app-ce-west.__DOMAIN__
+      <a class="test-access" href="https://app-ce-eu-west-1.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> app-ce-eu-west-1.__DOMAIN__
       </a>
       &mdash; eu-west
     </p>
     <p>To verify the WAF is active, append a simple XSS payload to the URL &mdash; the request should be blocked:</p>
-<pre><code>https://app-ce-central.__DOMAIN__?a=&lt;script&gt;</code></pre>
+<pre><code>https://app-ce-eu-central-1.__DOMAIN__?a=&lt;script&gt;</code></pre>
 
     <h2>Test &mdash; Internal (via SSH)</h2>
     <p>Because the load balancer is advertised on the <b>CE node itself</b> (not on the Regional Edge), any host inside the same VPC can reach it directly by resolving the FQDN to the CE&rsquo;s local IP address. This means the same WAF policy protects both external and internal traffic without any additional configuration.</p>
@@ -601,24 +616,22 @@ sudo vim /etc/hosts</code></pre>
 
     <p>SSH into one of the Ubuntu servers and test. If you have not imported the lab CA, you can skip TLS verification with <code>-k</code>:</p>
 <pre><code># Normal request (skip TLS verification)
-curl --silent -k https://app-ce-central.__DOMAIN__ | grep "Server address"
+curl --silent -k https://app-ce-eu-central-1.__DOMAIN__ | grep "Server address"
 
 # XSS test -- WAF should block
-curl --silent -k "https://app-ce-central.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+curl --silent -k "https://app-ce-eu-central-1.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
     <h2>Delete</h2>
     <p>Removes both HTTPS load balancers, certificates from xC, and cleans up generated files.</p>
-<pre><code>chmod +x "./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"
-"./xC-use-cases/North-South Loadbalancer - CE via CLB/bin/delete.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/CE-via-CLB/bin/delete.sh"
+"./xC-use-cases/Architecture/CE-via-CLB/bin/delete.sh"</code></pre>
 
-    <h2>Files</h2>
-    <table>
-      <tr><th>Path</th><th>Description</th></tr>
-      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
-      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
-      <tr><td><code>etc/__template_lb-ce-eu-central.json</code></td><td>LB template &mdash; eu-central (advertised on CE)</td></tr>
-      <tr><td><code>etc/__template_lb-ce-eu-west.json</code></td><td>LB template &mdash; eu-west (advertised on CE)</td></tr>
-    </table>
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/CE-via-CLB/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="ns-ce-clb" data-prev="ns-re-ce-bigip" data-next="ew-ce"></div>
 
@@ -634,8 +647,8 @@ curl --silent -k "https://app-ce-central.__DOMAIN__?a=&lt;script&gt;"</code></pr
 
     <h2>Deploy</h2>
     <p>The script generates a server certificate for the shared FQDN, uploads it to xC, and creates two HTTPS load balancers (one per region, each pointing to the opposite region&rsquo;s origin pool).</p>
-<pre><code>chmod +x "./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/setup.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/CE-to-CE/bin/setup.sh"
+"./xC-use-cases/Architecture/CE-to-CE/bin/setup.sh"</code></pre>
 
     <h2>Test</h2>
     <p>SSH into an Ubuntu server and curl the internal LB. The response should come from the <b>opposite</b> region, proving cross-region connectivity via the xC fabric:</p>
@@ -671,17 +684,15 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
     <h2>Delete</h2>
     <p>Removes both HTTPS load balancers, the certificate from xC, and cleans up generated files.</p>
-<pre><code>chmod +x "./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"
-"./xC-use-cases/East-West Loadbalancer - CE to CE/bin/delete.sh"</code></pre>
+<pre><code>chmod +x "./xC-use-cases/Architecture/CE-to-CE/bin/delete.sh"
+"./xC-use-cases/Architecture/CE-to-CE/bin/delete.sh"</code></pre>
 
-    <h2>Files</h2>
-    <table>
-      <tr><th>Path</th><th>Description</th></tr>
-      <tr><td><code>bin/setup.sh</code></td><td>Automated deployment script</td></tr>
-      <tr><td><code>bin/delete.sh</code></td><td>Automated teardown script</td></tr>
-      <tr><td><code>etc/__template_ew_loadbalancing-eu-central.json</code></td><td>LB template &mdash; advertised on eu-central, routes to eu-west</td></tr>
-      <tr><td><code>etc/__template_ew_loadbalancing-eu-west.json</code></td><td>LB template &mdash; advertised on eu-west, routes to eu-central</td></tr>
-    </table>
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/CE-to-CE/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="ew-ce" data-prev="ns-ce-clb" data-next="sd-k8s"></div>
 
@@ -705,19 +716,61 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
   <!-- ===== SD K8s ===== -->
   <section id="sd-k8s">
-    <h1>Service Discovery: Kubernetes</h1>
-    <p>Kubernetes service discovery via kubeconfig for minikube clusters on CE sites. Discovered services are exposed through HTTP load balancers.</p>
+    <h1>k8s Service Discovery</h1>
+    <p>Create <b>Kubernetes service discovery</b> objects for minikube clusters running on CE sites. The setup script SSHs into each Ubuntu server, fetches the kubeconfig, deploys an echo application, and registers service discovery objects, origin pools, and HTTPS load balancers with the xC API.</p>
+    <p>Three load balancers are deployed: one per region and one combined LB routing to both. A default <b>Web Application Firewall</b> policy is attached to each load balancer.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/SD-k8s.png')">
+      <img src="../images/use-cases/SD-k8s.png" alt="Use Case - k8s Service Discovery">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>"./xC-use-cases/Service Discovery/kubernetes/bin/setup.sh"</code></pre>
-    <p>The script SSHs into each Ubuntu server, fetches kubeconfig, deploys the echo app, and registers everything with the xC API.</p>
-    <h2>FQDNs</h2>
-    <ul>
-      <li><code>k8s.__DOMAIN__</code> &mdash; both regions</li>
-      <li><code>k8s-central.__DOMAIN__</code> &mdash; eu-central only</li>
-      <li><code>k8s-west.__DOMAIN__</code> &mdash; eu-west only</li>
-    </ul>
+    <p>The script generates server certificates for all three FQDNs, uploads them to xC, fetches kubeconfigs via SSH, deploys the echo app to both minikube clusters, then creates service discovery objects, origin pools, and load balancers.</p>
+<pre><code>chmod +x "./xC-use-cases/Architecture/k8s-service-discovery/bin/setup.sh"
+"./xC-use-cases/Architecture/k8s-service-discovery/bin/setup.sh"</code></pre>
+
+    <h2>Test</h2>
+    <p>Access each FQDN and verify the response. The regional LBs return pods from their region only, while the combined LB distributes across both.</p>
+    <p>
+      <a class="test-access" href="https://k8s.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> k8s.__DOMAIN__
+      </a>
+      &mdash; both regions
+    </p>
+    <p>
+      <a class="test-access" href="https://k8s-central.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> k8s-central.__DOMAIN__
+      </a>
+      &mdash; eu-central only
+    </p>
+    <p>
+      <a class="test-access" href="https://k8s-west.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> k8s-west.__DOMAIN__
+      </a>
+      &mdash; eu-west only
+    </p>
+
     <h2>Delete</h2>
-<pre><code>"./xC-use-cases/Service Discovery/kubernetes/bin/delete.sh"</code></pre>
+    <p>Removes all three load balancers, origin pools, service discovery objects, certificates from xC, and cleans up generated files.</p>
+<pre><code>chmod +x "./xC-use-cases/Architecture/k8s-service-discovery/bin/delete.sh"
+"./xC-use-cases/Architecture/k8s-service-discovery/bin/delete.sh"</code></pre>
+
+    <hr>
+
+    <h2>Appendix: k8s Service Discovery Reference</h2>
+
+    <h3>Further Reading</h3>
+    <table>
+      <tr><th>Resource</th><th>Notes</th></tr>
+      <tr><td><a href="https://community.f5.com/kb/technicalarticles/kubernetes-architecture-options-with-f5-distributed-cloud-services/306550" target="_blank" rel="noopener">K8s Architecture Options</a></td><td>General k8s options &mdash; focus on Secure k8s Gateway</td></tr>
+      <tr><td><a href="https://community.f5.com/kb/technicalarticles/service-discovery-and-authentication-options-for-kubernetes-providers-eks-aks-gc/297576" target="_blank" rel="noopener">SD kubeconfig</a></td><td>How to create kubeconfig for cloud providers</td></tr>
+      <tr><td><a href="https://community.f5.com/kb/technicalarticles/using-a-kubernetes-serviceaccount-for-service-discovery-with-f5-distributed-clou/300225" target="_blank" rel="noopener">SD k8s RBAC</a></td><td>Create kubeconfig with RBAC</td></tr>
+    </table>
+
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/k8s-service-discovery/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
   <div class="section-nav" data-for="sd-k8s" data-prev="ew-ce" data-next="vk8s"></div>
 
@@ -727,10 +780,21 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
     <div class="admonition warning"><strong>Early Access</strong> This feature is still Early Access. Use with caution.</div>
     <h2>BIG-IP Access</h2>
     <table>
-      <tr><th>Device</th><th>Username</th><th>Password</th></tr>
-      <tr><td><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
-      <tr><td><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></td><td>admin</td><td>DefaultLabPwd!2026</td></tr>
+      <tr><th>Device</th><th>FQDN</th><th>Username</th><th>Password</th></tr>
+      <tr>
+        <td><span class="region-central">BIG-IP EU-Central</span></td>
+        <td><a href="https://bigip-mgmt-eu-central-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-central-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
+      <tr>
+        <td><span class="region-west">BIG-IP EU-West</span></td>
+        <td><a href="https://bigip-mgmt-eu-west-1.__DOMAIN__" target="_blank" rel="noopener"><code>bigip-mgmt-eu-west-1.__DOMAIN__</code></a></td>
+        <td><code>admin</code></td>
+        <td><code>DefaultLabPwd!2026</code> *</td>
+      </tr>
     </table>
+    <p><small>* Default password &mdash; verify the current value in <code>setup-init/config.yaml</code> → <code>f5_password</code></small></p>
     <h2>Create Service Discovery</h2>
     <h3>EU-Central</h3>
     <ul>
@@ -750,18 +814,228 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
   <!-- ===== vk8s ===== -->
   <section id="vk8s">
     <h1>Edge Computing: vk8s</h1>
-    <p>Deploy container workloads to CE sites using F5 xC virtual Kubernetes (vk8s). Pods run directly on Customer Edge nodes.</p>
+    <p>Deploy container workloads to CE sites using F5 xC <b>virtual Kubernetes (vk8s)</b>. Pods run directly on Customer Edge nodes without requiring a separate Kubernetes cluster.</p>
+    <p>The setup script creates a vk8s cluster via Terraform, deploys an <code>echo-aws</code> workload to both CE sites, creates origin pools and HTTPS load balancers. A default <b>Web Application Firewall</b> policy is attached to each load balancer.</p>
+
+    <a class="image-zoom" href="#" onclick="openImageModal('../images/use-cases/vk8s.png')">
+      <img src="../images/use-cases/vk8s.png" alt="Use Case - vk8s">
+    </a>
+
     <h2>Deploy</h2>
-<pre><code>./xC-use-cases/vk8s/bin/setup.sh</code></pre>
-    <h2>FQDNs</h2>
-    <ul>
-      <li><code>vk8s-eu-central.__DOMAIN__</code></li>
-      <li><code>vk8s-eu-west.__DOMAIN__</code></li>
-    </ul>
+    <p>The script creates the vk8s cluster via xC API, generates server certificates, uploads them to xC, deploys the echo-aws workload, and creates origin pools and load balancers.</p>
+<pre><code>chmod +x ./xC-use-cases/Architecture/vk8s/bin/setup.sh
+./xC-use-cases/Architecture/vk8s/bin/setup.sh</code></pre>
+
+    <h2>Test</h2>
+    <p>Access each FQDN and verify the response comes from a vk8s pod running on the respective CE site.</p>
+    <p>
+      <a class="test-access" href="https://vk8s-eu-central.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> vk8s-eu-central.__DOMAIN__
+      </a>
+      &mdash; eu-central
+    </p>
+    <p>
+      <a class="test-access" href="https://vk8s-eu-west.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> vk8s-eu-west.__DOMAIN__
+      </a>
+      &mdash; eu-west
+    </p>
+
     <h2>Delete</h2>
-<pre><code>./xC-use-cases/vk8s/bin/delete.sh</code></pre>
+    <p>Removes load balancers, origin pools, workload, vk8s cluster, and certificates from xC, and cleans up generated files.</p>
+<pre><code>chmod +x ./xC-use-cases/Architecture/vk8s/bin/delete.sh
+./xC-use-cases/Architecture/vk8s/bin/delete.sh</code></pre>
+
+    <hr>
+
+    <h2>Appendix: vk8s Reference</h2>
+
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Architecture/vk8s/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
   </section>
-  <div class="section-nav" data-for="vk8s" data-prev="sd-k8s" data-next="wip"></div>
+  <div class="section-nav" data-for="vk8s" data-prev="sd-k8s" data-next="svc-overview"></div>
+
+  <!-- ===== SERVICES OVERVIEW ===== -->
+  <section id="svc-overview">
+    <h1>Services Overview</h1>
+
+    <div class="admonition info">
+      <strong>Student name required</strong>
+      All FQDNs and test links on the following pages are generated dynamically based on your student name. Make sure it is set in the bar above before proceeding.
+      <ul>
+        <li><b>Domain suffix:</b> <span class="domain-badge pending">__DOMAIN__</span></li>
+      </ul>
+    </div>
+
+    <p>xC platform services that can be applied across all use cases. Each service section includes configuration steps and test instructions.</p>
+    <table>
+      <tr><th>Service</th><th>Category</th><th>Status</th><th>Description</th></tr>
+      <tr><td><a href="#" data-target="svc-jwt" onclick="show('svc-jwt', event)">JWT Validation</a></td><td>API Security</td><td>Active</td><td>JWT token validation (RS256, blocking mode) on xC HTTP load balancers</td></tr>
+      <tr><td><a href="#" data-target="svc-tls-auth" onclick="show('svc-tls-auth', event)">TLS Authentication</a></td><td>Security</td><td>Active</td><td>mTLS client authentication with certificate header injection</td></tr>
+    </table>
+  </section>
+  <div class="section-nav" data-for="svc-overview" data-prev="vk8s" data-next="svc-jwt"></div>
+
+  <!-- ===== TLS AUTHENTICATION ===== -->
+  <section id="svc-tls-auth">
+    <h1>TLS Authentication (mTLS)</h1>
+    <p>Create an HTTPS load balancer with <b>mutual TLS (mTLS)</b> authentication. Clients must present a valid client certificate signed by the lab CA to access the application. The load balancer extracts certificate fields and injects them as HTTP headers.</p>
+
+    <!-- TODO: architecture diagram placeholder -->
+
+    <h2>Deploy</h2>
+    <p>The script generates a server certificate, creates client certificates for two test users (<code>alice@mordor.de</code> and <code>bob@shire.de</code>), uploads the server cert to xC, and creates the HTTP load balancer with mTLS enabled.</p>
+<pre><code>chmod +x "./xC-use-cases/Services/tls-authentication/bin/setup.sh"
+"./xC-use-cases/Services/tls-authentication/bin/setup.sh"</code></pre>
+
+    <h2>Test</h2>
+    <p>Access the load balancer with a client certificate. The JSON response should include the injected <code>x-client-cert-*</code> headers showing the client&rsquo;s identity.</p>
+
+    <p>
+      <a class="test-access" href="https://mtls.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> mtls.__DOMAIN__
+      </a>
+    </p>
+
+    <div class="admonition warning">
+      <strong>Browser access requires client cert import</strong>
+      To test via browser, import one of the client certificates (.cert + .key) into your browser or OS keychain. The curl examples below are easier for quick testing.
+    </div>
+
+    <h3>curl &mdash; Alice (alice@mordor.de)</h3>
+<pre><code>curl -vk \
+  --cert "./xC-use-cases/Services/tls-authentication/etc/client-certs/alice-mordor-de.cert" \
+  --key  "./xC-use-cases/Services/tls-authentication/etc/client-certs/alice-mordor-de.key" \
+  https://mtls.__DOMAIN__</code></pre>
+
+    <h3>curl &mdash; Bob (bob@shire.de)</h3>
+<pre><code>curl -vk \
+  --cert "./xC-use-cases/Services/tls-authentication/etc/client-certs/bob-shire-de.cert" \
+  --key  "./xC-use-cases/Services/tls-authentication/etc/client-certs/bob-shire-de.key" \
+  https://mtls.__DOMAIN__</code></pre>
+
+    <h3>curl &mdash; Without client cert (should fail)</h3>
+<pre><code>curl -vk https://mtls.__DOMAIN__</code></pre>
+    <p>This request should be rejected by the load balancer with a TLS handshake error, since no client certificate is presented.</p>
+
+    <div class="admonition info">
+      <strong>Adapting the curl paths</strong>
+      The client cert paths above assume you are running curl from the repository root. If you are in a different directory, adjust the <code>--cert</code> and <code>--key</code> paths accordingly. The client certs are stored in <code>xC-use-cases/Services/tls-authentication/etc/client-certs/</code>.
+    </div>
+
+    <h3>Expected Response</h3>
+    <p>When using a valid client cert, the JSON echo response should contain an <code>x-forwarded-client-cert</code> (XFCC) header injected by the load balancer. This header contains the client certificate details:</p>
+    <table>
+      <tr><th>XFCC Element</th><th>Content</th></tr>
+      <tr><td><code>Cert</code></td><td>URL-encoded client certificate</td></tr>
+      <tr><td><code>Chain</code></td><td>URL-encoded certificate chain</td></tr>
+      <tr><td><code>Subject</code></td><td>Client cert subject DN (e.g. <code>CN=alice@mordor.de,OU=de1chk1nd,O=xC-MCN-Lab</code>)</td></tr>
+      <tr><td><code>URI</code></td><td>SAN URI if present</td></tr>
+      <tr><td><code>DNS</code></td><td>SAN DNS if present</td></tr>
+    </table>
+    <p>Look for the <code>x-forwarded-client-cert</code> header in the JSON response to verify the client identity was passed through.</p>
+
+    <h2>Delete</h2>
+    <p>Removes the HTTP load balancer, server certificate, trusted CA list from xC, and cleans up all generated files including client certificates.</p>
+<pre><code>chmod +x "./xC-use-cases/Services/tls-authentication/bin/delete.sh"
+"./xC-use-cases/Services/tls-authentication/bin/delete.sh"</code></pre>
+
+    <hr>
+    <h2>Appendix</h2>
+
+    <h3>Certificate-Based Access Control with Service Policies</h3>
+    <p>After mTLS authentication, the load balancer injects the <code>x-forwarded-client-cert</code> (XFCC) header containing the client certificate details. You can use <b>xC Service Policies</b> to enforce access control based on these certificate fields.</p>
+
+    <p>The setup script creates a service policy <code>sp-${STUDENT}-mtls-cert-check</code> that demonstrates this pattern:</p>
+    <ul>
+      <li><b>Rule 1 (Deny):</b> If the XFCC header does <em>not</em> match <code>CN=...@mordor.de</code> &rarr; block the request (403)</li>
+      <li><b>Rule 2 (Allow):</b> Everything else (i.e. <code>@mordor.de</code> users) &rarr; allow</li>
+    </ul>
+
+    <div class="admonition info">
+      <strong>Manual step required</strong>
+      The service policy is created by the setup script, but must be <b>manually assigned</b> to the load balancer <code>lb-mtls</code> in the xC Console: <b>HTTP Load Balancer &rarr; Edit &rarr; Common Security Controls &rarr; Service Policies</b>.
+    </div>
+
+    <p>The key insight is that Service Policies evaluate <b>after</b> the mTLS handshake and header injection. This means you can use standard header matching (regex, exact, invert) on the XFCC Subject field to implement fine-grained access control based on client certificate attributes like CN, OU, O, or email.</p>
+
+    <h3>Regex Pattern</h3>
+    <p>xC uses <b>RE2 regex syntax</b>. The pattern used in this lab:</p>
+<pre><code>CN=[^,]*@mordor\.de</code></pre>
+    <p>This matches any XFCC header where the CN field ends with <code>@mordor.de</code>. Combined with <code>invert_matcher: true</code>, it denies all requests where this pattern does <em>not</em> match.</p>
+
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Services/tls-authentication/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
+  </section>
+  <div class="section-nav" data-for="svc-tls-auth" data-prev="svc-jwt" data-next="wip"></div>
+
+  <!-- ===== JWT VALIDATION ===== -->
+  <section id="svc-jwt">
+    <h1>JWT Validation</h1>
+    <p>Create an HTTPS load balancer with <b>JWT validation</b> in blocking mode. Requests must include a valid <code>Authorization: Bearer &lt;token&gt;</code> header. The JWT is signed with RS256 using the lab CA private key, and the load balancer validates it against an inline JWKS.</p>
+
+    <!-- TODO: architecture diagram placeholder -->
+
+    <h2>Deploy</h2>
+    <p>The script generates a server certificate, creates two JWT tokens (valid + invalid), extracts the JWKS from the CA public key, and deploys the HTTP load balancer with JWT validation in blocking mode.</p>
+<pre><code>chmod +x "./xC-use-cases/Services/jwt-validation/bin/setup.sh"
+"./xC-use-cases/Services/jwt-validation/bin/setup.sh"</code></pre>
+
+    <h2>Test</h2>
+    <p>Three test scenarios demonstrate the JWT validation behavior:</p>
+
+    <p>
+      <a class="test-access" href="https://jwt.__DOMAIN__" target="_blank" rel="noopener">
+        <span class="arrow">&#8594;</span> jwt.__DOMAIN__
+      </a>
+    </p>
+
+    <h3>Test 1: No token (should be blocked)</h3>
+<pre><code>curl -vk https://jwt.__DOMAIN__</code></pre>
+    <p>Expected: <b>401 Unauthorized</b> &mdash; no JWT provided, request is rejected.</p>
+
+    <h3>Test 2: Valid token (should pass)</h3>
+<pre><code>curl -vk \
+  -H "Authorization: Bearer $(cat ./xC-use-cases/Services/jwt-validation/etc/tokens/valid.jwt)" \
+  https://jwt.__DOMAIN__</code></pre>
+    <p>Expected: <b>200 OK</b> &mdash; valid issuer, audience, and signature. The echo response should show the full request details.</p>
+
+    <h3>Test 3: Invalid claim (should be blocked)</h3>
+<pre><code>curl -vk \
+  -H "Authorization: Bearer $(cat ./xC-use-cases/Services/jwt-validation/etc/tokens/invalid.jwt)" \
+  https://jwt.__DOMAIN__</code></pre>
+    <p>Expected: <b>401/403</b> &mdash; the token is cryptographically valid (signed by the same CA), but the issuer claim (<code>https://evil.attacker.com</code>) does not match the expected value. The load balancer rejects the request based on claims validation.</p>
+
+    <div class="admonition info">
+      <strong>How does this work?</strong>
+      The LB is configured with <code>jwt_validation</code> in blocking mode. It extracts the Bearer token from the <code>Authorization</code> header, validates the RS256 signature against the inline JWKS, and checks that the <code>iss</code> (issuer) and <code>aud</code> (audience) claims match the expected values. Mandatory claims are <code>iss</code>, <code>aud</code>, <code>sub</code>, and <code>exp</code>.
+    </div>
+
+    <h3>JWT Claims Reference</h3>
+    <table>
+      <tr><th>Claim</th><th>Valid Token</th><th>Invalid Token</th></tr>
+      <tr><td><code>iss</code></td><td><code>https://lab.__DOMAIN__</code></td><td><code>https://evil.attacker.com</code></td></tr>
+      <tr><td><code>aud</code></td><td><code>https://jwt.__DOMAIN__</code></td><td><code>https://jwt.__DOMAIN__</code></td></tr>
+      <tr><td><code>sub</code></td><td><code>__STUDENT__@xc-mcn-lab</code></td><td><code>attacker@evil.com</code></td></tr>
+    </table>
+
+    <h2>Delete</h2>
+    <p>Removes the HTTP load balancer, server certificate from xC, and cleans up all generated files including JWT tokens and JWKS.</p>
+<pre><code>chmod +x "./xC-use-cases/Services/jwt-validation/bin/delete.sh"
+"./xC-use-cases/Services/jwt-validation/bin/delete.sh"</code></pre>
+
+    <hr>
+    <h2>Appendix</h2>
+    <div class="tech-doc-ref">
+      <span>&#128196;</span>
+      <span>For file references, API endpoints, and script details see the <a href="../../xC-use-cases/Services/jwt-validation/README.md" target="_blank" rel="noopener">Technical Documentation</a></span>
+    </div>
+  </section>
+  <div class="section-nav" data-for="svc-jwt" data-prev="svc-overview" data-next="svc-tls-auth"></div>
 
   <!-- ===== WIP ===== -->
   <section id="wip">
@@ -769,15 +1043,13 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
     <p>The following use cases are planned or in early development and not yet part of the guided lab.</p>
     <table>
       <tr><th>Use Case</th><th>Category</th><th>Status</th><th>Notes</th></tr>
-      <tr><td><a href="../../xC-use-cases/East-West Network Connect/README.md" target="_blank" rel="noopener">Network Connect (L3 VPN)</a></td><td>East-West</td><td>Beta</td><td>Routing limited to GW01-to-GW01 CE nodes</td></tr>
-      <tr><td><a href="../../xC-use-cases/Service Discovery/bigip/README.md" target="_blank" rel="noopener">BIG-IP Service Discovery</a></td><td>Service Discovery</td><td>Early Access</td><td>Automatic endpoint discovery from BIG-IP</td></tr>
-      <tr><td><a href="../../xC-use-cases/misc/bgp anycast routing/README.md" target="_blank" rel="noopener">BGP Anycast Routing</a></td><td>Networking</td><td>Reference</td><td>BGP peering with CE nodes via FRR</td></tr>
-      <tr><td><a href="../../xC-use-cases/misc/mTLS/README.md" target="_blank" rel="noopener">mTLS</a></td><td>Security</td><td>Reference</td><td>Mutual TLS between CE sites and origin servers</td></tr>
-      <tr><td><a href="../../xC-use-cases/misc/jwt-validation/README.md" target="_blank" rel="noopener">JWT Validation</a></td><td>API Security</td><td>Reference</td><td>JWT token validation on xC HTTP load balancers</td></tr>
-      <tr><td><a href="../../xC-use-cases/Web Application Scan/README.md" target="_blank" rel="noopener">Web Application Scan</a></td><td>Security</td><td>Planned</td><td>Automated vulnerability scanning (Juice Shop)</td></tr>
+      <tr><td>Network Connect (L3 VPN)</td><td>East-West</td><td>Idea</td><td>Routing limited to GW01-to-GW01 CE nodes</td></tr>
+      <tr><td>BIG-IP Service Discovery</td><td>Service Discovery</td><td>Idea</td><td>Automatic endpoint discovery from BIG-IP</td></tr>
+      <tr><td><a href="../../xC-use-cases/Evaluation/bgp-anycast-routing/README.md" target="_blank" rel="noopener">BGP Anycast Routing</a></td><td>Networking</td><td>Evaluating</td><td>BGP peering with CE nodes via FRR</td></tr>
+      <tr><td>Web Application Scan</td><td>Security</td><td>Idea</td><td>Automated vulnerability scanning (Juice Shop)</td></tr>
     </table>
   </section>
-  <div class="section-nav" data-for="wip" data-prev="vk8s" data-next="tldr-setup"></div>
+  <div class="section-nav" data-for="wip" data-prev="svc-jwt" data-next="tldr-setup"></div>
 
   <!-- ===== TL;DR QUICK SETUP ===== -->
   <section id="tldr-setup">
@@ -798,7 +1070,7 @@ vim ./setup-init/config.yaml</code></pre>
 <pre><code>./setup-init/bin/initialize.sh init</code></pre>
 
     <h2>4. Post Install</h2>
-    <p class="platform-heading">Linux</p>
+    <p class="platform-heading linux">Linux</p>
 <pre><code>terraform -chdir="./infrastructure" output -raw etc-hosts | xclip -sel clip
 sudo vim /etc/hosts
 chmod +x ./setup-init/.ssh/ssh-key-permission_lnx.sh
