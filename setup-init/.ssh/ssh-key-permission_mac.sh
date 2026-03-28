@@ -38,7 +38,7 @@ LAB_SUFFIX="${STUDENT}.xc-mcn-lab.aws"
 if [ -f ~/.ssh/known_hosts ]; then
     grep -o "^[^ ,]*" ~/.ssh/known_hosts | grep "${LAB_SUFFIX}" | while read -r host; do
         ssh-keygen -R "${host}" 2>/dev/null
-    done
+    done || true
     echo "Removed lab hosts (*${LAB_SUFFIX}) from ~/.ssh/known_hosts"
 else
     echo "No ~/.ssh/known_hosts found, skipping cleanup"
