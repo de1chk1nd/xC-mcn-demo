@@ -562,11 +562,12 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Test</h2>
     <p>Access the load balancer FQDN and verify the <b>hostname</b> field in the JSON response. Load balancing alternates between eu-central-1 and eu-west-1.</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://echo-public.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> echo-public.__DOMAIN__
       </a>
-    </p>
+      <a class="test-waf" href="https://echo-public.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h2>Delete</h2>
     <p>Removes the HTTP load balancer, origin pool, and cleans up generated payload files.</p>
@@ -599,24 +600,24 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Test</h2>
     <p>Verify the <b>hostname</b> field in the JSON response. The regional LBs return servers from their region only, while the combined LB load balances across both regions.</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://echo-hybrid.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> echo-hybrid.__DOMAIN__
       </a>
-      &mdash; both regions
-    </p>
-    <p>
+      <a class="test-waf" href="https://echo-hybrid.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://echo-hybrid-central.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> echo-hybrid-central.__DOMAIN__
       </a>
-      &mdash; eu-central only
-    </p>
-    <p>
+      <a class="test-waf" href="https://echo-hybrid-central.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://echo-hybrid-west.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> echo-hybrid-west.__DOMAIN__
       </a>
-      &mdash; eu-west only
-    </p>
+      <a class="test-waf" href="https://echo-hybrid-west.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h2>Delete</h2>
     <p>Removes all three HTTP load balancers, certificates from xC, and cleans up generated files.</p>
@@ -649,18 +650,18 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Test</h2>
     <p>Access each FQDN and verify the JSON response. Since traffic passes through the BIG-IP, you should see a <b>custom header</b> injected by a BIG-IP iRule in the response.</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://bigip-echo-eu-central.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> bigip-echo-eu-central.__DOMAIN__
       </a>
-      &mdash; eu-central
-    </p>
-    <p>
+      <a class="test-waf" href="https://bigip-echo-eu-central.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://bigip-echo-eu-west.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> bigip-echo-eu-west.__DOMAIN__
       </a>
-      &mdash; eu-west
-    </p>
+      <a class="test-waf" href="https://bigip-echo-eu-west.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h3>iRule Custom Header</h3>
     <p>The BIG-IP iRule adds a custom header to every response. Look for the additional header entry in the JSON output:</p>
@@ -757,20 +758,18 @@ sudo vim /etc/hosts</code></pre>
 
     <h2>Test &mdash; External (via NLB)</h2>
     <p>External clients reach the application through the AWS NLB, which forwards traffic to the CE node. The CE terminates the TLS session and applies the WAF policy locally. Requires local <code>/etc/hosts</code> entries (see Post Install).</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://app-ce-eu-central-1.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> app-ce-eu-central-1.__DOMAIN__
       </a>
-      &mdash; eu-central
-    </p>
-    <p>
+      <a class="test-waf" href="https://app-ce-eu-central-1.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://app-ce-eu-west-1.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> app-ce-eu-west-1.__DOMAIN__
       </a>
-      &mdash; eu-west
-    </p>
-    <p>To verify the WAF is active, append a simple XSS payload to the URL &mdash; the request should be blocked:</p>
-<pre><code>https://app-ce-eu-central-1.__DOMAIN__?a=&lt;script&gt;</code></pre>
+      <a class="test-waf" href="https://app-ce-eu-west-1.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h2>Test &mdash; Internal (via SSH)</h2>
     <p>Because the load balancer is advertised on the <b>CE node itself</b> (not on the Regional Edge), any host inside the same VPC can reach it directly by resolving the FQDN to the CE&rsquo;s local IP address. This means the same WAF policy protects both external and internal traffic without any additional configuration.</p>
@@ -902,24 +901,24 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
     <h2>Test</h2>
     <p>Access each FQDN and verify the response. The regional LBs return pods from their region only, while the combined LB distributes across both.</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://k8s.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> k8s.__DOMAIN__
       </a>
-      &mdash; both regions
-    </p>
-    <p>
+      <a class="test-waf" href="https://k8s.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://k8s-central.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> k8s-central.__DOMAIN__
       </a>
-      &mdash; eu-central only
-    </p>
-    <p>
+      <a class="test-waf" href="https://k8s-central.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://k8s-west.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> k8s-west.__DOMAIN__
       </a>
-      &mdash; eu-west only
-    </p>
+      <a class="test-waf" href="https://k8s-west.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h2>Delete</h2>
     <p>Removes all three load balancers, origin pools, service discovery objects, certificates from xC, and cleans up generated files.</p>
@@ -999,18 +998,18 @@ curl -k --silent "https://remote-web.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
     <h2>Test</h2>
     <p>Access each FQDN and verify the response comes from a vk8s pod running on the respective CE site.</p>
-    <p>
+    <div class="test-row">
       <a class="test-access" href="https://vk8s-eu-central.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> vk8s-eu-central.__DOMAIN__
       </a>
-      &mdash; eu-central
-    </p>
-    <p>
+      <a class="test-waf" href="https://vk8s-eu-central.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
+    <div class="test-row">
       <a class="test-access" href="https://vk8s-eu-west.__DOMAIN__" target="_blank" rel="noopener">
         <span class="arrow">&#8594;</span> vk8s-eu-west.__DOMAIN__
       </a>
-      &mdash; eu-west
-    </p>
+      <a class="test-waf" href="https://vk8s-eu-west.__DOMAIN__/?a=%3Cscript%3E" target="_blank" rel="noopener">Test WAF</a>
+    </div>
 
     <h2>Delete</h2>
     <p>Removes load balancers, origin pools, workload, vk8s cluster, and certificates from xC, and cleans up generated files.</p>

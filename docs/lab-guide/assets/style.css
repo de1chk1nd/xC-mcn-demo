@@ -410,6 +410,35 @@ pre .copy-btn:hover { background: #374151; color: #fff; }
 }
 .test-access .arrow { font-size: 18px; }
 
+/* Test button row */
+.test-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0;
+  flex-wrap: wrap;
+}
+.test-row .test-access { margin: 0; }
+
+.test-waf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #fee2e2, #fef2f2);
+  border: 2px solid #dc2626;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+  text-decoration: none;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.test-waf:hover {
+  background: linear-gradient(135deg, #fecaca, #fee2e2);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+}
+
 /* Section navigation */
 .section-nav {
   display: none;
