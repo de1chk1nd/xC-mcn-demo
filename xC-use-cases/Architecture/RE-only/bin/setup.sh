@@ -41,8 +41,8 @@ echo "Generating server certificate for: ${DOMAIN}..."
 #######################################
 echo "Uploading certificate to xC: ${TLS_CERT_NAME}..."
 
-CERT_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.cert")
-KEY_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.key")
+CERT_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.cert" | tr -d '\n')
+KEY_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.key" | tr -d '\n')
 
 CERT_PAYLOAD=$(cat <<EOF
 {

@@ -73,8 +73,8 @@ for i in "${!DOMAINS[@]}"; do
     "${REPO_ROOT}/tools/s-certificate/bin/run-s-certificate.sh" "${DOMAIN}" --no-p12 --keep-pem
 
     echo "Uploading certificate to xC: ${TLS_NAME}..."
-    CERT_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.cert")
-    KEY_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.key")
+    CERT_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.cert" | tr -d '\n')
+    KEY_PEM_B64=$(base64 < "${CERT_DIR}/${DOMAIN}.key" | tr -d '\n')
 
     CERT_PAYLOAD=$(cat <<EOF
 {
