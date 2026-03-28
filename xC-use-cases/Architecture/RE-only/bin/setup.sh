@@ -57,7 +57,7 @@ CERT_PAYLOAD=$(cat <<EOF
     "private_key": {
       "clear_secret_info": {
         "url": "string:///${KEY_PEM_B64}",
-        "provider": "
+        "provider": ""
       }
     }
   }

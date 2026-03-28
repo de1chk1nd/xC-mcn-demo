@@ -89,7 +89,7 @@ for i in "${!DOMAINS[@]}"; do
     "private_key": {
       "clear_secret_info": {
         "url": "string:///${KEY_PEM_B64}",
-        "provider": "
+        "provider": ""
       }
     }
   }
