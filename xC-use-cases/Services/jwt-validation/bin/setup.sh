@@ -84,8 +84,8 @@ python3 "${USE_CASE_DIR}/bin/generate-tokens.py" \
 #######################################
 echo "Generating payload from template..."
 
-# Inline the JWKS as escaped JSON string for envsubst
-export JWKS_INLINE=$(cat "${TOKEN_DIR}/jwks.json" | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)))")
+# Base64-encode the JWKS for the cleartext field (string:/// prefix is in template)
+export JWKS_B64=$(base64 < "${TOKEN_DIR}/jwks.json" | tr -d '\n')
 
 envsubst < "${USE_CASE_DIR}/etc/__template_lb-jwt.json" > "${USE_CASE_DIR}/payload_final_lb-jwt.json"
 
