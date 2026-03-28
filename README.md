@@ -48,20 +48,6 @@ See the [Use Cases Overview](xC-use-cases/README.md) for details, or jump direct
 
 ---
 
-## Quick Start
-
-```bash
-git clone https://github.com/de1chk1nd/xC-mcn-demo.git
-cd xC-mcn-demo
-cp setup-init/template/config.yaml setup-init/config.yaml
-vim setup-init/config.yaml
-./setup-init/bin/initialize.sh init
-```
-
-For the full setup walkthrough, see the [Lab Guide](docs/lab-guide/index.html).
-
----
-
 ## Project Structure
 
 ```
