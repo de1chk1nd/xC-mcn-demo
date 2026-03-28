@@ -32,7 +32,7 @@
       input.value = student;
     }
 
-    var els = document.querySelectorAll("code, pre, td, p, li, span, b, a, h1, h2, h3");
+    var els = document.querySelectorAll("code, pre, td, p, li, span, b, a, h1, h2, h3, div");
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (el.id === "student-input" || el.id === "student-display") continue;
