@@ -42,8 +42,8 @@ cp setup-init/template/config.yaml setup-init/config.yaml
 | `p_12_pwd` | Yes | — | — | Password for the .p12 certificate. |
 | `tenant` | Yes | — | — | Full xC tenant name (e.g. `f5-emea-ent-bceuutam`). Found in xC Console under Administration. |
 | `namespace` | Yes | — | — | xC namespace for all lab objects (e.g. `m-petersen`). |
-| `tenant_shrt` | No | — | Yes | Short tenant name. Auto-derived from `tenant` by removing the last segment (e.g. `f5-emea-ent-bceuutam` → `f5-emea-ent`). |
-| `tenant_api` | No | — | Yes | xC API endpoint. Auto-derived from `tenant` as `https://{tenant}.console.ves.volterra.io/api`. |
+| `tenant_shrt` | No | — | Yes | Short tenant name. Auto-derived from `tenant` by removing the last segment (e.g. `f5-emea-ent-bceuutam` → `f5-emea-ent`, `volt-field-vhptnhxg` → `volt-field`). |
+| `tenant_api` | No | — | Yes | xC API endpoint. Auto-derived from `tenant_shrt` as `https://{tenant_shrt}.console.ves.volterra.io/api`. |
 | `tenant_anycast_ip` | No | — | Yes | Anycast IP for RE load balancers. Auto-fetched from xC API during initialization. If you set a value manually (e.g. a secondary IP), you will be asked during init whether to keep it or use the API value. Find it in: xC Console → DNS Management → delegated domain IP. |
 
 ---

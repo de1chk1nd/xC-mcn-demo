@@ -116,15 +116,18 @@ def load_config(config_path: Path) -> Config:
     tenant_shrt = xc_data.get("tenant_shrt", "")
     tenant_api = xc_data.get("tenant_api", "")
 
-    # Auto-derive tenant_shrt: first part before the first hyphen-separated hash
-    # e.g. "f5-emea-ent-bceuutam" -> "f5-emea-ent" (drop the last segment)
+    # Auto-derive tenant_shrt: drop the last segment (hash) from tenant name
+    # e.g. "f5-emea-ent-bceuutam" -> "f5-emea-ent"
+    # e.g. "volt-field-vhptnhxg" -> "volt-field"
     if tenant and (not tenant_shrt or "<" in tenant_shrt):
         parts = tenant.rsplit("-", 1)
         tenant_shrt = parts[0] if len(parts) > 1 else tenant
 
-    # Auto-derive tenant_api from tenant
+    # Auto-derive tenant_api from tenant_shrt (not full tenant name)
+    # e.g. "volt-field" -> "https://volt-field.console.ves.volterra.io/api"
     if tenant and (not tenant_api or "<" in tenant_api):
-        tenant_api = f"https://{tenant}.console.ves.volterra.io/api"
+        shrt = tenant_shrt or tenant.rsplit("-", 1)[0]
+        tenant_api = f"https://{shrt}.console.ves.volterra.io/api"
 
     xc = XCConfig(
         p12_auth=xc_data.get("p12_auth", ""),
