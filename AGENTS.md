@@ -102,6 +102,33 @@ open docs/lab-guide/index.html
 - Tools: each tool lives in `tools/<name>/` with own README, bin/, src/, config/
 - CA: auto-generated during init, stored in `setup-init/.cert/ca/`, gitignored
 
+### Cross-Platform Compatibility (macOS + Linux)
+
+**All scripts, tools, and Python code must work on both macOS and Linux.**
+This is a hard requirement — not optional. Test on both platforms when possible.
+
+Known differences to watch for:
+
+| Area | macOS | Linux | Safe Pattern |
+|------|-------|-------|-------------|
+| `base64` | No line wrapping | Wraps at 76 chars | Always `base64 < file \| tr -d '\n'` |
+| `base64` arg | `base64 file` may not work | `base64 file` works | Always `base64 < file` (stdin redirect) |
+| `sed -i` | Requires `sed -i ''` (empty backup ext) | `sed -i` works without arg | Avoid `sed -i` in shared scripts; use Python or `ed` |
+| `grep -o` | POSIX behavior | GNU extensions available | Stick to POSIX-compatible patterns |
+| `openssl` | LibreSSL (older, quirks) | OpenSSL (full features) | Test both; `-CAcreateserial` writes to CWD on macOS |
+| Terminal | Terminal.app, iTerm2 | gnome-terminal, xfce4, etc. | OS-specific scripts (`_mac.sh`, `_lnx.sh`) |
+| `readlink -f` | Not available | Works | Use `git rev-parse --show-toplevel` or `cd && pwd` |
+| Heredoc + base64 | No issues with short strings | Newlines in base64 break heredoc | Always strip newlines from base64 before embedding in heredoc |
+| `date` | BSD date (different flags) | GNU date | Avoid platform-specific date flags; use Python for formatting |
+| Python | `python3` (Homebrew or system) | `python3` (apt/yum) | Always use `python3`, never `python` |
+
+**General rules:**
+- Always use `base64 < file | tr -d '\n'` — never `base64 file` without redirect
+- Always use `#!/usr/bin/env bash` — never `#!/bin/bash` with hardcoded paths
+- Always pipe `openssl` serial files explicitly (`-CAserial <path>`) — never rely on CWD
+- Always test shell scripts with `bash -n <script>` before committing
+- For complex text manipulation, prefer Python over `sed`/`awk` for portability
+
 ---
 
 ## Tools Convention
