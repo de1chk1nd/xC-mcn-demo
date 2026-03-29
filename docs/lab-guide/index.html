@@ -420,24 +420,22 @@ source .venv/bin/activate</code></pre>
 <pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
 vim ./setup-init/config.yaml</code></pre>
 
-    <p>The configuration file has four sections:</p>
+    <p>Fill in the required parameters (<b>*</b>). Everything else is auto-populated or has sensible defaults.</p>
 
     <table>
       <tr><th>Section</th><th>Parameter</th><th></th><th>Description</th></tr>
-      <tr><td rowspan="5"><b>aws</b></td><td><code>auth_profile</code></td><td></td><td>AWS CLI profile name (default: <code>xc-mcn-lab</code>)</td></tr>
-      <tr><td><code>aws_access_key_id</code></td><td><b>*</b></td><td>Your AWS Access Key</td></tr>
-      <tr><td><code>aws_secret_access_key</code></td><td><b>*</b></td><td>Your AWS Secret Key</td></tr>
-      <tr><td><code>aws_session_token</code></td><td></td><td>STS session token (leave empty for static keys)</td></tr>
-      <tr><td><code>tmp_aws_cred</code></td><td></td><td>Set <code>true</code> for STS, <code>false</code> for static</td></tr>
-      <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td><b>*</b></td><td>Your unique lab ID &mdash; <b>drives DNS names, cert names, and resource naming across the entire lab</b></td></tr>
+      <tr><td rowspan="3"><b>aws</b></td><td><code>aws_access_key_id</code></td><td><b>*</b></td><td>AWS Access Key (or set <code>AWS_ACCESS_KEY_ID</code> env var)</td></tr>
+      <tr><td><code>aws_secret_access_key</code></td><td><b>*</b></td><td>AWS Secret Key (or set <code>AWS_SECRET_ACCESS_KEY</code> env var)</td></tr>
+      <tr><td><code>aws_session_token</code></td><td></td><td>STS token if using temporary credentials (or <code>AWS_SESSION_TOKEN</code> env var)</td></tr>
+      <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td><b>*</b></td><td>Your unique lab ID &mdash; drives DNS, certs, and resource naming</td></tr>
       <tr><td><code>email</code></td><td><b>*</b></td><td>Contact email for resource tagging</td></tr>
-      <tr><td rowspan="4"><b>xC</b></td><td><code>p12_auth</code></td><td><b>*</b></td><td>Path to the <code>.p12</code> file, e.g. <code>.xC/your-cert.p12</code></td></tr>
+      <tr><td rowspan="3"><b>xC</b></td><td><code>p12_auth</code></td><td><b>*</b></td><td>Path to the <code>.p12</code> certificate file</td></tr>
       <tr><td><code>p_12_pwd</code></td><td><b>*</b></td><td>Password for the P12 certificate</td></tr>
-      <tr><td><code>tenant</code></td><td><b>*</b></td><td>Your xC tenant name</td></tr>
-      <tr><td><code>tenant_api</code></td><td><b>*</b></td><td>API endpoint, e.g. <code>https://&lt;tenant&gt;.console.ves.volterra.io/api</code></td></tr>
-      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td></td><td>BIG-IP admin password (default provided &mdash; change for production)</td></tr>
+      <tr><td><code>tenant</code></td><td><b>*</b></td><td>xC tenant name &mdash; <code>tenant_api</code> and <code>tenant_shrt</code> are auto-derived</td></tr>
+      <tr><td><b>xC</b></td><td><code>tenant_anycast_ip</code></td><td></td><td>Auto-fetched from API &mdash; set manually to override with a secondary IP</td></tr>
+      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td></td><td>BIG-IP admin password (default provided)</td></tr>
     </table>
-    <p><small><b>*</b> = mandatory &mdash; other parameters have sensible defaults or are auto-populated during initialization.</small></p>
+    <p><small><b>*</b> = mandatory. All other parameters are auto-populated, auto-derived, or have defaults. See the <a href="../../setup-init/template/PARAMETERS.md" target="_blank" rel="noopener">full parameter reference</a> for details.</small></p>
 
     <div class="admonition warning">
       <strong>About the student name</strong>

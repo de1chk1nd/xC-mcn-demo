@@ -149,15 +149,13 @@ The `setup-init/config.yaml` file controls all deployment parameters. Copy from 
 cp setup-init/template/config.yaml setup-init/config.yaml
 ```
 
-| Section | Key Fields |
-|:--------|:-----------|
-| **aws** | `aws_access_key_id`, `aws_secret_access_key`, `aws_session_token`, `auth_profile` |
-| **xC** | `p12_auth`, `p_12_pwd`, `tenant`, `tenant_shrt`, `tenant_api`, `namespace` |
-| **student** | `name`, `email`, `ip-address` |
-| **f5** | `f5_password` (BIG-IP admin password) |
-| **certificate** | `ca_key`, `ca_cert` (auto-generated paths) |
+See the **[Parameter Reference](../setup-init/template/PARAMETERS.md)** for a detailed description of every field.
 
-> Terraform expects AWS auth via the profile defined in `config.yaml` (default: `xc-mcn-lab`).
+Key points:
+- AWS credentials can be set in the file **or** via environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) — env vars take priority
+- `tenant_api` and `tenant_shrt` are auto-derived from `tenant` — no manual input needed
+- `tenant_anycast_ip` is auto-fetched from the xC API — set manually only to override with a secondary IP
+- Terraform uses the AWS profile defined in `config.yaml` (default: `xc-mcn-lab`)
 
 ---
 
