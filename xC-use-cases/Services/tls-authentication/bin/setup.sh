@@ -155,7 +155,7 @@ sleep 3
 #######################################
 # Step 5: Create Load Balancer
 #######################################
-echo "Creating load balancer: lb-mtls..."
+echo "Creating load balancer: lb-${STUDENT}-mtls..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
     -d @"${USE_CASE_DIR}/payload_final_lb-mtls.json" \

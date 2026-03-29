@@ -8,7 +8,7 @@ Create HTTPS load balancers **advertised directly on the Customer Edge (CE)** ra
 
 ## Technical Overview
 
-Pure API automation — generates two CA-signed server certificates, uploads them to xC, then creates two HTTP load balancers with `advertise_custom` on CE virtual sites (`SITE_NETWORK_OUTSIDE`). The CE binds the FQDN to its local interface; the NLB NATs external traffic to the CE IP.
+Pure API automation — generates two CA-signed server certificates, uploads them to xC, then creates two HTTP load balancers with `advertise_custom` on CE virtual sites (`SITE_NETWORK_INSIDE_AND_OUTSIDE`). The CE binds the FQDN to its local interfaces; the NLB NATs external traffic to the CE IP. Internal hosts can also reach the LB directly via the inside interface.
 
 Internal hosts in the same VPC can also reach the LB directly (DNS resolves to CE private IP via Route53), so the same WAF policy protects both external and internal traffic.
 

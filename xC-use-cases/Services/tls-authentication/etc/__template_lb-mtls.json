@@ -1,6 +1,6 @@
 {
     "metadata": {
-      "name": "lb-mtls",
+      "name": "lb-${STUDENT}-mtls",
       "disable": false
     },
     "spec": {

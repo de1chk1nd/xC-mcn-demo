@@ -1,6 +1,6 @@
 {
     "metadata": {
-      "name": "lb-jwt",
+      "name": "lb-${STUDENT}-jwt",
       "disable": false
     },
     "spec": {

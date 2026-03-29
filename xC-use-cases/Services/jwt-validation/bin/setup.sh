@@ -92,7 +92,7 @@ envsubst < "${USE_CASE_DIR}/etc/__template_lb-jwt.json" > "${USE_CASE_DIR}/paylo
 #######################################
 # Step 4: Create Load Balancer
 #######################################
-echo "Creating load balancer: lb-jwt..."
+echo "Creating load balancer: lb-${STUDENT}-jwt..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -i -X POST -H 'Content-Type: application/json' -s -D - -o /dev/null \
     -d @"${USE_CASE_DIR}/payload_final_lb-jwt.json" \

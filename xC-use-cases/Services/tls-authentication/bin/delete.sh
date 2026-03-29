@@ -18,10 +18,10 @@ TLS_CERT_NAME="tls-${STUDENT}-mtls"
 #######################################
 # Delete Load Balancer (must be deleted before SP, since LB references SP)
 #######################################
-echo "Deleting load balancer: lb-mtls..."
+echo "Deleting load balancer: lb-${STUDENT}-mtls..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-mtls"
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-${STUDENT}-mtls"
 
 #######################################
 # Delete Service Policy

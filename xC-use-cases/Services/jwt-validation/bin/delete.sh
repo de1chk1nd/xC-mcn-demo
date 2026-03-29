@@ -18,10 +18,10 @@ TLS_CERT_NAME="tls-${STUDENT}-jwt"
 #######################################
 # Delete Load Balancer
 #######################################
-echo "Deleting load balancer: lb-jwt..."
+echo "Deleting load balancer: lb-${STUDENT}-jwt..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-jwt"
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/http_loadbalancers/lb-${STUDENT}-jwt"
 
 #######################################
 # Delete Certificate

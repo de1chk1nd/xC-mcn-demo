@@ -43,7 +43,7 @@
         "advertise_where": [
           {
             "virtual_site": {
-              "network": "SITE_NETWORK_OUTSIDE",
+              "network": "SITE_NETWORK_INSIDE_AND_OUTSIDE",
               "virtual_site": {
                 "tenant": "${XC_TENANT}",
                 "namespace": "shared",

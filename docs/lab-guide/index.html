@@ -782,12 +782,14 @@ sudo vim /etc/hosts</code></pre>
       When a load balancer is advertised on a CE virtual site, the CE node binds the FQDN to its own local interfaces (inside and outside). Any DNS query within the VPC resolves to the CE&rsquo;s private IP, so local traffic flows directly to the CE without leaving the network &mdash; but still receives the full xC WAF treatment.
     </div>
 
-    <p>SSH into one of the Ubuntu servers and test. If you have not imported the lab CA, you can skip TLS verification with <code>-k</code>:</p>
-<pre><code># Normal request (skip TLS verification)
+    <p>SSH into any Ubuntu server in the respective region and test. If you have not imported the lab CA, skip TLS verification with <code>-k</code>:</p>
+<pre><code># From eu-central Ubuntu server
 curl --silent -k https://app-ce-eu-central-1.__DOMAIN__ | grep "Server address"
+curl --silent -k "https://app-ce-eu-central-1.__DOMAIN__?a=&lt;script&gt;"
 
-# XSS test -- WAF should block
-curl --silent -k "https://app-ce-eu-central-1.__DOMAIN__?a=&lt;script&gt;"</code></pre>
+# From eu-west Ubuntu server
+curl --silent -k https://app-ce-eu-west-1.__DOMAIN__ | grep "Server address"
+curl --silent -k "https://app-ce-eu-west-1.__DOMAIN__?a=&lt;script&gt;"</code></pre>
 
     <h2>Delete</h2>
     <p>Removes both HTTPS load balancers, certificates from xC, and cleans up generated files.</p>
