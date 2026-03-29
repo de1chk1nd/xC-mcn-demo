@@ -145,40 +145,54 @@ def fetch_tenant_anycast_ip(
     Returns:
         Anycast IP address as string, or empty string on failure
     """
-    # If already set in config, reuse it
-    if xc_config.tenant_anycast_ip:
-        print(f"  Anycast IP (from config): {xc_config.tenant_anycast_ip}")
-        return xc_config.tenant_anycast_ip
-
     pem_path = get_pem_path(base_dir)
-    if not pem_path.is_file():
+    existing_ip = xc_config.tenant_anycast_ip or ""
+
+    # Try to fetch from API
+    api_ip = ""
+    if pem_path.is_file():
+        print(f"\nFetching tenant Anycast IP from xC API...")
+        print(f"  Tenant: {xc_config.tenant}")
+
+        base_url = xc_config.tenant_api.rstrip("/")
+        url = f"{base_url}/config/tenants/{xc_config.tenant}/summary"
+
+        try:
+            resp = requests.get(
+                url,
+                cert=str(pem_path),
+                timeout=timeout,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            api_ip = data.get("vip", "")
+            if api_ip:
+                vip_type = data.get("type", "unknown")
+                print(f"  Anycast IP (from API): {api_ip} ({vip_type})")
+        except Exception:
+            print("  WARNING: Could not fetch Anycast IP from API")
+    else:
         print("  WARNING: PEM certificate not found, cannot query xC API")
-        return ""
 
-    print(f"\nFetching tenant Anycast IP from xC API...")
-    print(f"  Tenant: {xc_config.tenant}")
+    # If config has a value and API returned a different one, ask the user
+    if existing_ip and api_ip and existing_ip != api_ip:
+        print(f"\n  Config has: {existing_ip}")
+        print(f"  API returned: {api_ip}")
+        choice = input(f"  Use API value [{api_ip}] or keep config value [{existing_ip}]? (api/keep) [api]: ").strip().lower()
+        if choice == "keep":
+            print(f"  Keeping config value: {existing_ip}")
+            return existing_ip
+        print(f"  Using API value: {api_ip}")
+        return api_ip
 
-    base_url = xc_config.tenant_api.rstrip("/")
-    url = f"{base_url}/config/tenants/{xc_config.tenant}/summary"
+    # If API returned a value, use it
+    if api_ip:
+        return api_ip
 
-    try:
-        resp = requests.get(
-            url,
-            cert=str(pem_path),
-            timeout=timeout,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-
-        vip = data.get("vip", "")
-        if vip:
-            vip_type = data.get("type", "unknown")
-            print(f"  Anycast IP: {vip} ({vip_type})")
-            return vip
-
-        print(f"  WARNING: No VIP in response: {data}")
-
-    except Exception as e:
-        print(f"  WARNING: API call failed: {e}")
+    # If only config has a value, reuse it
+    if existing_ip:
+        print(f"  Anycast IP (from config): {existing_ip}")
+        return existing_ip
 
     return ""
