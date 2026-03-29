@@ -86,13 +86,17 @@ def load_config(config_path: Path) -> Config:
         print(f"ERROR: Invalid YAML in {config_path}: {e}")
         sys.exit(1)
 
-    # Parse AWS config
+    # Parse AWS config — environment variables override file values
     aws_data = data.get("aws", {})
+    aws_key = os.environ.get("AWS_ACCESS_KEY_ID", "") or aws_data.get("aws_access_key_id", "")
+    aws_secret = os.environ.get("AWS_SECRET_ACCESS_KEY", "") or aws_data.get("aws_secret_access_key", "")
+    aws_token = os.environ.get("AWS_SESSION_TOKEN", "") or aws_data.get("aws_session_token", "")
+
     aws = AWSConfig(
         auth_profile=aws_data.get("auth_profile", "terraform"),
-        aws_access_key_id=aws_data.get("aws_access_key_id", ""),
-        aws_secret_access_key=aws_data.get("aws_secret_access_key", ""),
-        aws_session_token=aws_data.get("aws_session_token", ""),
+        aws_access_key_id=aws_key,
+        aws_secret_access_key=aws_secret,
+        aws_session_token=aws_token,
         region_site_1=aws_data.get("region_site_1", "eu-central-1"),
         region_site_2=aws_data.get("region_site_2", "eu-west-1"),
         tmp_aws_cred=aws_data.get("tmp_aws_cred", True),
@@ -106,14 +110,28 @@ def load_config(config_path: Path) -> Config:
         ip_address=student_data.get("ip-address", ""),
     )
 
-    # Parse xC config
+    # Parse xC config — derive tenant_api and tenant_shrt from tenant if not set
     xc_data = data.get("xC", {})
+    tenant = xc_data.get("tenant", "")
+    tenant_shrt = xc_data.get("tenant_shrt", "")
+    tenant_api = xc_data.get("tenant_api", "")
+
+    # Auto-derive tenant_shrt: first part before the first hyphen-separated hash
+    # e.g. "f5-emea-ent-bceuutam" -> "f5-emea-ent" (drop the last segment)
+    if tenant and (not tenant_shrt or "<" in tenant_shrt):
+        parts = tenant.rsplit("-", 1)
+        tenant_shrt = parts[0] if len(parts) > 1 else tenant
+
+    # Auto-derive tenant_api from tenant
+    if tenant and (not tenant_api or "<" in tenant_api):
+        tenant_api = f"https://{tenant}.console.ves.volterra.io/api"
+
     xc = XCConfig(
         p12_auth=xc_data.get("p12_auth", ""),
         p12_pwd=xc_data.get("p_12_pwd", ""),
-        tenant=xc_data.get("tenant", ""),
-        tenant_shrt=xc_data.get("tenant_shrt", ""),
-        tenant_api=xc_data.get("tenant_api", ""),
+        tenant=tenant,
+        tenant_shrt=tenant_shrt,
+        tenant_api=tenant_api,
         namespace=xc_data.get("namespace", ""),
         tenant_anycast_ip=xc_data.get("tenant_anycast_ip", ""),
     )
@@ -162,11 +180,22 @@ def save_config(config: Config, config_path: Path) -> None:
         data["cert"]["ca_dir"] = config.cert.ca_dir
         data["cert"]["cert_dir"] = config.cert.cert_dir
 
-    # Update xC tenant anycast IP if resolved
+    # Update xC config (auto-derived + resolved values)
+    if "xC" not in data:
+        data["xC"] = {}
     if config.xc.tenant_anycast_ip:
-        if "xC" not in data:
-            data["xC"] = {}
         data["xC"]["tenant_anycast_ip"] = config.xc.tenant_anycast_ip
+    if config.xc.tenant_shrt:
+        data["xC"]["tenant_shrt"] = config.xc.tenant_shrt
+    if config.xc.tenant_api:
+        data["xC"]["tenant_api"] = config.xc.tenant_api
+
+    # Update AWS credentials (persist env var overrides to file)
+    if "aws" not in data:
+        data["aws"] = {}
+    data["aws"]["aws_access_key_id"] = config.aws.aws_access_key_id
+    data["aws"]["aws_secret_access_key"] = config.aws.aws_secret_access_key
+    data["aws"]["aws_session_token"] = config.aws.aws_session_token
 
     with open(config_path, "w", encoding="utf-8") as f:
         yaml.dump(data, f, default_flow_style=False, sort_keys=False)

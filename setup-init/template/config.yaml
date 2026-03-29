@@ -1,40 +1,45 @@
 aws:
-  auth_profile: xc-mcn-lab
+  # Required — or set via environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
   aws_access_key_id: <AWS ACCESS KEY>
   aws_secret_access_key: <AWS SECRET KEY>
   aws_session_token: <AWS SESSION TOKEN>
+  tmp_aws_cred: true
+  # Defaults (usually no change needed)
+  auth_profile: xc-mcn-lab
   region_site_1: eu-central-1
   region_site_2: eu-west-1
-  tmp_aws_cred: true
 
 student:
-  email: <STUDENT E-MAIL>
-  ip-address: <AUTO-POPULATED>
+  # Required
   # DNS-safe label, lowercase: [a-z0-9-], 1-16 chars, start/end alphanumeric
   name: <STUDENT NAME>
-
-f5:
-  f5_password: DefaultLabPwd!2026
+  email: <STUDENT E-MAIL>
+  # Auto-populated
+  ip-address: <AUTO-POPULATED>
 
 xC:
+  # Required
   p12_auth: .xC/<P12_CERT_FILE_NAME>.p12
   p_12_pwd: <P12 PASSWORD STRING>
   tenant: <XC TENANT NAME>
-  tenant_shrt: <XC TENANT SHORT NAME>
-  tenant_api: https://<TENANT>.console.ves.volterra.io/api
   namespace: <NAMESPACE>
+  # Auto-derived from tenant (no manual input needed)
+  tenant_shrt: <AUTO-DERIVED>
+  tenant_api: <AUTO-DERIVED>
   # Default Anycast IP for RE load balancers (tenant-specific).
   # Find it in: xC Console -> DNS Management -> delegated domain IP.
   # If left empty, you will be prompted during initialization.
   tenant_anycast_ip: ""
 
+f5:
+  f5_password: DefaultLabPwd!2026
+
 # Certificate paths (relative to setup-init/)
-# CA is auto-generated during initialization using settings from
-# tools/s-certificate/config/config.yaml (ca: section).
+# CA is auto-generated during initialization.
 # Server/client certificates are created via tools/s-certificate.
 cert:
   ca_dir: .cert/ca
   cert_dir: .cert/domains
-  # Paths below are auto-populated after CA generation
+  # Auto-populated after CA generation
   ca_key: ""
   ca_cert: ""
