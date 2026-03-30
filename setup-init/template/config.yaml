@@ -1,21 +1,4 @@
 ########################################
-# AWS credentials
-# Set here or via env vars:
-#   AWS_ACCESS_KEY_ID
-#   AWS_SECRET_ACCESS_KEY
-#   AWS_SESSION_TOKEN
-########################################
-aws:
-  aws_access_key_id: <AWS ACCESS KEY>
-  aws_secret_access_key: <AWS SECRET KEY>
-  aws_session_token: <AWS SESSION TOKEN>
-  tmp_aws_cred: true
-  #--- no change needed below ---
-  auth_profile: xc-mcn-lab
-  region_site_1: eu-central-1
-  region_site_2: eu-west-1
-
-########################################
 # Student identity
 ########################################
 student:
@@ -23,21 +6,37 @@ student:
   name: <STUDENT NAME>
   email: <STUDENT E-MAIL>
   #--- auto-populated ---
-  ip-address: <AUTO-POPULATED>
+  ip-address:
 
 ########################################
 # F5 Distributed Cloud (xC)
 ########################################
 xC:
-  p12_auth: .xC/<P12_CERT_FILE_NAME>.p12
-  p_12_pwd: <P12 PASSWORD STRING>
   tenant: <XC TENANT NAME>
   namespace: <NAMESPACE>
-  #--- auto-derived from tenant ---
-  tenant_shrt: <AUTO-DERIVED>
-  tenant_api: <AUTO-DERIVED>
-  # Anycast IP — auto-fetched from API, or set manually for secondary IP
-  tenant_anycast_ip: ""
+  p_12_pwd: <P12 PASSWORD STRING>
+  #--- auto-detected / auto-derived ---
+  p12_auth:                      # auto-detected from .xC/ directory
+  tenant_shrt:                   # auto-derived from tenant
+  tenant_api:                    # auto-derived from tenant_shrt
+  tenant_anycast_ip:             # auto-fetched from xC API
+
+########################################
+# AWS credentials
+# Set here or via env vars:
+#   AWS_ACCESS_KEY_ID
+#   AWS_SECRET_ACCESS_KEY
+#   AWS_SESSION_TOKEN
+# STS vs static is auto-detected.
+########################################
+aws:
+  aws_access_key_id:
+  aws_secret_access_key:
+  aws_session_token:
+  #--- defaults (usually no change) ---
+  auth_profile: xc-mcn-lab
+  region_site_1: eu-central-1
+  region_site_2: eu-west-1
 
 ########################################
 # BIG-IP
@@ -51,5 +50,5 @@ f5:
 cert:
   ca_dir: .cert/ca
   cert_dir: .cert/domains
-  ca_key: ""
-  ca_cert: ""
+  ca_key:
+  ca_cert:

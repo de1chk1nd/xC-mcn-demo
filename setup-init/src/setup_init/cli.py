@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 from setup_init import __version__
-from setup_init.config import load_config, save_config, validate_config
+from setup_init.config import display_config_summary, load_config, save_config, validate_config
 
 
 # Directory layout
@@ -49,6 +49,11 @@ def cmd_init(args: argparse.Namespace) -> int:
     if not verify_openssl(ROOT_DIR):
         return 1
     if not verify_terraform():
+        return 1
+
+    # Show configuration summary and ask for confirmation
+    if not display_config_summary(config):
+        print("\nAborted by user.")
         return 1
 
     # Step 1: Detect public IP

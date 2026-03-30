@@ -420,22 +420,17 @@ source .venv/bin/activate</code></pre>
 <pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
 vim ./setup-init/config.yaml</code></pre>
 
-    <p>Fill in the required parameters (<b>*</b>). Everything else is auto-populated or has sensible defaults.</p>
+    <p>Only <b>5 fields</b> need to be filled in. Everything else is auto-detected, auto-derived, or has defaults.</p>
 
     <table>
       <tr><th>Section</th><th>Parameter</th><th></th><th>Description</th></tr>
-      <tr><td rowspan="3"><b>aws</b></td><td><code>aws_access_key_id</code></td><td><b>*</b></td><td>AWS Access Key (or set <code>AWS_ACCESS_KEY_ID</code> env var)</td></tr>
-      <tr><td><code>aws_secret_access_key</code></td><td><b>*</b></td><td>AWS Secret Key (or set <code>AWS_SECRET_ACCESS_KEY</code> env var)</td></tr>
-      <tr><td><code>aws_session_token</code></td><td></td><td>STS token if using temporary credentials (or <code>AWS_SESSION_TOKEN</code> env var)</td></tr>
       <tr><td rowspan="2"><b>student</b></td><td><code>name</code></td><td><b>*</b></td><td>Your unique lab ID &mdash; drives DNS, certs, and resource naming</td></tr>
       <tr><td><code>email</code></td><td><b>*</b></td><td>Contact email for resource tagging</td></tr>
-      <tr><td rowspan="3"><b>xC</b></td><td><code>p12_auth</code></td><td><b>*</b></td><td>Path to the <code>.p12</code> certificate file</td></tr>
+      <tr><td rowspan="3"><b>xC</b></td><td><code>tenant</code></td><td><b>*</b></td><td>xC tenant name &mdash; API URL and short name are auto-derived</td></tr>
+      <tr><td><code>namespace</code></td><td><b>*</b></td><td>xC namespace for all lab objects</td></tr>
       <tr><td><code>p_12_pwd</code></td><td><b>*</b></td><td>Password for the P12 certificate</td></tr>
-      <tr><td><code>tenant</code></td><td><b>*</b></td><td>xC tenant name &mdash; <code>tenant_api</code> and <code>tenant_shrt</code> are auto-derived</td></tr>
-      <tr><td><b>xC</b></td><td><code>tenant_anycast_ip</code></td><td></td><td>Auto-fetched from API &mdash; set manually to override with a secondary IP</td></tr>
-      <tr><td><b>f5</b></td><td><code>f5_password</code></td><td></td><td>BIG-IP admin password (default provided)</td></tr>
     </table>
-    <p><small><b>*</b> = mandatory. All other parameters are auto-populated, auto-derived, or have defaults. See the <a href="../../setup-init/template/PARAMETERS.md" target="_blank" rel="noopener">full parameter reference</a> for details.</small></p>
+    <p><small><b>*</b> = mandatory. AWS credentials can be set in the file or via environment variables (<code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SESSION_TOKEN</code>). P12 certificate is auto-detected from the <code>.xC/</code> directory. STS vs static credentials are auto-detected. See the <a href="../../setup-init/template/PARAMETERS.md" target="_blank" rel="noopener">full parameter reference</a> for details.</small></p>
 
     <div class="admonition warning">
       <strong>About the student name</strong>
