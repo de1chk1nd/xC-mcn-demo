@@ -51,11 +51,6 @@ def cmd_init(args: argparse.Namespace) -> int:
     if not verify_terraform():
         return 1
 
-    # Show configuration summary and ask for confirmation
-    if not display_config_summary(config):
-        print("\nAborted by user.")
-        return 1
-
     # Step 1: Detect public IP
     print("\n--- Detecting public IP ---")
     try:
@@ -92,12 +87,17 @@ def cmd_init(args: argparse.Namespace) -> int:
     else:
         print("  WARNING: Could not resolve Anycast IP (non-fatal, continuing)")
 
-    # Step 6: Save config with all auto-populated values
+    # Step 6: Show summary and confirm before deployment
+    if not display_config_summary(config):
+        print("\nAborted by user.")
+        return 1
+
+    # Step 7: Save config with all auto-populated values
     print("\n--- Saving configuration ---")
     save_config(config, CONFIG_FILE)
     print(f"  Config written to {CONFIG_FILE}")
 
-    # Step 7: Terraform deployment
+    # Step 8: Terraform deployment
     print("\n--- Terraform Deployment ---")
     tf_env = {"VES_P12_PASSWORD": config.xc.p12_pwd}
 
