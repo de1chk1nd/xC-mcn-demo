@@ -142,7 +142,7 @@ def cmd_update_ip(args: argparse.Namespace) -> int:
     from setup_init.network import get_public_ip_cidr
     from setup_init.terraform import terraform_apply, terraform_init
 
-    print("--- Updating Public IP ---")
+    print("--- Updating Public IP [BETA — not yet fully tested] ---")
 
     config = load_config(CONFIG_FILE)
     old_ip = config.student.ip_address
@@ -244,10 +244,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     creds_parser.set_defaults(func=cmd_update_creds)
 
-    # update-ip command
+    # update-ip command (beta)
     ip_parser = subparsers.add_parser(
         "update-ip",
-        help="Update public IP in config and refresh Security Groups",
+        help="[BETA] Update public IP in config and refresh Security Groups",
     )
     ip_parser.set_defaults(func=cmd_update_ip)
 
