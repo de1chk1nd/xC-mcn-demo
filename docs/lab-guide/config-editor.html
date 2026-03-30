@@ -184,23 +184,29 @@
 
   .toast {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
     background: var(--green);
     color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
     opacity: 0;
-    transform: translateY(10px);
     transition: opacity 0.3s, transform 0.3s;
     pointer-events: none;
+    z-index: 100;
+    text-align: center;
+    max-width: 400px;
   }
   .toast.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .toast.error {
+    background: var(--red);
   }
 </style>
 </head>
@@ -413,16 +419,18 @@
     return ok;
   }
 
-  function showToast(msg) {
+  function showToast(msg, isError) {
     var t = document.getElementById("toast");
     t.textContent = msg;
+    t.classList.remove("error");
+    if (isError) t.classList.add("error");
     t.classList.add("show");
-    setTimeout(function() { t.classList.remove("show"); }, 2500);
+    setTimeout(function() { t.classList.remove("show"); }, 3000);
   }
 
   window.downloadConfig = function() {
     if (!validate()) {
-      showToast("Please fill in all required fields");
+      showToast("Please fill in all required fields", true);
       return;
     }
     var yaml = generateYAML();
@@ -437,7 +445,7 @@
 
   window.copyConfig = function() {
     if (!validate()) {
-      showToast("Please fill in all required fields");
+      showToast("Please fill in all required fields", true);
       return;
     }
     var yaml = generateYAML();
