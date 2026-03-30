@@ -15,6 +15,13 @@
   <a href="#" class="sub" data-target="arch-saas" onclick="show('arch-saas', event)">SaaS</a>
   <a href="#" class="sub" data-target="arch-hybrid" onclick="show('arch-hybrid', event)">Hybrid</a>
   <a href="#" class="sub" data-target="arch-multisite" onclick="show('arch-multisite', event)">Multi-Site</a>
+  <h2>Security</h2>
+  <a href="#" data-target="sec-overview" onclick="show('sec-overview', event)">Overview</a>
+  <a href="#" class="sub" data-target="sec-waf" onclick="show('sec-waf', event)">WAF &amp; Reverse Proxy <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="sec-api" onclick="show('sec-api', event)">API Security <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="sec-api-discovery" onclick="show('sec-api-discovery', event)">API Discovery <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="sec-bot" onclick="show('sec-bot', event)">Bot Protection <span class="draft-dot"></span></a>
+  <a href="#" class="sub" data-target="sec-client" onclick="show('sec-client', event)">Client &amp; App Shield <span class="draft-dot"></span></a>
   <h2>Setup &amp; Delete</h2>
   <a href="#" data-target="home" onclick="show('home', event)">Home</a>
   <a href="#" data-target="before-start" onclick="show('before-start', event)">Before You Start</a>
@@ -253,7 +260,113 @@
       The <a href="#" data-target="ns-ce-clb" onclick="show('ns-ce-clb', event)">CE via CLB</a>, <a href="#" data-target="ew-ce" onclick="show('ew-ce', event)">CE to CE</a>, <a href="#" data-target="sd-k8s" onclick="show('sd-k8s', event)">k8s Service Discovery</a>, and <a href="#" data-target="vk8s" onclick="show('vk8s', event)">vk8s</a> use cases demonstrate the Multi-Site model.
     </div>
   </section>
-  <div class="section-nav" data-for="arch-multisite" data-prev="arch-hybrid" data-next="home"></div>
+  <div class="section-nav" data-for="arch-multisite" data-prev="arch-hybrid" data-next="sec-overview"></div>
+
+  <!-- ===== SECURITY OVERVIEW ===== -->
+  <section id="sec-overview">
+    <h1>Security Services</h1>
+
+    <h2>The Challenge</h2>
+    <p>In the previous chapter, we explored how F5 Distributed Cloud connects applications across clouds, data centers, and edge locations. The flexibility is powerful &mdash; but it comes with a challenge: <b>the more places you deploy, the more places you need to protect.</b></p>
+    <p>The reality for most organizations is not &ldquo;all in the cloud&rdquo; or &ldquo;stay on-premises&rdquo; &mdash; it&rsquo;s <b>hybrid</b>. Applications live everywhere: in public clouds, in private data centers, at the edge. And attackers don&rsquo;t care where your app runs &mdash; they look for the weakest link.</p>
+    <p>This is where F5 Distributed Cloud Security Services come in. Every security function can run on the <b>Regional Edge</b> (the global PoP network) or on the <b>Customer Edge</b> (your own sites) &mdash; or both. Same policies, same engine, same console. No matter where you deploy, your security posture stays consistent.</p>
+
+    <h2>What&rsquo;s Available</h2>
+    <p>F5 Distributed Cloud offers a comprehensive set of security services &mdash; all SaaS-managed, all integrated into one platform. Here&rsquo;s what&rsquo;s in the toolbox:</p>
+
+    <h3>WAF &amp; Reverse Proxy</h3>
+    <p>Every application needs a front door &mdash; and that front door should be smart. The F5 Web Application Firewall combines a full reverse proxy with <b>AI-powered threat detection</b>. It handles SSL/TLS termination, enforces mTLS, applies IP reputation scoring, rate limiting, and service policies &mdash; all in one layer.</p>
+    <p>What makes it different: the WAF engine is the same proven F5 technology trusted by the world&rsquo;s largest enterprises, now delivered as SaaS with <b>managed signature updates</b> and <b>zero-day protection via threat campaigns</b>. No tuning, no lag &mdash; new attack patterns are blocked within hours, not days.</p>
+    <ul>
+      <li><b>AI-assisted analysis</b> &mdash; reduces false positives and adapts to your traffic patterns</li>
+      <li><b>Threat campaigns</b> &mdash; proactive protection against emerging CVEs and zero-days</li>
+      <li><b>Consistent enforcement</b> &mdash; same WAF policy on RE and CE, managed from one console</li>
+    </ul>
+
+    <h3>API Security</h3>
+    <p>APIs are the backbone of modern applications &mdash; and the number one attack vector. F5 Distributed Cloud protects APIs you <b>already know about</b> and helps you find the ones you don&rsquo;t.</p>
+    <p>Import your OpenAPI/Swagger specification, and the platform automatically validates every request against your schema &mdash; wrong parameters, unexpected methods, oversized payloads get blocked before they reach your backend. Add JWT validation to verify caller identity, and you have a complete API security layer.</p>
+    <ul>
+      <li><b>Swagger/OpenAPI enforcement</b> &mdash; automatic schema validation, block non-conforming requests</li>
+      <li><b>JWT validation</b> &mdash; verify tokens at the edge, before traffic reaches your app</li>
+      <li><b>Positive security model</b> &mdash; only allow what&rsquo;s defined, deny everything else</li>
+    </ul>
+
+    <h3>API Discovery</h3>
+    <p>You can&rsquo;t protect what you don&rsquo;t know exists. Many organizations have &ldquo;shadow APIs&rdquo; &mdash; endpoints that were deployed but never documented, or legacy APIs that everyone forgot about. These are the endpoints attackers find first.</p>
+    <p>F5 Distributed Cloud analyzes your live traffic and <b>automatically discovers API endpoints</b>, maps their parameters, and generates OpenAPI specifications. It then monitors for OWASP API Top 10 attacks &mdash; injection, broken authentication, excessive data exposure &mdash; even on APIs you didn&rsquo;t know you had.</p>
+    <ul>
+      <li><b>Automatic endpoint discovery</b> &mdash; find every API, documented or not</li>
+      <li><b>Swagger export</b> &mdash; generate OpenAPI specs from observed traffic</li>
+      <li><b>OWASP API Top 10</b> &mdash; continuous monitoring and protection across all discovered endpoints</li>
+    </ul>
+
+    <h3>Bot Protection</h3>
+    <p>Not every visitor is human. Bots account for a significant portion of internet traffic &mdash; and while some are harmless (search crawlers), others steal credentials, scrape content, or abuse business logic.</p>
+    <p>F5 Distributed Cloud offers two levels of bot defense. <b>Basic protection</b> uses signature-based detection to block known bad bots. <b>Advanced protection</b> goes further &mdash; it analyzes client behavior in real-time using JavaScript signals, telemetry, and machine learning to distinguish real users from sophisticated bots. No CAPTCHAs. No image puzzles. Users don&rsquo;t even notice it&rsquo;s there.</p>
+    <ul>
+      <li><b>Signature-based detection</b> &mdash; block known bot frameworks and scrapers</li>
+      <li><b>Behavioral analysis</b> &mdash; detect sophisticated bots that mimic human behavior</li>
+      <li><b>Invisible to users</b> &mdash; no CAPTCHAs, no friction, no impact on user experience</li>
+    </ul>
+
+    <h3>Client-Side Defense &amp; Mobile App Shield</h3>
+    <p>Security doesn&rsquo;t end at the server. Modern web applications load dozens of third-party scripts (analytics, ads, chat widgets) &mdash; any of which could be compromised. And mobile apps face a different threat: reverse engineering, tampering, and credential theft on the device itself.</p>
+    <p>F5 <b>Client-Side Defense</b> monitors all JavaScript running in the user&rsquo;s browser and detects malicious modifications to third-party libraries &mdash; protecting against Magecart-style supply chain attacks. <b>Mobile App Shield</b> extends this to native apps, hardening them against reverse engineering and runtime tampering without requiring code changes.</p>
+    <ul>
+      <li><b>3rd-party script monitoring</b> &mdash; detect compromised JavaScript libraries in real-time</li>
+      <li><b>Supply chain protection</b> &mdash; block Magecart, formjacking, and skimming attacks</li>
+      <li><b>Mobile app hardening</b> &mdash; protect native apps without changing application code</li>
+    </ul>
+
+    <hr>
+
+    <h2>Why This Matters</h2>
+    <p>Most security vendors offer pieces of the puzzle &mdash; a WAF here, a bot solution there, API security from a third vendor. Each tool has its own console, its own policy language, its own blind spots.</p>
+    <p>F5 Distributed Cloud brings all of this into <b>one platform</b>. One console. One policy engine. Deployed anywhere &mdash; on the global network or at your own sites. That&rsquo;s not just convenience, it&rsquo;s a fundamentally different security posture:</p>
+    <ul>
+      <li><b>Consistent policies</b> across every deployment model (SaaS, Hybrid, Multi-Site)</li>
+      <li><b>Correlated visibility</b> &mdash; WAF events, bot activity, API anomalies, and client-side alerts in one dashboard</li>
+      <li><b>Faster response</b> &mdash; when you see the full picture, you act faster</li>
+    </ul>
+    <p>In the following chapters, we&rsquo;ll dive deeper into each security service with hands-on examples from this lab.</p>
+  </section>
+  <div class="section-nav" data-for="sec-overview" data-prev="arch-multisite" data-next="sec-waf"></div>
+
+  <!-- ===== SEC: WAF ===== -->
+  <section id="sec-waf">
+    <h1>WAF &amp; Reverse Proxy</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="sec-waf" data-prev="sec-overview" data-next="sec-api"></div>
+
+  <!-- ===== SEC: API Security ===== -->
+  <section id="sec-api">
+    <h1>API Security</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="sec-api" data-prev="sec-waf" data-next="sec-api-discovery"></div>
+
+  <!-- ===== SEC: API Discovery ===== -->
+  <section id="sec-api-discovery">
+    <h1>API Discovery</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="sec-api-discovery" data-prev="sec-api" data-next="sec-bot"></div>
+
+  <!-- ===== SEC: Bot Protection ===== -->
+  <section id="sec-bot">
+    <h1>Bot Protection</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="sec-bot" data-prev="sec-api-discovery" data-next="sec-client"></div>
+
+  <!-- ===== SEC: Client & App Shield ===== -->
+  <section id="sec-client">
+    <h1>Client-Side Defense &amp; Mobile App Shield</h1>
+    <p>Content coming soon.</p>
+  </section>
+  <div class="section-nav" data-for="sec-client" data-prev="sec-bot" data-next="home"></div>
 
   <!-- ===== HOME ===== -->
   <section id="home" class="active">
@@ -276,7 +389,7 @@
 
     <p>Use the sidebar to navigate through setup and each use case. A full overview is available under <b>Use Cases</b>.</p>
   </section>
-  <div class="section-nav" data-for="home" data-prev="arch-multisite" data-next="before-start"></div>
+  <div class="section-nav" data-for="home" data-prev="sec-client" data-next="before-start"></div>
 
   <!-- ===== BEFORE YOU START ===== -->
   <section id="before-start">
