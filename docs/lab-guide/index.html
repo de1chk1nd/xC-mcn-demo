@@ -529,7 +529,16 @@ source .venv/bin/activate</code></pre>
     </ul>
 
     <h2 class="step">3. Configure</h2>
-    <p>Copy the template and open it in your editor:</p>
+
+    <p><b>Option A</b> &mdash; Use the web-based config editor <span class="badge" style="font-size:11px;background:#fff4e5;color:#92400e;padding:2px 8px;border-radius:4px;font-weight:700;">BETA</span></p>
+    <p>
+      <a class="test-access" href="config-editor.html" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#fff4e5,#fef9ee);border-color:#f59e0b;color:#92400e;">
+        <span class="arrow">&#8594;</span> Open Config Editor
+      </a>
+    </p>
+    <p><small>Fill in the form, click <b>Download config.yaml</b>, and save the file to <code>setup-init/config.yaml</code>.</small></p>
+
+    <p><b>Option B</b> &mdash; Manual: copy the template and edit in your terminal:</p>
 <pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
 vim ./setup-init/config.yaml</code></pre>
 
@@ -1341,6 +1350,7 @@ source .venv/bin/activate
 pip install -r requirements.txt</code></pre>
 
     <h2>2. Config</h2>
+    <p><small>Use the <a href="config-editor.html" target="_blank">Config Editor (BETA)</a> or manual:</small></p>
 <pre><code>cp ./setup-init/template/config.yaml ./setup-init/config.yaml
 vim ./setup-init/config.yaml</code></pre>
 
