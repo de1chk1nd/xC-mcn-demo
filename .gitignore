@@ -1,5 +1,7 @@
 ####### Private / Secret files
 docs-priv/
+*.bk
+*.backup
 *.json
 !xC-use-cases/**/etc/__template*.json
 !xC-use-cases/**/etc/*.json.example
