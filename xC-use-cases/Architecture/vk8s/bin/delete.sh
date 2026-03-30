@@ -63,7 +63,7 @@ sleep 5
 echo "Deleting vk8s cluster: ${STUDENT}-vk8s..."
 curl --silent --cert "${CERT_FILE}:${P12_PASSWORD}" \
     -I -X DELETE \
-    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/virtual_k8ss/${STUDENT}-Architecture/vk8s"
+    "https://${TENANT}.console.ves.volterra.io/api/config/namespaces/${NAMESPACE}/virtual_k8ss/${STUDENT}-vk8s"
 
 #######################################
 # Step 5: Delete Certificates
