@@ -624,6 +624,7 @@ sudo vim /etc/hosts</code></pre>
       <tr><th>Command</th><th>Description</th></tr>
       <tr><td><code>./setup-init/bin/initialize.sh init</code></td><td>Full initialization: IP detection, CA, AWS credentials, xC cert, Anycast IP, Terraform deploy</td></tr>
       <tr><td><code>./setup-init/bin/initialize.sh update-creds</code></td><td>Update AWS credentials only (after STS token rotation)</td></tr>
+      <tr><td><code>./setup-init/bin/initialize.sh update-ip</code></td><td>[BETA] Update public IP and refresh Security Groups (e.g. after VPN reconnect)</td></tr>
       <tr><td><code>./setup-init/bin/initialize.sh generate-ca</code></td><td>Generate Certificate Authority only (no Terraform, no AWS)</td></tr>
     </table>
 
@@ -1378,6 +1379,9 @@ chmod +x ./setup-init/.ssh/ssh-key-permission_mac.sh
 
     <h2>Update Credentials (after STS rotation)</h2>
 <pre><code>./setup-init/bin/initialize.sh update-creds</code></pre>
+
+    <h2>Update Public IP (after VPN reconnect)</h2>
+<pre><code>./setup-init/bin/initialize.sh update-ip</code></pre>
 
     <h2>Destroy</h2>
 <pre><code># Update expired creds first

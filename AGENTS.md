@@ -74,6 +74,9 @@ Target environment: lab / demo — not production.
 # Update AWS credentials only (after STS rotation)
 ./setup-init/bin/initialize.sh update-creds
 
+# Update public IP and refresh Security Groups (e.g. after VPN reconnect)
+./setup-init/bin/initialize.sh update-ip
+
 # Generate CA only
 ./setup-init/bin/initialize.sh generate-ca
 

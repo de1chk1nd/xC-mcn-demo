@@ -25,6 +25,7 @@ cp /path/to/your-cert.p12 ./.xC/
 |---------|-------------|
 | `./bin/initialize.sh init` | Full initialization: CA generation, AWS credentials, xC cert conversion, Terraform deployment |
 | `./bin/initialize.sh update-creds` | Update AWS credentials only (after STS token rotation) |
+| `./bin/initialize.sh update-ip` | [BETA] Update public IP and refresh Security Groups (e.g. after VPN reconnect) |
 | `./bin/initialize.sh generate-ca` | Generate Certificate Authority only |
 | `./bin/delete.sh` | Destroy all Terraform-managed infrastructure |
 
