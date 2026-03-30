@@ -214,14 +214,30 @@ def display_config_summary(config: "Config") -> bool:
     """
     COL = 22  # label column width
 
+    # ANSI color codes — degrade gracefully if terminal doesn't support them
+    GREEN = "\033[32m"
+    RED = "\033[31m"
+    YELLOW = "\033[33m"
+    BOLD = "\033[1m"
+    RESET = "\033[0m"
+
+    def ok(text: str) -> str:
+        return f"{GREEN}✓ {text}{RESET}"
+
+    def fail(text: str) -> str:
+        return f"{RED}✗ {text}{RESET}"
+
+    def warn(text: str) -> str:
+        return f"{YELLOW}{text}{RESET}"
+
     os.system("clear")
-    print("══════════════════════════════════════════════")
-    print("  xC MCN Demo Lab — Configuration Summary")
-    print("══════════════════════════════════════════════")
+    print(f"{BOLD}══════════════════════════════════════════════")
+    print(f"  xC MCN Demo Lab — Configuration Summary")
+    print(f"══════════════════════════════════════════════{RESET}")
     print()
 
     # AWS
-    print("  AWS")
+    print(f"  {BOLD}AWS{RESET}")
     print("  ──────────────────────────────────────────")
     cred_ok = bool(
         config.aws.aws_access_key_id
@@ -230,7 +246,8 @@ def display_config_summary(config: "Config") -> bool:
     cred_source = ""
     if os.environ.get("AWS_ACCESS_KEY_ID"):
         cred_source = " (env var)"
-    print(f"  {'Credentials':<{COL}} {'✓ loaded' + cred_source if cred_ok else '✗ missing'}")
+    cred_status = ok("loaded" + cred_source) if cred_ok else fail("missing")
+    print(f"  {'Credentials':<{COL}} {cred_status}")
     auth_type = "STS (temporary)" if config.aws.tmp_aws_cred else "Static (IAM)"
     print(f"  {'Auth Type':<{COL}} {auth_type}")
     print(f"  {'Profile':<{COL}} {config.aws.auth_profile}")
@@ -239,28 +256,34 @@ def display_config_summary(config: "Config") -> bool:
     print()
 
     # Student
-    print("  Student")
+    print(f"  {BOLD}Student{RESET}")
     print("  ──────────────────────────────────────────")
-    print(f"  {'Name':<{COL}} {config.student.name}")
-    print(f"  {'Email':<{COL}} {config.student.email}")
-    ip_display = config.student.ip_address or "(will be detected)"
+    name_ok = bool(config.student.name and "<" not in config.student.name)
+    print(f"  {'Name':<{COL}} {ok(config.student.name) if name_ok else fail('not set')}")
+    email_ok = bool(config.student.email and "<" not in config.student.email)
+    print(f"  {'Email':<{COL}} {ok(config.student.email) if email_ok else fail('not set')}")
+    ip_display = config.student.ip_address or warn("(will be detected)")
     print(f"  {'Public IP':<{COL}} {ip_display}")
     print()
 
     # xC
-    print("  F5 Distributed Cloud")
+    print(f"  {BOLD}F5 Distributed Cloud{RESET}")
     print("  ──────────────────────────────────────────")
-    print(f"  {'Tenant':<{COL}} {config.xc.tenant}")
-    print(f"  {'Namespace':<{COL}} {config.xc.namespace}")
+    tenant_ok = bool(config.xc.tenant and "<" not in config.xc.tenant)
+    print(f"  {'Tenant':<{COL}} {ok(config.xc.tenant) if tenant_ok else fail('not set')}")
+    ns_ok = bool(config.xc.namespace and "<" not in config.xc.namespace)
+    print(f"  {'Namespace':<{COL}} {ok(config.xc.namespace) if ns_ok else fail('not set')}")
     # Show only filename, not full path
-    p12_display = config.xc.p12_auth.split("/")[-1] if config.xc.p12_auth else "✗ not found"
-    p12_auto = " (auto-detected)" if "<" not in (config.raw.get("xC", {}).get("p12_auth", "<")) == False else ""
-    print(f"  {'P12 Certificate':<{COL}} {p12_display}")
-    anycast = config.xc.tenant_anycast_ip or "(will be fetched)"
+    p12_ok = bool(config.xc.p12_auth and "<" not in config.xc.p12_auth)
+    p12_name = config.xc.p12_auth.split("/")[-1] if config.xc.p12_auth else ""
+    raw_p12 = config.raw.get("xC", {}).get("p12_auth", "")
+    p12_suffix = " (auto-detected)" if (not raw_p12 or "<" in raw_p12) and p12_ok else ""
+    print(f"  {'P12 Certificate':<{COL}} {ok(p12_name + p12_suffix) if p12_ok else fail('not found')}")
+    anycast = config.xc.tenant_anycast_ip or warn("(will be fetched)")
     print(f"  {'Anycast IP':<{COL}} {anycast}")
     print()
 
-    print("══════════════════════════════════════════════")
+    print(f"{BOLD}══════════════════════════════════════════════{RESET}")
     try:
         answer = input("  Proceed with these settings? [Y/n]: ").strip().lower()
     except (EOFError, KeyboardInterrupt):
