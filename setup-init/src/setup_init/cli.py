@@ -137,6 +137,65 @@ def cmd_update_creds(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_update_ip(args: argparse.Namespace) -> int:
+    """Update public IP in config and refresh Security Groups via Terraform."""
+    from setup_init.network import get_public_ip_cidr
+    from setup_init.terraform import terraform_apply, terraform_init
+
+    print("--- Updating Public IP ---")
+
+    config = load_config(CONFIG_FILE)
+    old_ip = config.student.ip_address
+
+    try:
+        new_ip = get_public_ip_cidr()
+    except RuntimeError as e:
+        print(f"ERROR: {e}")
+        return 1
+
+    if old_ip == new_ip:
+        print(f"  IP unchanged: {new_ip}")
+        print("  Nothing to do.")
+        return 0
+
+    print(f"  Old IP: {old_ip or '(not set)'}")
+    print(f"  New IP: {new_ip}")
+
+    config.student.ip_address = new_ip
+    save_config(config, CONFIG_FILE)
+    print(f"  Config updated: {CONFIG_FILE}")
+
+    # Targeted Terraform apply — only Security Groups (dynamic resources)
+    # BIG-IP user-data and EC2 instances are NOT affected (would require re-deploy)
+    print("\n--- Applying IP change to Security Groups ---")
+    tf_env = {"VES_P12_PASSWORD": config.xc.p12_pwd}
+
+    try:
+        terraform_init(INFRASTRUCTURE_DIR, env=tf_env)
+        # Target all security groups in both region modules
+        terraform_apply(
+            INFRASTRUCTURE_DIR,
+            env=tf_env,
+            extra_args=[
+                "-target=module.eu-central-1.aws_security_group.xC-mcn-server-allow-ubuntu",
+                "-target=module.eu-central-1.aws_security_group.xC-mcn-server-allow-bigip",
+                "-target=module.eu-central-1.aws_security_group.xC-mcn-site-allow-ubuntu",
+                "-target=module.eu-west-1.aws_security_group.xC-mcn-server-allow-ubuntu",
+                "-target=module.eu-west-1.aws_security_group.xC-mcn-server-allow-bigip",
+                "-target=module.eu-west-1.aws_security_group.xC-mcn-site-allow-ubuntu",
+            ],
+        )
+    except RuntimeError as e:
+        print(f"ERROR: {e}")
+        return 1
+
+    print(f"\nIP updated successfully: {old_ip} → {new_ip}")
+    print("NOTE: BIG-IP user-data still references the old IP. This only affects")
+    print("      the BIG-IP AS3 config (if student_ip is used there). Security")
+    print("      Groups are updated and effective immediately.")
+    return 0
+
+
 def cmd_generate_ca(args: argparse.Namespace) -> int:
     """Generate CA certificate only (no Terraform, no AWS)."""
     from setup_init.ca import generate_ca, verify_openssl
@@ -184,6 +243,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Update AWS credentials only (after STS rotation)",
     )
     creds_parser.set_defaults(func=cmd_update_creds)
+
+    # update-ip command
+    ip_parser = subparsers.add_parser(
+        "update-ip",
+        help="Update public IP in config and refresh Security Groups",
+    )
+    ip_parser.set_defaults(func=cmd_update_ip)
 
     # generate-ca command
     ca_parser = subparsers.add_parser(

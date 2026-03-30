@@ -90,6 +90,7 @@ def terraform_apply(
     plan_file: Path | None = None,
     auto_approve: bool = False,
     env: dict | None = None,
+    extra_args: list | None = None,
 ) -> None:
     """
     Apply Terraform changes.
@@ -99,10 +100,13 @@ def terraform_apply(
         plan_file: Optional saved plan file to apply
         auto_approve: Skip interactive approval
         env: Additional environment variables
+        extra_args: Additional CLI arguments (e.g. -target=...)
     """
     args = []
     if auto_approve:
         args.append("-auto-approve")
+    if extra_args:
+        args.extend(extra_args)
     if plan_file:
         args.append(str(plan_file))
 

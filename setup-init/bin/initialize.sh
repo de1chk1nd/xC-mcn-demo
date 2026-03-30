@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # xC MCN Demo Lab — Initialization Wrapper
-# Usage: ./setup-init/bin/initialize.sh [init|update-creds|generate-ca]
+# Usage: ./setup-init/bin/initialize.sh [init|update-creds|update-ip|generate-ca]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SETUP_INIT_DIR="$(dirname "$SCRIPT_DIR")"
