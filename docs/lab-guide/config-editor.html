@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xC MCN Lab — Config Editor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --primary: #003a75;
+    --accent: #f59e0b;
+    --bg: #f3f4f6;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-light: #475569;
+    --border: #e5e7eb;
+    --red: #dc2626;
+    --green: #16a34a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "IBM Plex Sans", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .editor {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 720px;
+    width: 100%;
+    padding: 32px;
+  }
+
+  .editor h1 {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .editor .subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 24px;
+  }
+
+  .section-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 10px 0 6px;
+    margin-top: 20px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-header:first-of-type { margin-top: 0; }
+
+  .field {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field label .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .badge.req { background: #fee2e2; color: var(--red); }
+  .badge.opt { background: #e0f2fe; color: #0369a1; }
+  .badge.auto { background: #dcfce7; color: #166534; }
+
+  .field input, .field select {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fafbfc;
+    color: var(--text);
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 58, 117, 0.1);
+  }
+  .field input.invalid { border-color: var(--red); }
+  .field input[disabled] {
+    background: #f1f5f9;
+    color: var(--text-light);
+    cursor: not-allowed;
+  }
+
+  .field .hint {
+    grid-column: 2;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: -4px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+  }
+
+  .btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #002a57;
+    box-shadow: 0 2px 8px rgba(0, 58, 117, 0.2);
+  }
+  .btn-secondary {
+    background: #e2e8f0;
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: #cbd5e1; }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .preview {
+    margin-top: 20px;
+    display: none;
+  }
+  .preview.visible { display: block; }
+  .preview-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .preview pre {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.5;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--green);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div class="editor">
+  <h1>xC MCN Lab — Config Editor</h1>
+  <p class="subtitle">Fill in the required fields and download your <code>config.yaml</code>.</p>
+
+  <!-- Student -->
+  <div class="section-header">Student</div>
+
+  <div class="field">
+    <label>Name <span class="badge req">required</span></label>
+    <input type="text" id="student-name" placeholder="e.g. de1chk1nd" maxlength="16" pattern="[a-z0-9][a-z0-9-]{0,14}[a-z0-9]">
+    <span class="hint">DNS-safe: [a-z0-9-], 1-16 chars</span>
+  </div>
+
+  <div class="field">
+    <label>Email <span class="badge req">required</span></label>
+    <input type="email" id="student-email" placeholder="e.g. me@example.com">
+  </div>
+
+  <!-- xC -->
+  <div class="section-header">F5 Distributed Cloud</div>
+
+  <div class="field">
+    <label>Tenant <span class="badge req">required</span></label>
+    <input type="text" id="xc-tenant" placeholder="e.g. f5-emea-ent-bceuutam">
+    <span class="hint">Full tenant name from xC Console → Administration</span>
+  </div>
+
+  <div class="field">
+    <label>Namespace <span class="badge req">required</span></label>
+    <input type="text" id="xc-namespace" placeholder="e.g. m-petersen">
+  </div>
+
+  <div class="field">
+    <label>P12 Password <span class="badge req">required</span></label>
+    <input type="password" id="xc-p12-pwd" placeholder="P12 certificate password">
+  </div>
+
+  <div class="field">
+    <label>P12 File Path <span class="badge auto">auto</span></label>
+    <input type="text" id="xc-p12-auth" placeholder="auto-detected from .xC/ directory">
+    <span class="hint">Leave empty for auto-detection, or set manually (e.g. <code>.xC/my-cert.p12</code>)</span>
+  </div>
+
+  <div class="field">
+    <label>Anycast IP <span class="badge auto">auto</span></label>
+    <input type="text" id="xc-anycast" placeholder="auto-fetched from xC API">
+    <span class="hint">Leave empty for auto-detection, or set a secondary IP</span>
+  </div>
+
+  <!-- AWS -->
+  <div class="section-header">AWS Credentials</div>
+
+  <div class="field">
+    <label>Access Key <span class="badge opt">optional</span></label>
+    <input type="text" id="aws-key" placeholder="or set AWS_ACCESS_KEY_ID env var">
+  </div>
+
+  <div class="field">
+    <label>Secret Key <span class="badge opt">optional</span></label>
+    <input type="password" id="aws-secret" placeholder="or set AWS_SECRET_ACCESS_KEY env var">
+  </div>
+
+  <div class="field">
+    <label>Session Token <span class="badge opt">optional</span></label>
+    <input type="text" id="aws-token" placeholder="or set AWS_SESSION_TOKEN env var">
+    <span class="hint">STS vs static is auto-detected based on token presence</span>
+  </div>
+
+  <div class="field">
+    <label>Profile <span class="badge auto">default</span></label>
+    <input type="text" id="aws-profile" value="xc-mcn-lab">
+  </div>
+
+  <div class="field">
+    <label>Region 1 <span class="badge auto">default</span></label>
+    <input type="text" id="aws-region1" value="eu-central-1">
+  </div>
+
+  <div class="field">
+    <label>Region 2 <span class="badge auto">default</span></label>
+    <input type="text" id="aws-region2" value="eu-west-1">
+  </div>
+
+  <!-- BIG-IP -->
+  <div class="section-header">BIG-IP</div>
+
+  <div class="field">
+    <label>Admin Password <span class="badge auto">default</span></label>
+    <input type="text" id="f5-password" value="DefaultLabPwd!2026">
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="downloadConfig()">Download config.yaml</button>
+    <button class="btn btn-secondary" onclick="copyConfig()">Copy to Clipboard</button>
+    <button class="btn btn-secondary" onclick="togglePreview()">Preview</button>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview" id="preview">
+    <p class="preview-header">Generated config.yaml</p>
+    <pre id="preview-content"></pre>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  "use strict";
+
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function generateYAML() {
+    var name = val("student-name");
+    var email = val("student-email");
+    var tenant = val("xc-tenant");
+    var namespace = val("xc-namespace");
+    var p12pwd = val("xc-p12-pwd");
+    var p12auth = val("xc-p12-auth");
+    var anycast = val("xc-anycast");
+    var awsKey = val("aws-key");
+    var awsSecret = val("aws-secret");
+    var awsToken = val("aws-token");
+    var awsProfile = val("aws-profile") || "xc-mcn-lab";
+    var region1 = val("aws-region1") || "eu-central-1";
+    var region2 = val("aws-region2") || "eu-west-1";
+    var f5pw = val("f5-password") || "DefaultLabPwd!2026";
+
+    var yaml = "";
+    yaml += "########################################\n";
+    yaml += "# Student identity\n";
+    yaml += "########################################\n";
+    yaml += "student:\n";
+    yaml += "  name: " + (name || "<STUDENT NAME>") + "\n";
+    yaml += "  email: " + (email || "<STUDENT E-MAIL>") + "\n";
+    yaml += "  #--- auto-populated ---\n";
+    yaml += "  ip-address:\n";
+    yaml += "\n";
+    yaml += "########################################\n";
+    yaml += "# F5 Distributed Cloud (xC)\n";
+    yaml += "########################################\n";
+    yaml += "xC:\n";
+    yaml += "  tenant: " + (tenant || "<XC TENANT NAME>") + "\n";
+    yaml += "  namespace: " + (namespace || "<NAMESPACE>") + "\n";
+    yaml += "  p_12_pwd: " + (p12pwd || "<P12 PASSWORD STRING>") + "\n";
+    yaml += "  #--- auto-detected / auto-derived ---\n";
+    yaml += "  p12_auth: " + (p12auth || "") + "\n";
+    yaml += "  tenant_shrt:\n";
+    yaml += "  tenant_api:\n";
+    yaml += "  tenant_anycast_ip: " + (anycast ? '"' + anycast + '"' : '""') + "\n";
+    yaml += "\n";
+    yaml += "########################################\n";
+    yaml += "# AWS credentials\n";
+    yaml += "########################################\n";
+    yaml += "aws:\n";
+    yaml += "  aws_access_key_id: " + (awsKey || "") + "\n";
+    yaml += "  aws_secret_access_key: " + (awsSecret || "") + "\n";
+    yaml += "  aws_session_token: " + (awsToken || "") + "\n";
+    yaml += "  #--- defaults ---\n";
+    yaml += "  auth_profile: " + awsProfile + "\n";
+    yaml += "  region_site_1: " + region1 + "\n";
+    yaml += "  region_site_2: " + region2 + "\n";
+    yaml += "\n";
+    yaml += "########################################\n";
+    yaml += "# BIG-IP\n";
+    yaml += "########################################\n";
+    yaml += "f5:\n";
+    yaml += "  f5_password: " + f5pw + "\n";
+    yaml += "\n";
+    yaml += "########################################\n";
+    yaml += "# Certificates — auto-populated\n";
+    yaml += "########################################\n";
+    yaml += "cert:\n";
+    yaml += "  ca_dir: .cert/ca\n";
+    yaml += "  cert_dir: .cert/domains\n";
+    yaml += "  ca_key:\n";
+    yaml += "  ca_cert:\n";
+
+    return yaml;
+  }
+
+  function validate() {
+    var ok = true;
+    var fields = [
+      { id: "student-name", check: function(v) { return /^[a-z0-9][a-z0-9-]{0,14}[a-z0-9]$/.test(v) || /^[a-z0-9]$/.test(v); } },
+      { id: "student-email", check: function(v) { return v.indexOf("@") > 0; } },
+      { id: "xc-tenant", check: function(v) { return v.length > 0; } },
+      { id: "xc-namespace", check: function(v) { return v.length > 0; } },
+      { id: "xc-p12-pwd", check: function(v) { return v.length > 0; } }
+    ];
+
+    for (var i = 0; i < fields.length; i++) {
+      var el = document.getElementById(fields[i].id);
+      if (!fields[i].check(el.value.trim())) {
+        el.classList.add("invalid");
+        ok = false;
+      } else {
+        el.classList.remove("invalid");
+      }
+    }
+    return ok;
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function() { t.classList.remove("show"); }, 2500);
+  }
+
+  window.downloadConfig = function() {
+    if (!validate()) {
+      showToast("Please fill in all required fields");
+      return;
+    }
+    var yaml = generateYAML();
+    var blob = new Blob([yaml], { type: "text/yaml" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "config.yaml";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast("config.yaml downloaded — save to setup-init/");
+  };
+
+  window.copyConfig = function() {
+    if (!validate()) {
+      showToast("Please fill in all required fields");
+      return;
+    }
+    var yaml = generateYAML();
+    navigator.clipboard.writeText(yaml).then(function() {
+      showToast("Copied to clipboard");
+    }).catch(function() {
+      // Fallback for file:// where clipboard API may not work
+      var pre = document.getElementById("preview-content");
+      pre.textContent = yaml;
+      document.getElementById("preview").classList.add("visible");
+      var range = document.createRange();
+      range.selectNode(pre);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      showToast("Select All + Copy (clipboard API not available in file://)");
+    });
+  };
+
+  window.togglePreview = function() {
+    var p = document.getElementById("preview");
+    if (p.classList.contains("visible")) {
+      p.classList.remove("visible");
+    } else {
+      var yaml = generateYAML();
+      document.getElementById("preview-content").textContent = yaml;
+      p.classList.add("visible");
+    }
+  };
+
+  // Validate on input
+  document.querySelectorAll("input").forEach(function(el) {
+    el.addEventListener("input", function() { el.classList.remove("invalid"); });
+  });
+})();
+</script>
+
+</body>
+</html>
