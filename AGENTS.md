@@ -132,6 +132,57 @@ open docs/lab-guide/index.html
 
 ---
 
+## Meta-Dependencies — Change Impact Matrix
+
+When modifying the codebase, the following cross-module dependencies must be respected.
+
+### Adding a New Use Case
+
+When a new use case is added (new directory under `xC-use-cases/Architecture/` or `xC-use-cases/Services/`), ALL of the following must be updated:
+
+| File | What to add | Why |
+|------|-------------|-----|
+| `Makefile` | New `uc-<name>` and `uc-<name>-delete` targets | Makefile has hardcoded paths — no auto-discovery |
+| `tools/xc-cleanup/bin/check-objects.sh` | GET check for every new xC object (LB, cert, origin pool, etc.) | Cleanup check is a static inventory |
+| `docs/lab-guide/index.html` | New `<section id="...">` + sidebar link + section-nav entry | SPA requires manual registration |
+| `xC-use-cases/README.md` | New row in Architecture or Services table | Overview table is manually maintained |
+| `AGENTS.md` (this file) | Update Use-Case TLS Workflow section if pattern changes | Agent context |
+
+### Renaming or Moving a Use Case
+
+Moving a directory (e.g. during restructuring) breaks ALL of:
+- `Makefile` — hardcoded paths to `bin/setup.sh` and `bin/delete.sh`
+- `docs/lab-guide/index.html` — `chmod +x` and script paths in code blocks
+- Use case `bin/setup.sh` and `bin/delete.sh` — `USE_CASE_DIR` variable
+- `xC-use-cases/README.md` — table links
+
+**Rule:** When renaming/moving a use case, run `grep -r "old-name" .` and update all occurrences.
+
+### Renaming a config.yaml Field
+
+`setup-init/template/config.yaml` field names must stay in sync with:
+- `setup-init/src/setup_init/config.py` — all `*_data.get("field-name")` calls
+- `setup-init/bin/delete.sh` — `yq` resets (e.g. `.xC.tenant_anycast_ip`)
+- `setup-init/lib/common-config-loader.sh` — `yq` reads
+- `setup-init/template/PARAMETERS.md` — documentation
+
+### Changing common-config-loader.sh
+
+`setup-init/lib/common-config-loader.sh` exports `TENANT`, `XC_TENANT`, `NAMESPACE`, `P12_PASSWORD`, `CERT_FILE`. These variables are used by **19 scripts** (all use-case setup/delete + xc-cleanup). Any change to exported variable names breaks all of them.
+
+### Adding a New xC API Object in a Use Case
+
+When a new xC object is created in a `setup.sh` script:
+1. Add the corresponding DELETE call to `delete.sh`
+2. Add a `check_object` call to `tools/xc-cleanup/bin/check-objects.sh`
+3. Update `xC-use-cases/<use-case>/README.md` API Endpoints table
+
+### Terraform Output Names
+
+`infrastructure/outputs.tf` output names are referenced in the `Makefile` (`status` target). If output names change, update the Makefile accordingly. Current names: `xC-MCN-CE-EU-CENTRAL1`, `xC-MCN-CE-EU-WEST1`, `xC-MCN-CE-EU-CENTRAL1-GW01`, `xC-MCN-CE-EU-WEST1-GW01`, `etc-hosts`.
+
+---
+
 ## Conventions & Rules
 
 - Terraform: tag all resources with `environment` and `owner`
