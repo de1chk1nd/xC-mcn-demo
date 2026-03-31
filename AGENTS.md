@@ -67,28 +67,64 @@ Target environment: lab / demo — not production.
 
 ## Key Commands
 
+The repo includes a **Makefile** in the root directory as the primary entry point.
+Use `make` or `make help` to see all available targets.
+
 ```bash
-# Full initialization (CA, AWS creds, Terraform)
+# ─── Basics ───────────────────────────────────────
+make install           # Full lab init (Terraform + xC)
+make delete            # Destroy all infrastructure
+make update-creds      # Update AWS credentials (after STS rotation)
+make update-ip         # Update public IP + refresh Security Groups [BETA]
+make generate-ca       # Generate CA only
+
+# ─── SSH ──────────────────────────────────────────
+make ssh               # Open SSH to all servers (OS auto-detected)
+make ssh-central       # SSH to eu-central only
+make ssh-west          # SSH to eu-west only
+make ssh-ubuntu        # SSH to Ubuntu servers
+make ssh-bigip         # SSH to BIG-IP servers
+
+# ─── Use Cases ────────────────────────────────────
+make uc-re             # Deploy RE Only (+ make uc-re-delete)
+make uc-re-ce          # Deploy RE to CE (+ make uc-re-ce-delete)
+make uc-bigip          # Deploy RE to CE via BIG-IP (+ delete)
+make uc-clb            # Deploy CE via CLB (+ delete)
+make uc-ce2ce          # Deploy CE to CE (+ delete)
+make uc-k8s            # Deploy k8s SD (+ delete)
+make uc-vk8s           # Deploy vk8s (+ delete)
+make svc-mtls          # Deploy mTLS (+ make svc-mtls-delete)
+make svc-jwt           # Deploy JWT Validation (+ delete)
+
+# ─── Utilities ────────────────────────────────────
+make show-hosts        # Print /etc/hosts entries
+make status            # Show Terraform outputs (IPs, CE names)
+make check-ip          # Compare current IP with config
+make xc-cleanup        # Check for orphaned xC objects (read-only)
+make clean             # Remove generated payloads + certs
+make lint              # shellcheck + tflint + terraform validate
+make docs              # Open lab guide in browser
+
+# ─── Direct access (if preferred over make) ───────
 ./setup-init/bin/initialize.sh init
-
-# Update AWS credentials only (after STS rotation)
 ./setup-init/bin/initialize.sh update-creds
-
-# Update public IP and refresh Security Groups (e.g. after VPN reconnect)
 ./setup-init/bin/initialize.sh update-ip
-
-# Generate CA only
 ./setup-init/bin/initialize.sh generate-ca
-
-# Teardown
 ./setup-init/bin/delete.sh
 
 # Linting
+make lint
+# or directly:
 tflint --recursive
 shellcheck setup-init/**/*.sh xC-use-cases/**/bin/*.sh
 
 # Tools — s-certificate (key flags: --no-p12, --keep-pem, --xc-upload)
 cd tools/s-certificate && ./bin/run-s-certificate.sh --help
+
+# Tools — xc-cleanup (check for orphaned xC objects)
+make xc-cleanup
+# or directly:
+./tools/xc-cleanup/bin/check-objects.sh
 
 # Documentation — Lab Guide (open in browser)
 open docs/lab-guide/index.html
